@@ -5,6 +5,12 @@ type PingRequest struct {
 	Payload string `json:"payload" validate:"required"`
 }
 
+type GetScoresRequest struct {
+	Id     string `json:"-"`
+	ApiKey string `json:"api-key" validate:"required"`
+	Hash   string `json:"hash" validate:"required"`
+}
+
 type SubmitScoreRequest struct {
 	Id     string `json:"-"`
 	ApiKey string `json:"api-key" validate:"required"`

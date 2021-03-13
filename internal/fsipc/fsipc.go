@@ -167,41 +167,15 @@ func (fsipc *FsIpc) handleFile(filename string) {
 		return
 	}
 
+	var request interface{}
+
 	switch base.Action {
 	case "ping":
-		request := PingRequest{Id: id}
-
-		err = json.Unmarshal(data, &request)
-		if err != nil {
-			log.Printf("failed to unmarshal request %s: %v", id, err)
-			return
-		}
-
-		validate := validator.New()
-		err = validate.Struct(request)
-		if err != nil {
-			log.Printf("invalid request %s: %v", id, err)
-			return
-		}
-
-		fsipc.Requests <- request
+		request = &PingRequest{Id: id}
+	case "get-scores":
+		request = &GetScoresRequest{Id: id}
 	case "submit-score":
-		request := SubmitScoreRequest{Id: id}
-
-		err = json.Unmarshal(data, &request)
-		if err != nil {
-			log.Printf("failed to unmarshal request %s: %v", id, err)
-			return
-		}
-
-		validate := validator.New()
-		err = validate.Struct(request)
-		if err != nil {
-			log.Printf("invalid request %s: %v", id, err)
-			return
-		}
-
-		fsipc.Requests <- request
+		request = &SubmitScoreRequest{Id: id}
 	case "":
 		log.Printf("invalid request %s: missing action", id)
 		return
@@ -209,6 +183,21 @@ func (fsipc *FsIpc) handleFile(filename string) {
 		log.Printf("invalid request %s: unknown action %s", id, base.Action)
 		return
 	}
+
+	err = json.Unmarshal(data, request)
+	if err != nil {
+		log.Printf("failed to unmarshal request %s: %v", id, err)
+		return
+	}
+
+	validate := validator.New()
+	err = validate.Struct(request)
+	if err != nil {
+		log.Printf("invalid request %s: %v", id, err)
+		return
+	}
+
+	fsipc.Requests <- request
 
 	err = os.Remove(filename)
 	if err != nil {
