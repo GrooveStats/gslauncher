@@ -96,11 +96,12 @@ func (fsipc *FsIpc) loop() {
 
 	fsipc.cleanup()
 
+loop:
 	for {
 		select {
 		case event, ok := <-fsipc.watcher.Events:
 			if !ok {
-				break
+				break loop
 			}
 
 			if event.Op&fsnotify.Write == fsnotify.Write {
@@ -108,14 +109,14 @@ func (fsipc *FsIpc) loop() {
 			}
 		case err, ok := <-fsipc.watcher.Errors:
 			if !ok {
-				break
+				break loop
 			}
 
 			log.Print("fsnotify error: ", err)
 		case <-fsipc.cleanupTicker.C:
 			fsipc.cleanup()
 		case <-fsipc.shutdown:
-			break
+			break loop
 		}
 	}
 }
