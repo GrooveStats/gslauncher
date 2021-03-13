@@ -33,7 +33,7 @@ func TestFsipc(t *testing.T) {
 			t.Fatal("requests channel closed prematurely")
 		}
 
-		pingRequest, ok := request.(PingRequest)
+		pingRequest, ok := request.(*PingRequest)
 		if !ok {
 			t.Fatal("incorrect request type")
 		}
@@ -42,7 +42,40 @@ func TestFsipc(t *testing.T) {
 			Id:      "bda6a8a9d7924c149697e13b93aa68bf",
 			Payload: "foobar",
 		}
-		if pingRequest != expected {
+		if *pingRequest != expected {
+			t.Fatal("unexpected request")
+		}
+	})
+
+	t.Run("GetScoresRequest", func(t *testing.T) {
+		go func() {
+			filename := filepath.Join(dir, "requests", "71523759f20147f79ab2b9f883492e7b.json")
+			err := os.WriteFile(filename, []byte(`{
+				"action": "get-scores",
+				"api-key": "K",
+				"hash": "H"
+			}`), 0700)
+			if err != nil {
+				t.Fatal(err)
+			}
+		}()
+
+		request, ok := <-ipc.Requests
+		if !ok {
+			t.Fatal("requests channel closed prematurely")
+		}
+
+		getScoresRequest, ok := request.(*GetScoresRequest)
+		if !ok {
+			t.Fatal("incorrect request type")
+		}
+
+		expected := GetScoresRequest{
+			Id:     "71523759f20147f79ab2b9f883492e7b",
+			ApiKey: "K",
+			Hash:   "H",
+		}
+		if *getScoresRequest != expected {
 			t.Fatal("unexpected request")
 		}
 	})
@@ -67,7 +100,7 @@ func TestFsipc(t *testing.T) {
 			t.Fatal("requests channel closed prematurely")
 		}
 
-		submitScoreRequest, ok := request.(SubmitScoreRequest)
+		submitScoreRequest, ok := request.(*SubmitScoreRequest)
 		if !ok {
 			t.Fatal("incorrect request type")
 		}
@@ -79,7 +112,7 @@ func TestFsipc(t *testing.T) {
 			Score:  10000,
 			Rate:   100,
 		}
-		if submitScoreRequest != expected {
+		if *submitScoreRequest != expected {
 			t.Fatal("unexpected request")
 		}
 	})
@@ -130,7 +163,7 @@ func TestFsipc(t *testing.T) {
 			t.Fatal("requests channel closed prematurely")
 		}
 
-		pingRequest, ok := request.(PingRequest)
+		pingRequest, ok := request.(*PingRequest)
 		if !ok {
 			t.Fatal("incorrect request type")
 		}
@@ -139,7 +172,7 @@ func TestFsipc(t *testing.T) {
 			Id:      "cb95f27932174600bafab86e2e5204c7",
 			Payload: "foobar",
 		}
-		if pingRequest != expected {
+		if *pingRequest != expected {
 			t.Fatal("unexpected request")
 		}
 	})
