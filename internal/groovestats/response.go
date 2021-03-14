@@ -10,15 +10,15 @@ type GetScoresResponse struct {
 	Leaderboard []scoreEntry `json:"leaderboard"`
 
 	RpgData struct {
-		Leaderboard []scoreEntry `json:"leaderboard"`
-		RivalScores []scoreEntry `json:"rivalScores"`
+		Leaderboard []scoreEntry `json:"leaderboard,omitempty"`
+		RivalScores []scoreEntry `json:"rivalScores,omitempty"`
 	} `json:"rpgData"`
 }
 
 type AutoSubmitScoreResponse struct {
-	Result     string `json:"result"`
-	ScoreDelta int    `json:"scoreDelta"`
-	RankingUrl string `json:"rankingUrl"`
+	Result     string  `json:"result"`
+	ScoreDelta *int    `json:"scoreDelta,omitempty"`
+	RankingUrl *string `json:"rankingUrl,omitempty"`
 
 	Profile struct {
 		AvatarUrl string `json:"avatarUrl"`
@@ -26,10 +26,10 @@ type AutoSubmitScoreResponse struct {
 	Leaderboard []scoreEntry `json:"leaderboard"`
 
 	RpgData struct {
-		Name string `json:"name"`
-		Url  string `json:"url"`
+		Name *string `json:"name,omitempty"`
+		Url  *string `json:"url,omitempty"`
 
-		Progress struct {
+		Progress *struct {
 			StatImprovements struct {
 				Gold int `json:"gold"`
 				Exp  int `json:"exp"`
@@ -48,9 +48,9 @@ type AutoSubmitScoreResponse struct {
 					SongDownloadUrl string `json:"songDownloadUrl"`
 				} `json:"rewards"`
 			} `json:"questsCompleted"`
-		} `json:"progress"`
+		} `json:"progress,omitempty"`
 
-		Leaderboard []scoreEntry `json:"leaderboard"`
-		RivalScores []scoreEntry `json:"rivalScores"`
+		Leaderboard []scoreEntry `json:"leaderboard,omitempty"`
+		RivalScores []scoreEntry `json:"rivalScores,omitempty"`
 	} `json:"rpgData"`
 }

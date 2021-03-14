@@ -1,0 +1,100 @@
+{
+    "result": "score-added",
+    "rankingUrl": "http://groovestats.com/index.php?page=songscores&chartid=15595&gameid=191",
+    "profile": {
+        "avatarUrl": "https://i.imgur.com/Bpmv4sk.png"
+    },
+    "leaderboard": [
+        {
+            "name": "dom no bar",
+            "score": 9910,
+            "date": "Oct 14, 1989"
+        },
+        {
+            "name": "teejusb",
+            "score": 9500,
+            "date": "Dec 10, 2019"
+        },
+        {
+            "name": "natano",
+            "score": 9210,
+            "date": "Apr 3, 2020"
+        },
+        {
+            "name": "Archiflaxseed",
+            "score": 8827,
+            "date": "Jan 1, 1900"
+        }
+    ],
+    "rpgData": {
+        "name": "Stamina RPG 5",
+        "url": "https://srpg5.groovestats.com",
+        "progress": {
+            "statImprovements": {
+                "gold": 300,
+                "exp": 42069,
+                "tp": 0,
+                "lp": 0,
+                "jp": 0
+            },
+            "skillImprovements": [
+                "You've levelled up to life level 31!",
+                "You've reached Skill Level 17 for 220 BPM!"
+            ],
+            "questsCompleted": [
+                {
+                    "title": "Chips and Chipz",
+                    "rewards": [
+                        {
+                            "type": "song",
+                            "description": "Unlocked \"The Video Boab Oyedivuth\"",
+                            "songDownloadUrl": "https://srpg4.groovestats.com/unlocks/8179238973.zip"
+                        },
+                        {
+                            "type": "song",
+                            "description": "Unlocked \"Last Trip (for enterprise)\"",
+                            "songDownloadUrl": "https://srpg4.groovestats.com/unlocks/1726371683.zip"
+                        },
+                        {
+                            "type": "relic",
+                            "description": "Got the \"Coomer Arm\""
+                        },
+                        {
+                            "type": "stat",
+                            "description": "Gained 20 EXP"
+                        }
+                    ]
+                }
+            ],
+            "rivalScores": [
+                {
+                    "name": "yutsi",
+                    "score": 7420,
+                    "date": "Dec 10, 2019"
+                }
+            ],
+            "leaderboard": [
+                {
+                    "name": "Jake B",
+                    "score": 8910,
+                    "date": "Oct 14, 1989"
+                },
+                {
+                    "name": "jortsjoke",
+                    "score": 8500,
+                    "date": "Dec 10, 2019"
+                },
+                {
+                    "name": "RustITG",
+                    "score": 8210,
+                    "date": "Apr 3, 2020"
+                },
+                {
+                    "name": "RawInput",
+                    "score": 7827,
+                    "date": "Jan 1, 1900"
+                }
+            ]
+        }
+    }
+}
