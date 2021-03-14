@@ -2,7 +2,6 @@ package settings
 
 import (
 	"encoding/json"
-	"log"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -52,11 +51,6 @@ func Update(newSettings Settings) {
 	if updateCallback != nil {
 		updateCallback(oldSettings, newSettings)
 	}
-
-	err := save(newSettings)
-	if err != nil {
-		log.Print("failed to save settings: ", err)
-	}
 }
 
 func SetUpdateCallback(callback func(Settings, Settings)) {
@@ -92,7 +86,7 @@ func getDefaults() Settings {
 	}
 }
 
-func save(newSettings Settings) error {
+func Save() error {
 	configDir, err := os.UserConfigDir()
 	if err != nil {
 		return err
@@ -109,7 +103,7 @@ func save(newSettings Settings) error {
 		}
 	}
 
-	data, err := json.Marshal(newSettings)
+	data, err := json.Marshal(settings)
 	if err != nil {
 		return err
 	}

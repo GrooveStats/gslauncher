@@ -109,6 +109,11 @@ func (app *App) showSettingsDialog() {
 	dialog.ShowForm("Settings", "Save", "Cancel", items, func(save bool) {
 		if save {
 			settings.Update(data)
+
+			err := settings.Save()
+			if err != nil {
+				dialog.ShowError(err, app.mainWin)
+			}
 		}
 	}, app.mainWin)
 }

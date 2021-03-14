@@ -5,7 +5,6 @@ package main
 import (
 	"embed"
 	"encoding/json"
-	"log"
 	"math/rand"
 
 	"github.com/archiveflax/gslauncher/internal/fsipc"
@@ -39,13 +38,13 @@ func processRequest(ipc *fsipc.FsIpc, request interface{}) {
 
 		data, err := fs.ReadFile(filename)
 		if err != nil {
-			log.Fatal(err)
+			panic(err)
 		}
 
 		var resp groovestats.GetScoresResponse
 		err = json.Unmarshal(data, &resp)
 		if err != nil {
-			log.Fatal(err)
+			panic(err)
 		}
 
 		response := fsipc.NetworkResponse{
@@ -78,13 +77,13 @@ func processRequest(ipc *fsipc.FsIpc, request interface{}) {
 
 		data, err := fs.ReadFile(filename)
 		if err != nil {
-			log.Fatal(err)
+			panic(err)
 		}
 
 		var resp groovestats.AutoSubmitScoreResponse
 		err = json.Unmarshal(data, &resp)
 		if err != nil {
-			log.Fatal(err)
+			panic(err)
 		}
 
 		response := fsipc.NetworkResponse{
@@ -93,6 +92,6 @@ func processRequest(ipc *fsipc.FsIpc, request interface{}) {
 		}
 		ipc.WriteResponse(req.Id, response)
 	default:
-		log.Print("unknown request")
+		panic("unknown request type")
 	}
 }

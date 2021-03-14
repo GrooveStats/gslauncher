@@ -3,8 +3,6 @@
 package main
 
 import (
-	"log"
-
 	"github.com/archiveflax/gslauncher/internal/fsipc"
 	"github.com/archiveflax/gslauncher/internal/groovestats"
 )
@@ -35,6 +33,6 @@ func processRequest(ipc *fsipc.FsIpc, request interface{}) {
 		}
 		ipc.WriteResponse(req.Id, response)
 	default:
-		log.Print("unknown request")
+		panic("unknown request type")
 	}
 }
