@@ -7,6 +7,7 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 
 	"github.com/archiveflax/gslauncher/internal/settings"
@@ -22,8 +23,9 @@ func NewApp() *App {
 		app: app.New(),
 	}
 
-	app.mainWin = app.app.NewWindow("GrooveStats Launcher")
+	app.app.Settings().SetTheme(theme.LightTheme())
 
+	app.mainWin = app.app.NewWindow("GrooveStats Launcher")
 	app.mainWin.Resize(fyne.NewSize(800, 600))
 
 	app.mainWin.SetMainMenu(fyne.NewMainMenu(
