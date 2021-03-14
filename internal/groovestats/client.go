@@ -23,9 +23,9 @@ func NewClient(baseUrl string, apiKey string) *Client {
 
 func (client *Client) AutoSubmitScore(hash string, rate int, score int) (*AutoSubmitScoreResponse, error) {
 	data := struct {
-		H string `json:"h"`
-		R int    `json:"r"`
-		S int    `json:"s"`
+		Hash  string `json:"hash"`
+		Rate  int    `json:"rate"`
+		Score int    `json:"score"`
 	}{hash, rate, score}
 
 	var response AutoSubmitScoreResponse
