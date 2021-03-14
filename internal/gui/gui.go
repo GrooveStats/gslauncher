@@ -23,7 +23,7 @@ func NewApp() *App {
 		app: app.New(),
 	}
 
-	app.app.Settings().SetTheme(theme.LightTheme())
+	app.app.Settings().SetTheme(theme.DarkTheme())
 
 	app.mainWin = app.app.NewWindow("GrooveStats Launcher")
 	app.mainWin.Resize(fyne.NewSize(800, 600))
