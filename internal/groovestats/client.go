@@ -3,6 +3,7 @@ package groovestats
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 )
@@ -70,6 +71,10 @@ func (client *Client) jsonGet(path string, params *url.Values, response interfac
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		return fmt.Errorf("status code %s", resp.Status)
+	}
+
 	decoder := json.NewDecoder(resp.Body)
 	return decoder.Decode(response)
 }
@@ -93,6 +98,10 @@ func (client *Client) jsonPost(path string, data interface{}, response interface
 		return err
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		return fmt.Errorf("status code %s", resp.Status)
+	}
 
 	decoder := json.NewDecoder(resp.Body)
 	return decoder.Decode(response)
