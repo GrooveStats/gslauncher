@@ -86,6 +86,7 @@ func TestFsipc(t *testing.T) {
 			err := os.WriteFile(filename, []byte(`{
 				"action": "submit-score",
 				"api-key": "K",
+				"profile-name": "N",
 				"hash": "H",
 				"score": 10000,
 				"rate": 100
@@ -106,11 +107,12 @@ func TestFsipc(t *testing.T) {
 		}
 
 		expected := SubmitScoreRequest{
-			Id:     "25a1506cdeff4d01b50f8207313f5db1",
-			ApiKey: "K",
-			Hash:   "H",
-			Score:  10000,
-			Rate:   100,
+			Id:          "25a1506cdeff4d01b50f8207313f5db1",
+			ApiKey:      "K",
+			ProfileName: "N",
+			Hash:        "H",
+			Score:       10000,
+			Rate:        100,
 		}
 		if *submitScoreRequest != expected {
 			t.Fatal("unexpected request")
