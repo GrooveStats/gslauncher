@@ -108,5 +108,5 @@ func Save() error {
 		return err
 	}
 
-	return os.WriteFile(settingsPath, data, 0700)
+	return os.WriteFile(settingsPath, data, 0600)
 }

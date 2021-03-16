@@ -246,5 +246,5 @@ func (fsipc *FsIpc) WriteResponse(id string, data interface{}) error {
 	}
 
 	filename := filepath.Join(fsipc.responseDir, id+".json")
-	return os.WriteFile(filename, b, 0700)
+	return os.WriteFile(filename, b, 0600)
 }
