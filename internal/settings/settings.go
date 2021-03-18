@@ -81,8 +81,8 @@ func getDefaults() Settings {
 	return Settings{
 		SmExePath:    smExePath,
 		SmDataDir:    smDataDir,
-		AutoDownload: true,
-		AutoUnpack:   true,
+		AutoDownload: false,
+		AutoUnpack:   false,
 	}
 }
 
