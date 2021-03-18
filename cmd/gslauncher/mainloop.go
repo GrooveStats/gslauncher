@@ -8,10 +8,12 @@ import (
 	"github.com/archiveflax/gslauncher/internal/fsipc"
 	"github.com/archiveflax/gslauncher/internal/groovestats"
 	"github.com/archiveflax/gslauncher/internal/settings"
+	"github.com/archiveflax/gslauncher/internal/unlocks"
 )
 
-func mainLoop() {
+func mainLoop(unlockManager *unlocks.Manager) {
 	gsClient := groovestats.NewClient()
+
 	reload := make(chan bool)
 
 	settings.SetUpdateCallback(func(old, new_ settings.Settings) {
@@ -50,7 +52,7 @@ func mainLoop() {
 			select {
 			case request := <-ipc.Requests:
 				log.Printf("REQ: %#v", request)
-				processRequest(ipc, gsClient, request)
+				processRequest(ipc, gsClient, request, unlockManager)
 			case <-reload:
 				break loop
 			}
@@ -60,7 +62,7 @@ func mainLoop() {
 	}
 }
 
-func processRequest(ipc *fsipc.FsIpc, gsClient *groovestats.Client, request interface{}) {
+func processRequest(ipc *fsipc.FsIpc, gsClient *groovestats.Client, request interface{}, unlockManager *unlocks.Manager) {
 	switch req := request.(type) {
 	case *fsipc.PingRequest:
 		response := fsipc.PingResponse{
@@ -98,7 +100,39 @@ func processRequest(ipc *fsipc.FsIpc, gsClient *groovestats.Client, request inte
 	case *fsipc.GsScoreSubmitRequest:
 		resp, err := gsClient.ScoreSubmit(req)
 
-		// XXX: download unlocks
+		if err == nil {
+			if req.Player1 != nil && resp.Player1 != nil && resp.Player1.Rpg != nil && resp.Player1.Rpg.Progress != nil {
+				for _, quest := range resp.Player1.Rpg.Progress.QuestsCompleted {
+					for _, reward := range quest.Rewards {
+						if reward.SongDownloadUrl == nil {
+							continue
+						}
+						unlockManager.AddUnlock(
+							reward.Description,
+							*reward.SongDownloadUrl,
+							resp.Player1.Rpg.Name,
+							req.Player1.ProfileName,
+						)
+					}
+				}
+			}
+
+			if req.Player2 != nil && resp.Player2 != nil && resp.Player2.Rpg != nil && resp.Player2.Rpg.Progress != nil {
+				for _, quest := range resp.Player2.Rpg.Progress.QuestsCompleted {
+					for _, reward := range quest.Rewards {
+						if reward.SongDownloadUrl == nil {
+							continue
+						}
+						unlockManager.AddUnlock(
+							reward.Description,
+							*reward.SongDownloadUrl,
+							resp.Player2.Rpg.Name,
+							req.Player2.ProfileName,
+						)
+					}
+				}
+			}
+		}
 
 		response := fsipc.NetworkResponse{
 			Success: err == nil,

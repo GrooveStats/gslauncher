@@ -9,19 +9,22 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/data/validation"
 	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 
 	"github.com/archiveflax/gslauncher/internal/settings"
+	"github.com/archiveflax/gslauncher/internal/unlocks"
 )
 
 type App struct {
-	app     fyne.App
-	mainWin fyne.Window
-	smCmd   *exec.Cmd
+	app          fyne.App
+	mainWin      fyne.Window
+	unlockWidget *UnlockWidget
+	smCmd        *exec.Cmd
 }
 
-func NewApp() *App {
+func NewApp(unlockManager *unlocks.Manager) *App {
 	app := &App{
 		app: app.New(),
 	}
@@ -58,8 +61,12 @@ func NewApp() *App {
 	}
 	launchButton.Importance = widget.HighImportance
 
+	app.unlockWidget = NewUnlockWidget(unlockManager)
+
 	app.mainWin.SetContent(container.NewVBox(
-		launchButton,
+		app.unlockWidget.vbox,
+		layout.NewSpacer(),
+		container.NewPadded(launchButton),
 	))
 
 	app.mainWin.CenterOnScreen()

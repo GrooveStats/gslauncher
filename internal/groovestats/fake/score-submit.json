@@ -236,8 +236,9 @@
                         "title": "Chips and Chipz",
                         "rewards": [
                             {
-                                "type": "ad-hoc",
-                                "description": "Good Job!"
+                                "type": "song",
+                                "description": "Unlocked \"Safari Dynamic\"",
+                                "songDownloadUrl": "http://srpg4.groovestats.com/downloads/unlocks/2321196.zip"
                             }
                         ]
                     }
