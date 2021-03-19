@@ -1,0 +1,10 @@
+{
+    "activeEvents": [
+        {"name": "Stamina RPG 5", "shortName": "SRPG5", "url": "https://srpg5.groovestats.com"}
+    ],
+    "servicesAllowed": {
+        "scoreSubmit": false,
+        "playerScores": false,
+        "playerLeaderboards": false
+    }
+}

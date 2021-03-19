@@ -21,11 +21,20 @@ This assumes that SM doesn't wait for responses for more than a minute.
 ```
 
 
+### New Session
+
+```jsonc
+{
+    "action": "groovestats/new-session"
+}
+```
+
+
 ### Get Scores
 
 ```jsonc
 {
-    "action": "get-scores",
+    "action": "groovestats/get-scores",
     "api-key": "topsecret",
     "hash": "somehash"
 }
@@ -36,7 +45,7 @@ This assumes that SM doesn't wait for responses for more than a minute.
 
 ```jsonc
 {
-    "action": "submit-score",
+    "action": "groovestats/submit-score",
     "api-key": "topsecret",
     "hash": "somehash",
     "rate": 199,        // music rate x100
@@ -72,6 +81,13 @@ responses.
 ```sh
 go build -tags debug ./cmd/gslauncher/
 ```
+
+### New Session
+
+The launcher randomly returns either:
+- A network error
+- A response that indicates that all services are up
+- A response that indicates that all services are down (DDoS scenario)
 
 ### Get Scores
 

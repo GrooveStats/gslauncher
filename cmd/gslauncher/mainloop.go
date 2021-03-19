@@ -6,10 +6,12 @@ import (
 	"path/filepath"
 
 	"github.com/archiveflax/gslauncher/internal/fsipc"
+	"github.com/archiveflax/gslauncher/internal/groovestats"
 	"github.com/archiveflax/gslauncher/internal/settings"
 )
 
 func mainLoop() {
+	gsClient := groovestats.NewClient()
 	reload := make(chan bool)
 
 	settings.SetUpdateCallback(func(old, new_ settings.Settings) {
@@ -48,12 +50,52 @@ func mainLoop() {
 			select {
 			case request := <-ipc.Requests:
 				log.Printf("REQ: %#v", request)
-				processRequest(ipc, request)
+				processRequest(ipc, gsClient, request)
 			case <-reload:
 				break loop
 			}
 		}
 
 		ipc.Close()
+	}
+}
+
+func processRequest(ipc *fsipc.FsIpc, gsClient *groovestats.Client, request interface{}) {
+	switch req := request.(type) {
+	case *fsipc.PingRequest:
+		response := fsipc.PingResponse{Payload: req.Payload}
+		ipc.WriteResponse(req.Id, response)
+	case *fsipc.GsNewSessionRequest:
+		resp, err := gsClient.NewSession()
+
+		response := fsipc.NetworkResponse{
+			Success: err == nil,
+			Data:    resp,
+		}
+		ipc.WriteResponse(req.Id, response)
+	case *fsipc.GetScoresRequest:
+		resp, err := gsClient.GetScores(req.ApiKey, req.Hash)
+
+		if err != nil {
+			log.Print(err)
+		}
+
+		response := fsipc.NetworkResponse{
+			Success: err == nil,
+			Data:    resp,
+		}
+		ipc.WriteResponse(req.Id, response)
+	case *fsipc.SubmitScoreRequest:
+		resp, err := gsClient.AutoSubmitScore(req.ApiKey, req.Hash, req.Rate, req.Score)
+
+		// XXX: download unlocks
+
+		response := fsipc.NetworkResponse{
+			Success: err == nil,
+			Data:    resp,
+		}
+		ipc.WriteResponse(req.Id, response)
+	default:
+		panic("unknown request type")
 	}
 }

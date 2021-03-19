@@ -173,9 +173,11 @@ func (fsipc *FsIpc) handleFile(filename string) {
 	switch base.Action {
 	case "ping":
 		request = &PingRequest{Id: id}
-	case "get-scores":
+	case "groovestats/new-session":
+		request = &GsNewSessionRequest{Id: id}
+	case "groovestats/get-scores":
 		request = &GetScoresRequest{Id: id}
-	case "submit-score":
+	case "groovestats/submit-score":
 		request = &SubmitScoreRequest{Id: id}
 	case "":
 		log.Printf("invalid request %s: missing action", id)

@@ -47,11 +47,40 @@ func TestFsipc(t *testing.T) {
 		}
 	})
 
+	t.Run("NewSession", func(t *testing.T) {
+		go func() {
+			filename := filepath.Join(dir, "requests", "b787ae38ea0c465e8d853015db940915.json")
+			err := os.WriteFile(filename, []byte(`{
+				"action": "groovestats/new-session"
+			}`), 0700)
+			if err != nil {
+				t.Fatal(err)
+			}
+		}()
+
+		request, ok := <-ipc.Requests
+		if !ok {
+			t.Fatal("requests channel closed prematurely")
+		}
+
+		newSessionRequest, ok := request.(*GsNewSessionRequest)
+		if !ok {
+			t.Fatal("incorrect request type")
+		}
+
+		expected := GsNewSessionRequest{
+			Id: "b787ae38ea0c465e8d853015db940915",
+		}
+		if *newSessionRequest != expected {
+			t.Fatal("unexpected request")
+		}
+	})
+
 	t.Run("GetScoresRequest", func(t *testing.T) {
 		go func() {
 			filename := filepath.Join(dir, "requests", "71523759f20147f79ab2b9f883492e7b.json")
 			err := os.WriteFile(filename, []byte(`{
-				"action": "get-scores",
+				"action": "groovestats/get-scores",
 				"api-key": "K",
 				"hash": "H"
 			}`), 0700)
@@ -84,7 +113,7 @@ func TestFsipc(t *testing.T) {
 		go func() {
 			filename := filepath.Join(dir, "requests", "25a1506cdeff4d01b50f8207313f5db1.json")
 			err := os.WriteFile(filename, []byte(`{
-				"action": "submit-score",
+				"action": "groovestats/submit-score",
 				"api-key": "K",
 				"profile-name": "N",
 				"hash": "H",

@@ -6,6 +6,20 @@ type scoreEntry struct {
 	Date  string `json:"date"`
 }
 
+type NewSessionResponse struct {
+	ActiveEvents []struct {
+		Name      string `json:"name"`
+		ShortName string `json:"shortName"`
+		Url       string `json:"url"`
+	} `json:"activeEvents"`
+
+	ServicesAllowed struct {
+		ScoreSubmit        bool `json:"scoreSubmit"`
+		PlayerScores       bool `json:"playerScores"`
+		PlayerLeaderboards bool `json:"playerLeaderboards"`
+	} `json:"servicesAllowed"`
+}
+
 type GetScoresResponse struct {
 	Leaderboard []scoreEntry `json:"leaderboard"`
 

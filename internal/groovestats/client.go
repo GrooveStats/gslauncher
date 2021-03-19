@@ -13,24 +13,37 @@ import (
 )
 
 type Client struct {
-	baseUrl        string
-	apiKey         string
 	client         *http.Client
 	permanentError bool
 }
 
-func NewClient(apiKey string) *Client {
-	baseUrl := settings.Get().GrooveStatsUrl
-
+func NewClient() *Client {
 	return &Client{
-		baseUrl:        baseUrl,
-		apiKey:         apiKey,
 		client:         &http.Client{Timeout: 15 * time.Second},
 		permanentError: false,
 	}
 }
 
-func (client *Client) AutoSubmitScore(hash string, rate int, score int) (*AutoSubmitScoreResponse, error) {
+func (client *Client) NewSession() (*NewSessionResponse, error) {
+	if settings.Get().FakeGroovestats {
+		return fakeNewSession()
+	}
+
+	req, err := client.newGetRequest("/new-session.php", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var response NewSessionResponse
+	err = client.doRequest(req, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	return &response, nil
+}
+
+func (client *Client) AutoSubmitScore(apiKey, hash string, rate int, score int) (*AutoSubmitScoreResponse, error) {
 	if settings.Get().FakeGroovestats {
 		return fakeAutoSubmitScore(hash, rate, score)
 	}
@@ -41,9 +54,14 @@ func (client *Client) AutoSubmitScore(hash string, rate int, score int) (*AutoSu
 		Score int    `json:"score"`
 	}{hash, rate, score}
 
-	var response AutoSubmitScoreResponse
+	req, err := client.newPostRequest("/auto-submit-score.php", &data)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("x-api-key", apiKey)
 
-	err := client.jsonPost("/auto-submit-score.php", &data, &response)
+	var response AutoSubmitScoreResponse
+	err = client.doRequest(req, &response)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +69,7 @@ func (client *Client) AutoSubmitScore(hash string, rate int, score int) (*AutoSu
 	return &response, nil
 }
 
-func (client *Client) GetScores(hash string) (*GetScoresResponse, error) {
+func (client *Client) GetScores(apiKey, hash string) (*GetScoresResponse, error) {
 	if settings.Get().FakeGroovestats {
 		return fakeGetScores(hash)
 	}
@@ -59,9 +77,14 @@ func (client *Client) GetScores(hash string) (*GetScoresResponse, error) {
 	params := url.Values{}
 	params.Add("h", hash)
 
-	var response GetScoresResponse
+	req, err := client.newGetRequest("/get-scores.php", &params)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("x-api-key", apiKey)
 
-	err := client.jsonGet("/get-scores.php", &params, &response)
+	var response GetScoresResponse
+	err = client.doRequest(req, &response)
 	if err != nil {
 		return nil, err
 	}
@@ -69,36 +92,24 @@ func (client *Client) GetScores(hash string) (*GetScoresResponse, error) {
 	return &response, nil
 }
 
-func (client *Client) jsonGet(path string, params *url.Values, response interface{}) error {
-	url := client.baseUrl + path
+func (client *Client) newGetRequest(path string, params *url.Values) (*http.Request, error) {
+	url := settings.Get().GrooveStatsUrl + path
 	if params != nil {
 		url += "?" + params.Encode()
 	}
 
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return err
-	}
-	req.Header.Add("x-api-key", client.apiKey)
-
-	return client.doRequest(req, response)
+	return http.NewRequest("GET", url, nil)
 }
 
-func (client *Client) jsonPost(path string, data interface{}, response interface{}) error {
-	url := client.baseUrl + path
+func (client *Client) newPostRequest(path string, data interface{}) (*http.Request, error) {
+	url := settings.Get().GrooveStatsUrl + path
 
 	body, err := json.Marshal(data)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
-	if err != nil {
-		return err
-	}
-	req.Header.Add("x-api-key", client.apiKey)
-
-	return client.doRequest(req, response)
+	return http.NewRequest("POST", url, bytes.NewBuffer(body))
 }
 
 func (client *Client) doRequest(req *http.Request, response interface{}) error {
