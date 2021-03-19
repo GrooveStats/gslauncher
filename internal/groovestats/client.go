@@ -3,6 +3,7 @@ package groovestats
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -12,25 +13,26 @@ import (
 )
 
 type Client struct {
-	baseUrl string
-	apiKey  string
-	client  *http.Client
+	baseUrl        string
+	apiKey         string
+	client         *http.Client
+	permanentError bool
 }
 
 func NewClient(apiKey string) *Client {
 	baseUrl := settings.Get().GrooveStatsUrl
 
 	return &Client{
-		baseUrl: baseUrl,
-		apiKey:  apiKey,
-		client:  &http.Client{Timeout: 15 * time.Second},
+		baseUrl:        baseUrl,
+		apiKey:         apiKey,
+		client:         &http.Client{Timeout: 15 * time.Second},
+		permanentError: false,
 	}
 }
 
 func (client *Client) AutoSubmitScore(hash string, rate int, score int) (*AutoSubmitScoreResponse, error) {
 	if settings.Get().FakeGroovestats {
-		fakeResponse, err := fakeAutoSubmitScore(hash, rate, score)
-		return fakeResponse, err
+		return fakeAutoSubmitScore(hash, rate, score)
 	}
 
 	data := struct {
@@ -51,8 +53,7 @@ func (client *Client) AutoSubmitScore(hash string, rate int, score int) (*AutoSu
 
 func (client *Client) GetScores(hash string) (*GetScoresResponse, error) {
 	if settings.Get().FakeGroovestats {
-		fakeResponse, err := fakeGetScores(hash)
-		return fakeResponse, err
+		return fakeGetScores(hash)
 	}
 
 	params := url.Values{}
@@ -80,18 +81,7 @@ func (client *Client) jsonGet(path string, params *url.Values, response interfac
 	}
 	req.Header.Add("x-api-key", client.apiKey)
 
-	resp, err := client.client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode < 200 || resp.StatusCode > 299 {
-		return fmt.Errorf("status code %s", resp.Status)
-	}
-
-	decoder := json.NewDecoder(resp.Body)
-	return decoder.Decode(response)
+	return client.doRequest(req, response)
 }
 
 func (client *Client) jsonPost(path string, data interface{}, response interface{}) error {
@@ -108,11 +98,23 @@ func (client *Client) jsonPost(path string, data interface{}, response interface
 	}
 	req.Header.Add("x-api-key", client.apiKey)
 
+	return client.doRequest(req, response)
+}
+
+func (client *Client) doRequest(req *http.Request, response interface{}) error {
+	if client.permanentError {
+		return errors.New("request not sent due to protocol violation")
+	}
+
 	resp, err := client.client.Do(req)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 && resp.StatusCode < 499 && resp.StatusCode != 429 {
+		client.permanentError = true
+	}
 
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		return fmt.Errorf("status code %s", resp.Status)
