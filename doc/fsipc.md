@@ -65,11 +65,12 @@ Responses for network requests look like this:
 
 ## GrooveStats Faking
 
-The launcher can be built with the "fake" build tag to replace requests to
-GrooveStats with fake responses.
+The debug build of the launcher adds support for the "Fake GrooveStats
+Requests" setting. It replaces requests to GrooveStats with predetermined fake
+responses.
 
 ```sh
-go build -tags fake ./cmd/gslauncher/
+go build -tags debug ./cmd/gslauncher/
 ```
 
 ### Get Scores

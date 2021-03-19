@@ -12,6 +12,12 @@ type Settings struct {
 	SmDataDir    string
 	AutoDownload bool
 	AutoUnpack   bool
+	UserUnlocks  bool
+
+	// debug settings, not stored in the json
+	Debug           bool   `json:"-"`
+	FakeGroovestats bool   `json:"-"`
+	GrooveStatsUrl  string `json:"-"`
 }
 
 var settings Settings = getDefaults()
@@ -34,14 +40,7 @@ func Load() error {
 		return err
 	}
 
-	var loadedSettings Settings
-	err = json.Unmarshal(data, &loadedSettings)
-	if err != nil {
-		return err
-	}
-
-	settings = loadedSettings
-	return nil
+	return json.Unmarshal(data, &settings)
 }
 
 func Update(newSettings Settings) {
@@ -78,11 +77,21 @@ func getDefaults() Settings {
 		}
 	}
 
+	grooveStatsUrl := "https://www.groovestats.com"
+	if debug {
+		grooveStatsUrl = "http://localhost:9090"
+	}
+
 	return Settings{
 		SmExePath:    smExePath,
 		SmDataDir:    smDataDir,
 		AutoDownload: false,
 		AutoUnpack:   false,
+		UserUnlocks:  false,
+
+		Debug:           debug,
+		FakeGroovestats: false,
+		GrooveStatsUrl:  grooveStatsUrl,
 	}
 }
 

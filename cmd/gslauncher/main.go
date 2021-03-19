@@ -5,8 +5,6 @@ import (
 	"github.com/archiveflax/gslauncher/internal/settings"
 )
 
-const groovestatsUrl = "http://localhost:12345" // XXX
-
 func main() {
 	settings.Load()
 

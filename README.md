@@ -1,4 +1,5 @@
 # gslauncher
+
 Repository for the Groovestats Launcher for the Simply Love SM5 theme.
 
 
@@ -40,3 +41,13 @@ Some setup is required, but otherwise building works the same as on Linux.
    to do that whenever you open git bash.
 5. You are good to go now. Refer to the previous section for general buliding
    instructions.
+
+
+## Debug Build
+
+The launcher can be built with the `debug` build tag. It adds additional
+settings to the menu.
+
+```sh
+go run -tags debug ./cmd/gslauncher
+```

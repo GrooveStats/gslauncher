@@ -99,11 +99,32 @@ func (app *App) showSettingsDialog() {
 	})
 	autoUnpackCheck.SetChecked(data.AutoUnpack)
 
+	userUnlocksCheck := widget.NewCheck("", func(checked bool) {
+		data.UserUnlocks = checked
+	})
+	userUnlocksCheck.SetChecked(data.UserUnlocks)
+
 	items := []*widget.FormItem{
 		widget.NewFormItem("StepMania 5 Executable", smExeButton),
 		widget.NewFormItem("StepMania 5 Data Directory", smDirButton),
 		widget.NewFormItem("Auto-Download Unlocks", autoDownloadCheck),
 		widget.NewFormItem("Auto-Unpack Unlocks", autoUnpackCheck),
+		widget.NewFormItem("Separate Unlocks by User", userUnlocksCheck),
+	}
+
+	if data.Debug {
+		fakeGsCheck := widget.NewCheck("", func(checked bool) {
+			data.FakeGroovestats = checked
+		})
+		fakeGsCheck.SetChecked(data.FakeGroovestats)
+		items = append(items, widget.NewFormItem("[DEBUG] Fake GrooveStats Requests", fakeGsCheck))
+
+		gsUrlEntry := widget.NewEntry()
+		gsUrlEntry.Text = data.GrooveStatsUrl
+		gsUrlEntry.OnChanged = func(url string) {
+			data.GrooveStatsUrl = url
+		}
+		items = append(items, widget.NewFormItem("[DEBUG] GrooveStats URL", gsUrlEntry))
 	}
 
 	dialog.ShowForm("Settings", "Save", "Cancel", items, func(save bool) {

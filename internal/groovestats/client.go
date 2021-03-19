@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/archiveflax/gslauncher/internal/settings"
 )
 
 type Client struct {
@@ -15,7 +17,9 @@ type Client struct {
 	client  *http.Client
 }
 
-func NewClient(baseUrl string, apiKey string) *Client {
+func NewClient(apiKey string) *Client {
+	baseUrl := settings.Get().GrooveStatsUrl
+
 	return &Client{
 		baseUrl: baseUrl,
 		apiKey:  apiKey,
@@ -24,6 +28,11 @@ func NewClient(baseUrl string, apiKey string) *Client {
 }
 
 func (client *Client) AutoSubmitScore(hash string, rate int, score int) (*AutoSubmitScoreResponse, error) {
+	if settings.Get().FakeGroovestats {
+		fakeResponse, err := fakeAutoSubmitScore(hash, rate, score)
+		return fakeResponse, err
+	}
+
 	data := struct {
 		Hash  string `json:"hash"`
 		Rate  int    `json:"rate"`
@@ -41,6 +50,11 @@ func (client *Client) AutoSubmitScore(hash string, rate int, score int) (*AutoSu
 }
 
 func (client *Client) GetScores(hash string) (*GetScoresResponse, error) {
+	if settings.Get().FakeGroovestats {
+		fakeResponse, err := fakeGetScores(hash)
+		return fakeResponse, err
+	}
+
 	params := url.Values{}
 	params.Add("h", hash)
 
