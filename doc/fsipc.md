@@ -18,22 +18,25 @@ This assumes that SM doesn't wait for responses for more than a minute.
 ```
 
 
-### New Session
+### GrooveStats: New Session
 
 ```jsonc
 {"action": "groovestats/new-session"}
 ```
 
 
-### Get Scores
+### GrooveStats: Player Scores
 
 ```jsonc
 {
-    "action": "groovestats/get-scores",
-    "api-key": "topsecret",
-    "hash": "somehash"
+    "action": "groovestats/player-scores",
+    "chart": "somehash",                        // the hash of the chart
+    "api-key-player-1": "topsecret",            // optional
+    "api-key-player-2": "topsecret"             // optional
 }
 ```
+
+At least one of the two API keys has to be provided.
 
 
 ### Submit Score
@@ -77,6 +80,7 @@ responses.
 go build -tags debug ./cmd/gslauncher/
 ```
 
+
 ### New Session
 
 The launcher randomly returns either:
@@ -84,12 +88,12 @@ The launcher randomly returns either:
 - A response that indicates that all services are up
 - A response that indicates that all services are down (DDoS scenario)
 
-### Get Scores
+
+### Player Scores
 
 The launcher randomly returns either:
 - A network error
-- A response without rgpData
-- A response with rpgData
+- A leaderboard response for the requested players
 
 
 ### Submit Score

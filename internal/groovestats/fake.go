@@ -30,6 +30,29 @@ func fakeNewSession() (*NewSessionResponse, error) {
 	return &response, nil
 }
 
+func fakePlayerScores(chart string, apiKeyPlayer1, apiKeyPlayer2 *string) (*PlayerScoresResponse, error) {
+	switch rand.Intn(2) {
+	case 0:
+		return nil, errors.New("network error")
+	}
+
+	var response PlayerScoresResponse
+	err := loadFakeData("player-scores.json", &response)
+	if err != nil {
+		return nil, err
+	}
+
+	if apiKeyPlayer1 == nil {
+		response.Player1 = nil
+	}
+
+	if apiKeyPlayer2 == nil {
+		response.Player2 = nil
+	}
+
+	return &response, nil
+}
+
 func fakeAutoSubmitScore(hash string, rate int, score int) (*AutoSubmitScoreResponse, error) {
 	var filename string
 
@@ -49,26 +72,6 @@ func fakeAutoSubmitScore(hash string, rate int, score int) (*AutoSubmitScoreResp
 	}
 
 	var response AutoSubmitScoreResponse
-	err := loadFakeData(filename, &response)
-	if err != nil {
-		return nil, err
-	}
-	return &response, nil
-}
-
-func fakeGetScores(hash string) (*GetScoresResponse, error) {
-	var filename string
-
-	switch rand.Intn(3) {
-	case 0:
-		return nil, errors.New("network error")
-	case 1:
-		filename = "get-scores.json"
-	case 2:
-		filename = "get-scores-rpg.json"
-	}
-
-	var response GetScoresResponse
 	err := loadFakeData(filename, &response)
 	if err != nil {
 		return nil, err

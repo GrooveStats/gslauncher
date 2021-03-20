@@ -1,0 +1,69 @@
+{
+    "player1": [
+        {
+            "name": "Bran",
+            "machineTag": "BRAN",
+            "score": 9890,
+            "date": "2020-05-21 19:43:37",
+            "rank": 1,
+            "isSelf": false,
+            "isRival": false
+        },
+        {
+            "name": "Archiflax",
+            "machineTag": "ARCHI",
+            "score": 9210,
+            "date": "2020-05-21 19:43:37",
+            "rank": 4,
+            "isSelf": false,
+            "isRival": true
+        },
+        {
+            "name": "dom no bar",
+            "machineTag": "DOMP",
+            "score": 9200,
+            "date": "2020-05-21 19:43:37",
+            "rank": 7,
+            "isSelf": true,
+            "isRival": false
+        },
+        {
+            "name": "Teejusb",
+            "machineTag": "TEEJ",
+            "score": 8810,
+            "date": "2020-05-21 19:43:37",
+            "rank": 13,
+            "isSelf": false,
+            "isRival": true
+        },
+        {
+            "name": "natano",
+            "machineTag": "NATO",
+            "score": 7810,
+            "date": "2020-05-21 19:43:37",
+            "rank": 14,
+            "isSelf": false,
+            "isRival": true
+        }
+    ],
+    "player2": [
+        {
+            "name": "Alice",
+            "machineTag": "ALIC",
+            "score": 9210,
+            "date": "2020-05-21 19:43:37",
+            "rank": 7,
+            "isSelf": false,
+            "isRival": true
+        },
+        {
+            "name": "Bob",
+            "machineTag": "BOB",
+            "score": 9200,
+            "date": "2020-05-21 19:43:37",
+            "rank": 1,
+            "isSelf": false,
+            "isRival": true
+        }
+    ]
+}

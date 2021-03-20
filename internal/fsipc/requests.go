@@ -8,10 +8,11 @@ type GsNewSessionRequest struct {
 	Id string `json:"-"`
 }
 
-type GetScoresRequest struct {
-	Id     string `json:"-"`
-	ApiKey string `json:"api-key" validate:"required"`
-	Hash   string `json:"hash" validate:"required"`
+type GsPlayerScoresRequest struct {
+	Id            string  `json:"-"`
+	Chart         string  `json:"chart" validate:"required"`
+	ApiKeyPlayer1 *string `json:"api-key-player-1"`
+	ApiKeyPlayer2 *string `json:"api-key-player-2"`
 }
 
 type SubmitScoreRequest struct {

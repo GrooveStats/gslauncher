@@ -43,6 +43,34 @@ func (client *Client) NewSession() (*NewSessionResponse, error) {
 	return &response, nil
 }
 
+func (client *Client) PlayerScores(chart string, apiKeyPlayer1, apiKeyPlayer2 *string) (*PlayerScoresResponse, error) {
+	if settings.Get().FakeGroovestats {
+		return fakePlayerScores(chart, apiKeyPlayer1, apiKeyPlayer2)
+	}
+
+	params := url.Values{}
+	params.Add("chart", chart)
+
+	req, err := client.newGetRequest("/player-scores.php", nil)
+	if err != nil {
+		return nil, err
+	}
+	if apiKeyPlayer1 != nil {
+		req.Header.Add("x-api-key-player-1", *apiKeyPlayer1)
+	}
+	if apiKeyPlayer2 != nil {
+		req.Header.Add("x-api-key-player-2", *apiKeyPlayer2)
+	}
+
+	var response PlayerScoresResponse
+	err = client.doRequest(req, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	return &response, nil
+}
+
 func (client *Client) AutoSubmitScore(apiKey, hash string, rate int, score int) (*AutoSubmitScoreResponse, error) {
 	if settings.Get().FakeGroovestats {
 		return fakeAutoSubmitScore(hash, rate, score)
@@ -61,29 +89,6 @@ func (client *Client) AutoSubmitScore(apiKey, hash string, rate int, score int) 
 	req.Header.Add("x-api-key", apiKey)
 
 	var response AutoSubmitScoreResponse
-	err = client.doRequest(req, &response)
-	if err != nil {
-		return nil, err
-	}
-
-	return &response, nil
-}
-
-func (client *Client) GetScores(apiKey, hash string) (*GetScoresResponse, error) {
-	if settings.Get().FakeGroovestats {
-		return fakeGetScores(hash)
-	}
-
-	params := url.Values{}
-	params.Add("h", hash)
-
-	req, err := client.newGetRequest("/get-scores.php", &params)
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Add("x-api-key", apiKey)
-
-	var response GetScoresResponse
 	err = client.doRequest(req, &response)
 	if err != nil {
 		return nil, err

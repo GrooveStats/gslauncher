@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"os"
 	"path/filepath"
+	"reflect"
 	"testing"
 	"time"
 )
@@ -40,12 +41,12 @@ func TestFsipc(t *testing.T) {
 		expected := PingRequest{
 			Id: "bda6a8a9d7924c149697e13b93aa68bf",
 		}
-		if *pingRequest != expected {
+		if !reflect.DeepEqual(*pingRequest, expected) {
 			t.Fatal("unexpected request")
 		}
 	})
 
-	t.Run("NewSession", func(t *testing.T) {
+	t.Run("GsNewSessionRequest", func(t *testing.T) {
 		go func() {
 			filename := filepath.Join(dir, "requests", "b787ae38ea0c465e8d853015db940915.json")
 			err := os.WriteFile(filename, []byte(`{
@@ -69,18 +70,18 @@ func TestFsipc(t *testing.T) {
 		expected := GsNewSessionRequest{
 			Id: "b787ae38ea0c465e8d853015db940915",
 		}
-		if *newSessionRequest != expected {
+		if !reflect.DeepEqual(*newSessionRequest, expected) {
 			t.Fatal("unexpected request")
 		}
 	})
 
-	t.Run("GetScoresRequest", func(t *testing.T) {
+	t.Run("GsPlayerScoresRequest", func(t *testing.T) {
 		go func() {
-			filename := filepath.Join(dir, "requests", "71523759f20147f79ab2b9f883492e7b.json")
+			filename := filepath.Join(dir, "requests", "8eef8847d10041e2b519ac28165e9a24.json")
 			err := os.WriteFile(filename, []byte(`{
-				"action": "groovestats/get-scores",
-				"api-key": "K",
-				"hash": "H"
+				"action": "groovestats/player-scores",
+				"chart": "H",
+				"api-key-player-2": "K"
 			}`), 0700)
 			if err != nil {
 				t.Fatal(err)
@@ -92,17 +93,19 @@ func TestFsipc(t *testing.T) {
 			t.Fatal("requests channel closed prematurely")
 		}
 
-		getScoresRequest, ok := request.(*GetScoresRequest)
+		playerScoresRequest, ok := request.(*GsPlayerScoresRequest)
 		if !ok {
 			t.Fatal("incorrect request type")
 		}
 
-		expected := GetScoresRequest{
-			Id:     "71523759f20147f79ab2b9f883492e7b",
-			ApiKey: "K",
-			Hash:   "H",
+		key := "K"
+		expected := GsPlayerScoresRequest{
+			Id:            "8eef8847d10041e2b519ac28165e9a24",
+			Chart:         "H",
+			ApiKeyPlayer1: nil,
+			ApiKeyPlayer2: &key,
 		}
-		if *getScoresRequest != expected {
+		if !reflect.DeepEqual(*playerScoresRequest, expected) {
 			t.Fatal("unexpected request")
 		}
 	})
@@ -141,7 +144,7 @@ func TestFsipc(t *testing.T) {
 			Score:       10000,
 			Rate:        100,
 		}
-		if *submitScoreRequest != expected {
+		if !reflect.DeepEqual(*submitScoreRequest, expected) {
 			t.Fatal("unexpected request")
 		}
 	})
@@ -199,7 +202,7 @@ func TestFsipc(t *testing.T) {
 		expected := PingRequest{
 			Id: "cb95f27932174600bafab86e2e5204c7",
 		}
-		if *pingRequest != expected {
+		if !reflect.DeepEqual(*pingRequest, expected) {
 			t.Fatal("unexpected request")
 		}
 	})

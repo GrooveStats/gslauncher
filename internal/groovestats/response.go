@@ -1,11 +1,5 @@
 package groovestats
 
-type scoreEntry struct {
-	Name  string `json:"name"`
-	Score int    `json:"score"`
-	Date  string `json:"date"`
-}
-
 type NewSessionResponse struct {
 	ActiveEvents []struct {
 		Name      string `json:"name"`
@@ -20,13 +14,25 @@ type NewSessionResponse struct {
 	} `json:"servicesAllowed"`
 }
 
-type GetScoresResponse struct {
-	Leaderboard []scoreEntry `json:"leaderboard"`
+type leaderBoardEntry struct {
+	Name       string  `json:"name"`
+	MachineTag *string `json:"machineTag"`
+	Score      int     `json:"score"`
+	Date       string  `json:"date"`
+	Rank       int     `json:"rank"`
+	IsSelf     bool    `json:"isSelf"`
+	IsRival    bool    `json:"isRival"`
+}
 
-	RpgData struct {
-		Leaderboard []scoreEntry `json:"leaderboard,omitempty"`
-		RivalScores []scoreEntry `json:"rivalScores,omitempty"`
-	} `json:"rpgData"`
+type PlayerScoresResponse struct {
+	Player1 *[]leaderBoardEntry `json:"player1"`
+	Player2 *[]leaderBoardEntry `json:"player2"`
+}
+
+type scoreEntry struct {
+	Name  string `json:"name"`
+	Score int    `json:"score"`
+	Date  string `json:"date"`
 }
 
 type AutoSubmitScoreResponse struct {

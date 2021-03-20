@@ -73,12 +73,8 @@ func processRequest(ipc *fsipc.FsIpc, gsClient *groovestats.Client, request inte
 			Data:    resp,
 		}
 		ipc.WriteResponse(req.Id, response)
-	case *fsipc.GetScoresRequest:
-		resp, err := gsClient.GetScores(req.ApiKey, req.Hash)
-
-		if err != nil {
-			log.Print(err)
-		}
+	case *fsipc.GsPlayerScoresRequest:
+		resp, err := gsClient.PlayerScores(req.Chart, req.ApiKeyPlayer1, req.ApiKeyPlayer2)
 
 		response := fsipc.NetworkResponse{
 			Success: err == nil,
