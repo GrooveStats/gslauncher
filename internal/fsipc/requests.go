@@ -1,8 +1,7 @@
 package fsipc
 
 type PingRequest struct {
-	Id      string `json:"-"`
-	Payload string `json:"payload" validate:"required"`
+	Id string `json:"-"`
 }
 
 type GsNewSessionRequest struct {

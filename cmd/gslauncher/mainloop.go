@@ -63,7 +63,7 @@ func mainLoop() {
 func processRequest(ipc *fsipc.FsIpc, gsClient *groovestats.Client, request interface{}) {
 	switch req := request.(type) {
 	case *fsipc.PingRequest:
-		response := fsipc.PingResponse{Payload: req.Payload}
+		response := fsipc.PingResponse{}
 		ipc.WriteResponse(req.Id, response)
 	case *fsipc.GsNewSessionRequest:
 		resp, err := gsClient.NewSession()

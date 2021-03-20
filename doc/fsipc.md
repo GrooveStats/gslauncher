@@ -14,19 +14,14 @@ This assumes that SM doesn't wait for responses for more than a minute.
 ### Ping
 
 ```jsonc
-{
-    "action": "ping",
-    "payload": "something"
-}
+{"action": "ping"}
 ```
 
 
 ### New Session
 
 ```jsonc
-{
-    "action": "groovestats/new-session"
-}
+{"action": "groovestats/new-session"}
 ```
 
 
@@ -59,7 +54,7 @@ This assumes that SM doesn't wait for responses for more than a minute.
 The response for ping looks like this:
 
 ```jsonc
-{"payload": "something"}
+{}
 ```
 
 Responses for network requests look like this:
