@@ -17,11 +17,10 @@ type FsIpc struct {
 	Requests chan interface{}
 	RootDir  string
 
-	requestDir    string
-	responseDir   string
-	watcher       *fsnotify.Watcher
-	cleanupTicker *time.Ticker
-	shutdown      chan bool
+	requestDir  string
+	responseDir string
+	watcher     *fsnotify.Watcher
+	shutdown    chan bool
 }
 
 func New(rootDir string) (*FsIpc, error) {
@@ -31,21 +30,23 @@ func New(rootDir string) (*FsIpc, error) {
 	}
 
 	requestDir := filepath.Join(rootDir, "requests")
-	info, err = os.Stat(requestDir)
-	if os.IsNotExist(err) || !info.IsDir() {
-		err = os.Mkdir(requestDir, os.ModeDir|0700)
-		if err != nil {
-			return nil, err
-		}
+	err = os.RemoveAll(requestDir)
+	if err != nil {
+		return nil, err
+	}
+	err = os.Mkdir(requestDir, os.ModeDir|0700)
+	if err != nil {
+		return nil, err
 	}
 
 	responseDir := filepath.Join(rootDir, "responses")
-	info, err = os.Stat(responseDir)
-	if os.IsNotExist(err) || !info.IsDir() {
-		err = os.Mkdir(responseDir, os.ModeDir|0700)
-		if err != nil {
-			return nil, err
-		}
+	err = os.RemoveAll(responseDir)
+	if err != nil {
+		return nil, err
+	}
+	err = os.Mkdir(responseDir, os.ModeDir|0700)
+	if err != nil {
+		return nil, err
 	}
 
 	watcher, err := fsnotify.NewWatcher()
@@ -54,13 +55,12 @@ func New(rootDir string) (*FsIpc, error) {
 	}
 
 	fsipc := FsIpc{
-		Requests:      make(chan interface{}),
-		RootDir:       rootDir,
-		requestDir:    requestDir,
-		responseDir:   responseDir,
-		watcher:       watcher,
-		cleanupTicker: time.NewTicker(time.Minute),
-		shutdown:      make(chan bool),
+		Requests:    make(chan interface{}),
+		RootDir:     rootDir,
+		requestDir:  requestDir,
+		responseDir: responseDir,
+		watcher:     watcher,
+		shutdown:    make(chan bool),
 	}
 
 	err = fsipc.watcher.Add(fsipc.requestDir)
@@ -75,7 +75,6 @@ func New(rootDir string) (*FsIpc, error) {
 }
 
 func (fsipc *FsIpc) Close() error {
-	fsipc.cleanupTicker.Stop()
 	fsipc.shutdown <- true
 
 	close(fsipc.Requests)
@@ -85,23 +84,11 @@ func (fsipc *FsIpc) Close() error {
 }
 
 func (fsipc *FsIpc) loop() {
-	entries, err := os.ReadDir(fsipc.requestDir)
-	if err == nil {
-		for _, entry := range entries {
-			fsipc.handleFile(filepath.Join(fsipc.requestDir, entry.Name()))
-		}
-	} else {
-		log.Print("failed to list requests: ", err)
-	}
-
-	fsipc.cleanup()
-
-loop:
 	for {
 		select {
 		case event, ok := <-fsipc.watcher.Events:
 			if !ok {
-				break loop
+				return
 			}
 
 			if event.Op&fsnotify.Write == fsnotify.Write {
@@ -109,14 +96,12 @@ loop:
 			}
 		case err, ok := <-fsipc.watcher.Errors:
 			if !ok {
-				break loop
+				return
 			}
 
 			log.Print("fsnotify error: ", err)
-		case <-fsipc.cleanupTicker.C:
-			fsipc.cleanup()
 		case <-fsipc.shutdown:
-			break loop
+			return
 		}
 	}
 }
@@ -212,37 +197,6 @@ func (fsipc *FsIpc) handleFile(filename string) {
 	return
 }
 
-func (fsipc *FsIpc) cleanup() {
-	entries, err := os.ReadDir(fsipc.responseDir)
-	if err != nil {
-		log.Print("failed to list responses: ", err)
-		return
-	}
-
-	for _, entry := range entries {
-		filename := filepath.Join(fsipc.responseDir, entry.Name())
-
-		info, err := os.Stat(filename)
-		if err != nil {
-			log.Printf("failed to stat %s: %v", entry.Name(), err)
-			continue
-		}
-
-		if !info.Mode().IsRegular() || !strings.HasSuffix(entry.Name(), ".json") {
-			continue
-		}
-
-		// SM only waits up to one minute for a reply, so if the
-		// response is too old, discard it.
-		if info.ModTime().Add(time.Minute).Before(time.Now()) {
-			err = os.Remove(filename)
-			if err != nil {
-				log.Printf("failed to delete %s: %v", entry.Name(), err)
-			}
-		}
-	}
-}
-
 func (fsipc *FsIpc) WriteResponse(id string, data interface{}) error {
 	b, err := json.Marshal(data)
 	if err != nil {
@@ -250,5 +204,20 @@ func (fsipc *FsIpc) WriteResponse(id string, data interface{}) error {
 	}
 
 	filename := filepath.Join(fsipc.responseDir, id+".json")
-	return os.WriteFile(filename, b, 0600)
+	err = os.WriteFile(filename, b, 0600)
+
+	if err == nil {
+		// SM only waits up to one minute for a reply, so when the
+		// response is too old, discard it.
+		go func() {
+			<-time.After(time.Minute)
+
+			err := os.Remove(filename)
+			if err != nil {
+				log.Printf("failed to delete %s: %v", filename, err)
+			}
+		}()
+	}
+
+	return err
 }
