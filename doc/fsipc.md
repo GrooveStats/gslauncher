@@ -39,6 +39,21 @@ This assumes that SM doesn't wait for responses for more than a minute.
 At least one of the two API keys has to be provided.
 
 
+### GrooveStats: Player Leaderboards
+
+```jsonc
+{
+    "action": "groovestats/player-leaderboards",
+    "chart": "somehash",                        // the hash of the chart
+    "max-leaderboard-results": 10,              // optional
+    "api-key-player-1": "topsecret",            // optional
+    "api-key-player-2": "topsecret"             // optional
+}
+```
+
+At least one of the two API keys has to be provided.
+
+
 ### Submit Score
 
 ```jsonc
@@ -90,6 +105,13 @@ The launcher randomly returns either:
 
 
 ### Player Scores
+
+The launcher randomly returns either:
+- A network error
+- A leaderboard response for the requested players
+
+
+### Player Leaderboards
 
 The launcher randomly returns either:
 - A network error

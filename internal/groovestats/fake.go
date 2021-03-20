@@ -53,6 +53,41 @@ func fakePlayerScores(chart string, apiKeyPlayer1, apiKeyPlayer2 *string) (*Play
 	return &response, nil
 }
 
+func fakePlayerLeaderboards(chart string, maxLeaderboardResults *int, apiKeyPlayer1, apiKeyPlayer2 *string) (*PlayerLeaderboardsResponse, error) {
+	switch rand.Intn(2) {
+	case 0:
+		return nil, errors.New("network error")
+	}
+
+	var response PlayerLeaderboardsResponse
+	err := loadFakeData("player-leaderboards.json", &response)
+	if err != nil {
+		return nil, err
+	}
+
+	if maxLeaderboardResults != nil {
+		p1GsLeaderboard := (*response.Player1.GsLeaderboard)[:*maxLeaderboardResults]
+		p1RpgLeaderboard := (*response.Player1.Rpg.RpgLeaderboard)[:*maxLeaderboardResults]
+		p2GsLeaderboard := (*response.Player2.GsLeaderboard)[:*maxLeaderboardResults]
+		p2RpgLeaderboard := (*response.Player2.Rpg.RpgLeaderboard)[:*maxLeaderboardResults]
+
+		response.Player1.GsLeaderboard = &p1GsLeaderboard
+		response.Player1.Rpg.RpgLeaderboard = &p1RpgLeaderboard
+		response.Player2.GsLeaderboard = &p2GsLeaderboard
+		response.Player2.Rpg.RpgLeaderboard = &p2RpgLeaderboard
+	}
+
+	if apiKeyPlayer1 == nil {
+		response.Player1 = nil
+	}
+
+	if apiKeyPlayer2 == nil {
+		response.Player2 = nil
+	}
+
+	return &response, nil
+}
+
 func fakeAutoSubmitScore(hash string, rate int, score int) (*AutoSubmitScoreResponse, error) {
 	var filename string
 

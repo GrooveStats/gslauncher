@@ -15,6 +15,14 @@ type GsPlayerScoresRequest struct {
 	ApiKeyPlayer2 *string `json:"api-key-player-2"`
 }
 
+type GsPlayerLeaderboardsRequest struct {
+	Id                    string  `json:"-"`
+	Chart                 string  `json:"chart" validate:"required"`
+	MaxLeaderboardResults *int    `json:"max-leaderboard-results"`
+	ApiKeyPlayer1         *string `json:"api-key-player-1"`
+	ApiKeyPlayer2         *string `json:"api-key-player-2"`
+}
+
 type SubmitScoreRequest struct {
 	Id          string `json:"-"`
 	ApiKey      string `json:"api-key" validate:"required"`

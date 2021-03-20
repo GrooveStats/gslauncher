@@ -177,6 +177,8 @@ func (fsipc *FsIpc) handleFile(filename string) {
 		request = &GsNewSessionRequest{Id: id}
 	case "groovestats/player-scores":
 		request = &GsPlayerScoresRequest{Id: id}
+	case "groovestats/player-leaderboards":
+		request = &GsPlayerLeaderboardsRequest{Id: id}
 	case "groovestats/submit-score":
 		request = &SubmitScoreRequest{Id: id}
 	case "":

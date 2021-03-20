@@ -29,6 +29,26 @@ type PlayerScoresResponse struct {
 	Player2 *[]leaderBoardEntry `json:"player2"`
 }
 
+type PlayerLeaderboardsResponse struct {
+	Player1 *struct {
+		GsLeaderboard *[]leaderBoardEntry `json:"gsLeaderboard"`
+
+		Rpg *struct {
+			Name           string              `json:"name"`
+			RpgLeaderboard *[]leaderBoardEntry `json:"rpgLeaderboard"`
+		} `json:"rpg"`
+	} `json:"player1"`
+
+	Player2 *struct {
+		GsLeaderboard *[]leaderBoardEntry `json:"gsLeaderboard"`
+
+		Rpg *struct {
+			Name           string              `json:"name"`
+			RpgLeaderboard *[]leaderBoardEntry `json:"rpgLeaderboard"`
+		} `json:"rpg"`
+	} `json:"player2"`
+}
+
 type scoreEntry struct {
 	Name  string `json:"name"`
 	Score int    `json:"score"`

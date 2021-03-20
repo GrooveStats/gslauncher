@@ -81,6 +81,14 @@ func processRequest(ipc *fsipc.FsIpc, gsClient *groovestats.Client, request inte
 			Data:    resp,
 		}
 		ipc.WriteResponse(req.Id, response)
+	case *fsipc.GsPlayerLeaderboardsRequest:
+		resp, err := gsClient.PlayerLeaderboards(req.Chart, req.MaxLeaderboardResults, req.ApiKeyPlayer1, req.ApiKeyPlayer2)
+
+		response := fsipc.NetworkResponse{
+			Success: err == nil,
+			Data:    resp,
+		}
+		ipc.WriteResponse(req.Id, response)
 	case *fsipc.SubmitScoreRequest:
 		resp, err := gsClient.AutoSubmitScore(req.ApiKey, req.Hash, req.Rate, req.Score)
 

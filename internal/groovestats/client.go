@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/archiveflax/gslauncher/internal/settings"
@@ -46,7 +47,7 @@ func (client *Client) NewSession() (*NewSessionResponse, error) {
 		return response, nil
 	}
 
-	req, err := client.newGetRequest("/new-session.php", nil)
+	req, err := client.newGetRequest("/api/new-session.php", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +77,7 @@ func (client *Client) PlayerScores(chart string, apiKeyPlayer1, apiKeyPlayer2 *s
 	params := url.Values{}
 	params.Add("chart", chart)
 
-	req, err := client.newGetRequest("/player-scores.php", nil)
+	req, err := client.newGetRequest("/api/player-scores.php", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -88,6 +89,41 @@ func (client *Client) PlayerScores(chart string, apiKeyPlayer1, apiKeyPlayer2 *s
 	}
 
 	var response PlayerScoresResponse
+	err = client.doRequest(req, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	return &response, nil
+}
+
+func (client *Client) PlayerLeaderboards(chart string, maxLeaderboardResults *int, apiKeyPlayer1, apiKeyPlayer2 *string) (*PlayerLeaderboardsResponse, error) {
+	if !client.allowPlayerLeaderboards {
+		return nil, errors.New("not allowed to fetch player leaderboards")
+	}
+
+	if settings.Get().FakeGroovestats {
+		return fakePlayerLeaderboards(chart, maxLeaderboardResults, apiKeyPlayer1, apiKeyPlayer2)
+	}
+
+	params := url.Values{}
+	params.Add("chart", chart)
+	if maxLeaderboardResults != nil {
+		params.Add("maxLeaderboardResults", strconv.Itoa(*maxLeaderboardResults))
+	}
+
+	req, err := client.newGetRequest("/api/player-leaderboards.php", nil)
+	if err != nil {
+		return nil, err
+	}
+	if apiKeyPlayer1 != nil {
+		req.Header.Add("x-api-key-player-1", *apiKeyPlayer1)
+	}
+	if apiKeyPlayer2 != nil {
+		req.Header.Add("x-api-key-player-2", *apiKeyPlayer2)
+	}
+
+	var response PlayerLeaderboardsResponse
 	err = client.doRequest(req, &response)
 	if err != nil {
 		return nil, err

@@ -110,6 +110,41 @@ func TestFsipc(t *testing.T) {
 		}
 	})
 
+	t.Run("GsPlayerLeaderboardsRequest", func(t *testing.T) {
+		go func() {
+			filename := filepath.Join(dir, "requests", "68b50a36752141d58700b4d252dfee15.json")
+			err := os.WriteFile(filename, []byte(`{
+				"action": "groovestats/player-leaderboards",
+				"chart": "H",
+				"api-key-player-1": "K"
+			}`), 0700)
+			if err != nil {
+				t.Fatal(err)
+			}
+		}()
+
+		request, ok := <-ipc.Requests
+		if !ok {
+			t.Fatal("requests channel closed prematurely")
+		}
+
+		playerLeaderboardsRequest, ok := request.(*GsPlayerLeaderboardsRequest)
+		if !ok {
+			t.Fatal("incorrect request type")
+		}
+
+		key := "K"
+		expected := GsPlayerLeaderboardsRequest{
+			Id:            "68b50a36752141d58700b4d252dfee15",
+			Chart:         "H",
+			ApiKeyPlayer1: &key,
+			ApiKeyPlayer2: nil,
+		}
+		if !reflect.DeepEqual(*playerLeaderboardsRequest, expected) {
+			t.Fatal("unexpected request")
+		}
+	})
+
 	t.Run("SubmitScoreRequest", func(t *testing.T) {
 		go func() {
 			filename := filepath.Join(dir, "requests", "25a1506cdeff4d01b50f8207313f5db1.json")
