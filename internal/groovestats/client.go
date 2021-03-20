@@ -13,20 +13,37 @@ import (
 )
 
 type Client struct {
-	client         *http.Client
-	permanentError bool
+	client *http.Client
+
+	allowScoreSubmit        bool
+	allowPlayerScores       bool
+	allowPlayerLeaderboards bool
+	permanentError          bool
 }
 
 func NewClient() *Client {
 	return &Client{
-		client:         &http.Client{Timeout: 15 * time.Second},
-		permanentError: false,
+		client: &http.Client{Timeout: 15 * time.Second},
+
+		allowScoreSubmit:        false,
+		allowPlayerScores:       false,
+		allowPlayerLeaderboards: false,
+		permanentError:          false,
 	}
 }
 
 func (client *Client) NewSession() (*NewSessionResponse, error) {
 	if settings.Get().FakeGroovestats {
-		return fakeNewSession()
+		response, err := fakeNewSession()
+		if err != nil {
+			return nil, err
+		}
+
+		client.allowScoreSubmit = response.ServicesAllowed.ScoreSubmit
+		client.allowPlayerScores = response.ServicesAllowed.PlayerScores
+		client.allowPlayerLeaderboards = response.ServicesAllowed.PlayerLeaderboards
+
+		return response, nil
 	}
 
 	req, err := client.newGetRequest("/new-session.php", nil)
@@ -40,10 +57,18 @@ func (client *Client) NewSession() (*NewSessionResponse, error) {
 		return nil, err
 	}
 
+	client.allowScoreSubmit = response.ServicesAllowed.ScoreSubmit
+	client.allowPlayerScores = response.ServicesAllowed.PlayerScores
+	client.allowPlayerLeaderboards = response.ServicesAllowed.PlayerLeaderboards
+
 	return &response, nil
 }
 
 func (client *Client) PlayerScores(chart string, apiKeyPlayer1, apiKeyPlayer2 *string) (*PlayerScoresResponse, error) {
+	if !client.allowPlayerScores {
+		return nil, errors.New("not allowed to fetch player scores")
+	}
+
 	if settings.Get().FakeGroovestats {
 		return fakePlayerScores(chart, apiKeyPlayer1, apiKeyPlayer2)
 	}
