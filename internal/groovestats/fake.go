@@ -4,24 +4,25 @@ import (
 	"embed"
 	"encoding/json"
 	"errors"
-	"math/rand"
 
 	"github.com/archiveflax/gslauncher/internal/fsipc"
+	"github.com/archiveflax/gslauncher/internal/settings"
 )
 
 //go:embed fake/*.json
 var fs embed.FS
 
 func fakeNewSession() (*NewSessionResponse, error) {
+	if settings.Get().FakeGsNetworkError {
+		return nil, errors.New("network error")
+	}
+
 	var filename string
 
-	switch rand.Intn(3) {
-	case 0:
-		return nil, errors.New("network error")
-	case 1:
-		filename = "new-session.json"
-	case 2:
+	if settings.Get().FakeGsDdos {
 		filename = "new-session-ddos.json"
+	} else {
+		filename = "new-session.json"
 	}
 
 	var response NewSessionResponse
@@ -33,8 +34,7 @@ func fakeNewSession() (*NewSessionResponse, error) {
 }
 
 func fakePlayerScores(request *fsipc.GsPlayerScoresRequest) (*PlayerScoresResponse, error) {
-	switch rand.Intn(2) {
-	case 0:
+	if settings.Get().FakeGsNetworkError {
 		return nil, errors.New("network error")
 	}
 
@@ -56,8 +56,7 @@ func fakePlayerScores(request *fsipc.GsPlayerScoresRequest) (*PlayerScoresRespon
 }
 
 func fakePlayerLeaderboards(request *fsipc.GsPlayerLeaderboardsRequest) (*PlayerLeaderboardsResponse, error) {
-	switch rand.Intn(2) {
-	case 0:
+	if settings.Get().FakeGsNetworkError {
 		return nil, errors.New("network error")
 	}
 
@@ -76,6 +75,11 @@ func fakePlayerLeaderboards(request *fsipc.GsPlayerLeaderboardsRequest) (*Player
 		response.Player2.Rpg.RpgLeaderboard = response.Player2.Rpg.RpgLeaderboard[:n]
 	}
 
+	if !settings.Get().FakeGsRpg {
+		response.Player1.Rpg = nil
+		response.Player2.Rpg = nil
+	}
+
 	if request.ApiKeyPlayer1 == nil {
 		response.Player1 = nil
 	}
@@ -88,8 +92,7 @@ func fakePlayerLeaderboards(request *fsipc.GsPlayerLeaderboardsRequest) (*Player
 }
 
 func fakeScoreSubmit(request *fsipc.GsScoreSubmitRequest) (*ScoreSubmitResponse, error) {
-	switch rand.Intn(2) {
-	case 0:
+	if settings.Get().FakeGsNetworkError {
 		return nil, errors.New("network error")
 	}
 
@@ -113,78 +116,68 @@ func fakeScoreSubmit(request *fsipc.GsScoreSubmitRequest) (*ScoreSubmitResponse,
 		response.Player2.Rpg.RpgLeaderboard = &p2RpgLeaderboard
 	}
 
+	switch settings.Get().FakeGsSubmitResult {
+	case "score-added":
+		response.Player1.Result = "score-added"
+		response.Player1.ScoreDelta = nil
+		response.Player1.Rpg.Result = "score-added"
+		response.Player1.Rpg.ScoreDelta = nil
+		response.Player1.Rpg.RateDelta = nil
+		response.Player2.Result = "score-added"
+		response.Player2.ScoreDelta = nil
+		response.Player2.Rpg.Result = "score-added"
+		response.Player2.Rpg.ScoreDelta = nil
+		response.Player2.Rpg.RateDelta = nil
+	case "score-improved":
+		response.Player1.Result = "score-improved"
+		response.Player1.Rpg.Result = "score-improved"
+		response.Player2.Result = "score-improved"
+		response.Player2.Rpg.Result = "score-improved"
+	case "score-not-improved":
+		zero := 0
+
+		response.Player1.Result = "score-not-improved"
+		response.Player1.ScoreDelta = &zero
+		response.Player1.Rpg.Result = "score-not-improved"
+		response.Player1.Rpg.ScoreDelta = &zero
+		response.Player1.Rpg.RateDelta = &zero
+		response.Player2.Result = "score-not-improved"
+		response.Player2.ScoreDelta = &zero
+		response.Player2.Rpg.Result = "score-not-improved"
+		response.Player2.Rpg.ScoreDelta = &zero
+		response.Player2.Rpg.RateDelta = &zero
+	case "score-not-ranked":
+		response.Player1.Result = "song-not-ranked"
+		response.Player1.ScoreDelta = nil
+		response.Player1.GsLeaderboard = nil
+		response.Player1.Rpg.Result = "song-not-ranked"
+		response.Player1.Rpg.ScoreDelta = nil
+		response.Player1.Rpg.RateDelta = nil
+		response.Player1.Rpg.Progress = nil
+		response.Player1.Rpg.RpgLeaderboard = nil
+		response.Player2.Result = "song-not-ranked"
+		response.Player2.ScoreDelta = nil
+		response.Player2.GsLeaderboard = nil
+		response.Player2.Rpg.Result = "song-not-ranked"
+		response.Player2.Rpg.ScoreDelta = nil
+		response.Player2.Rpg.RateDelta = nil
+		response.Player2.Rpg.Progress = nil
+		response.Player2.Rpg.RpgLeaderboard = nil
+	default:
+		panic("unknown submit result")
+	}
+
+	if !settings.Get().FakeGsRpg {
+		response.Player1.Rpg = nil
+		response.Player2.Rpg = nil
+	}
+
 	if request.Player1 == nil {
 		response.Player1 = nil
-	} else {
-		switch {
-		case request.Player1.Rate <= 33:
-			response.Player1.Result = "score-added"
-			response.Player1.ScoreDelta = nil
-			response.Player1.Rpg = nil
-		case request.Player1.Rate <= 66:
-			response.Player1.Result = "score-added"
-			response.Player1.ScoreDelta = nil
-			response.Player1.Rpg.Result = "score-added"
-			response.Player1.Rpg.ScoreDelta = nil
-			response.Player1.Rpg.RateDelta = nil
-		case request.Player1.Rate <= 100:
-			response.Player1.Result = "score-improved"
-			response.Player1.Rpg.Result = "score-improved"
-		case request.Player1.Rate <= 133:
-			zero := 0
-
-			response.Player1.Result = "score-not-improved"
-			response.Player1.ScoreDelta = &zero
-			response.Player1.Rpg.Result = "score-not-improved"
-			response.Player1.Rpg.ScoreDelta = &zero
-			response.Player1.Rpg.RateDelta = &zero
-		default:
-			response.Player1.Result = "song-not-ranked"
-			response.Player1.ScoreDelta = nil
-			response.Player1.GsLeaderboard = nil
-			response.Player1.Rpg.Result = "song-not-ranked"
-			response.Player1.Rpg.ScoreDelta = nil
-			response.Player1.Rpg.RateDelta = nil
-			response.Player1.Rpg.Progress = nil
-			response.Player1.Rpg.RpgLeaderboard = nil
-		}
 	}
 
 	if request.Player2 == nil {
 		response.Player2 = nil
-	} else {
-		switch {
-		case request.Player2.Rate <= 33:
-			response.Player2.Result = "score-added"
-			response.Player2.ScoreDelta = nil
-			response.Player2.Rpg = nil
-		case request.Player2.Rate <= 66:
-			response.Player2.Result = "score-added"
-			response.Player2.ScoreDelta = nil
-			response.Player2.Rpg.Result = "score-added"
-			response.Player2.Rpg.ScoreDelta = nil
-			response.Player2.Rpg.RateDelta = nil
-		case request.Player2.Rate <= 100:
-			response.Player2.Result = "score-improved"
-			response.Player2.Rpg.Result = "score-improved"
-		case request.Player2.Rate <= 133:
-			zero := 0
-
-			response.Player2.Result = "score-not-improved"
-			response.Player2.ScoreDelta = &zero
-			response.Player2.Rpg.Result = "score-not-improved"
-			response.Player2.Rpg.ScoreDelta = &zero
-			response.Player2.Rpg.RateDelta = &zero
-		default:
-			response.Player2.Result = "song-not-ranked"
-			response.Player2.ScoreDelta = nil
-			response.Player2.GsLeaderboard = nil
-			response.Player2.Rpg.Result = "song-not-ranked"
-			response.Player2.Rpg.ScoreDelta = nil
-			response.Player2.Rpg.RateDelta = nil
-			response.Player2.Rpg.Progress = nil
-			response.Player2.Rpg.RpgLeaderboard = nil
-		}
 	}
 
 	return &response, nil

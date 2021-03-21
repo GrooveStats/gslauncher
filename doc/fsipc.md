@@ -99,46 +99,12 @@ Responses for network requests look like this:
 ```
 
 
-## GrooveStats Faking
+## GrooveStats Simulation
 
-The debug build of the launcher adds support for the "Fake GrooveStats
+The debug build of the launcher adds support for the "Simulate GrooveStats
 Requests" setting. It replaces requests to GrooveStats with predetermined fake
 responses.
 
 ```sh
 go build -tags debug ./cmd/gslauncher/
 ```
-
-
-### New Session
-
-The launcher randomly returns either:
-- A network error
-- A response that indicates that all services are up
-- A response that indicates that all services are down (DDoS scenario)
-
-
-### Player Scores
-
-The launcher randomly returns either:
-- A network error
-- A leaderboard response for the requested players
-
-
-### Player Leaderboards
-
-The launcher randomly returns either:
-- A network error
-- A leaderboard response for the requested players
-
-
-### Score Submit
-
-The launcher randomly returns either:
-- A network error
-- A valid response: The result per player depends on the music rate:
-  - rate 0-33: Score added (no rpgData)
-  - rate 34-66: Score added (rpgData)
-  - rate 67-100: Score improved
-  - rate 101-133: Score not improved
-  - rate > 133: Song not ranked

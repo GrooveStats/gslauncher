@@ -35,7 +35,7 @@ func NewClient() *Client {
 }
 
 func (client *Client) NewSession() (*NewSessionResponse, error) {
-	if settings.Get().FakeGroovestats {
+	if settings.Get().FakeGs {
 		response, err := fakeNewSession()
 		if err != nil {
 			return nil, err
@@ -71,7 +71,7 @@ func (client *Client) PlayerScores(request *fsipc.GsPlayerScoresRequest) (*Playe
 		return nil, errors.New("not allowed to fetch player scores")
 	}
 
-	if settings.Get().FakeGroovestats {
+	if settings.Get().FakeGs {
 		return fakePlayerScores(request)
 	}
 
@@ -103,7 +103,7 @@ func (client *Client) PlayerLeaderboards(request *fsipc.GsPlayerLeaderboardsRequ
 		return nil, errors.New("not allowed to fetch player leaderboards")
 	}
 
-	if settings.Get().FakeGroovestats {
+	if settings.Get().FakeGs {
 		return fakePlayerLeaderboards(request)
 	}
 
@@ -134,7 +134,7 @@ func (client *Client) PlayerLeaderboards(request *fsipc.GsPlayerLeaderboardsRequ
 }
 
 func (client *Client) ScoreSubmit(request *fsipc.GsScoreSubmitRequest) (*ScoreSubmitResponse, error) {
-	if settings.Get().FakeGroovestats {
+	if settings.Get().FakeGs {
 		return fakeScoreSubmit(request)
 	}
 

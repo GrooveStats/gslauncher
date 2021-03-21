@@ -15,9 +15,13 @@ type Settings struct {
 	UserUnlocks  bool
 
 	// debug settings, not stored in the json
-	Debug           bool   `json:"-"`
-	FakeGroovestats bool   `json:"-"`
-	GrooveStatsUrl  string `json:"-"`
+	Debug              bool   `json:"-"`
+	FakeGs             bool   `json:"-"`
+	FakeGsNetworkError bool   `json:"-"`
+	FakeGsDdos         bool   `json:"-"`
+	FakeGsSubmitResult string `json:"-"`
+	FakeGsRpg          bool   `json:"-"`
+	GrooveStatsUrl     string `json:"-"`
 }
 
 var settings Settings = getDefaults()
@@ -89,9 +93,13 @@ func getDefaults() Settings {
 		AutoUnpack:   false,
 		UserUnlocks:  false,
 
-		Debug:           debug,
-		FakeGroovestats: false,
-		GrooveStatsUrl:  grooveStatsUrl,
+		Debug:              debug,
+		FakeGs:             false,
+		FakeGsNetworkError: false,
+		FakeGsDdos:         false,
+		FakeGsSubmitResult: "score-added",
+		FakeGsRpg:          true,
+		GrooveStatsUrl:     grooveStatsUrl,
 	}
 }
 

@@ -113,11 +113,59 @@ func (app *App) showSettingsDialog() {
 	}
 
 	if data.Debug {
-		fakeGsCheck := widget.NewCheck("", func(checked bool) {
-			data.FakeGroovestats = checked
+		fakeGsNetworkErrorCheck := widget.NewCheck("", func(checked bool) {
+			data.FakeGsNetworkError = checked
 		})
-		fakeGsCheck.SetChecked(data.FakeGroovestats)
-		items = append(items, widget.NewFormItem("[DEBUG] Fake GrooveStats Requests", fakeGsCheck))
+		fakeGsNetworkErrorCheck.SetChecked(data.FakeGsNetworkError)
+
+		fakeGsDdosCheck := widget.NewCheck("", func(checked bool) {
+			data.FakeGsDdos = checked
+		})
+		fakeGsDdosCheck.SetChecked(data.FakeGsDdos)
+
+		options := []string{"score-added", "score-improved", "score-not-improved", "score-not-ranked"}
+		fakeGsSubmitResultSelect := widget.NewSelect(options, func(selected string) {
+			data.FakeGsSubmitResult = selected
+		})
+		fakeGsSubmitResultSelect.SetSelected(data.FakeGsSubmitResult)
+
+		fakeGsRpgCheck := widget.NewCheck("", func(checked bool) {
+			data.FakeGsRpg = checked
+		})
+		fakeGsRpgCheck.SetChecked(data.FakeGsRpg)
+
+		fakeGsCheck := widget.NewCheck("", func(checked bool) {
+			data.FakeGs = checked
+
+			if checked {
+				fakeGsNetworkErrorCheck.Enable()
+				fakeGsDdosCheck.Enable()
+				fakeGsSubmitResultSelect.Enable()
+				fakeGsRpgCheck.Enable()
+			} else {
+				fakeGsNetworkErrorCheck.Disable()
+				fakeGsDdosCheck.Disable()
+				fakeGsSubmitResultSelect.Disable()
+				fakeGsRpgCheck.Disable()
+			}
+		})
+		fakeGsCheck.SetChecked(data.FakeGs)
+
+		if !data.FakeGs {
+			fakeGsNetworkErrorCheck.Disable()
+			fakeGsDdosCheck.Disable()
+			fakeGsSubmitResultSelect.Disable()
+			fakeGsRpgCheck.Disable()
+		}
+
+		items = append(
+			items,
+			widget.NewFormItem("[DEBUG] Simulate GrooveStats Requests", fakeGsCheck),
+			widget.NewFormItem("[DEBUG] >> Network Error", fakeGsNetworkErrorCheck),
+			widget.NewFormItem("[DEBUG] >> DDoS Protection", fakeGsDdosCheck),
+			widget.NewFormItem("[DEBUG] >> Score Submit Result", fakeGsSubmitResultSelect),
+			widget.NewFormItem("[DEBUG] >> RPG active", fakeGsRpgCheck),
+		)
 
 		gsUrlEntry := widget.NewEntry()
 		gsUrlEntry.Text = data.GrooveStatsUrl
