@@ -21,7 +21,8 @@ func TestFsipc(t *testing.T) {
 		go func() {
 			filename := filepath.Join(dir, "requests", "bda6a8a9d7924c149697e13b93aa68bf.json")
 			err := os.WriteFile(filename, []byte(`{
-				"action": "ping"
+				"action": "ping",
+				"protocol": 1
 			}`), 0700)
 			if err != nil {
 				t.Fatal(err)
@@ -39,7 +40,8 @@ func TestFsipc(t *testing.T) {
 		}
 
 		expected := PingRequest{
-			Id: "bda6a8a9d7924c149697e13b93aa68bf",
+			Id:       "bda6a8a9d7924c149697e13b93aa68bf",
+			Protocol: 1,
 		}
 		if !reflect.DeepEqual(*pingRequest, expected) {
 			t.Fatal("unexpected request")
@@ -207,19 +209,13 @@ func TestFsipc(t *testing.T) {
 	t.Run("PartialWrite", func(t *testing.T) {
 		go func() {
 			filename := filepath.Join(dir, "requests", "cb95f27932174600bafab86e2e5204c7.json")
-			err := os.WriteFile(filename, []byte(`{
-				"action": "ping"
-			}`), 0700)
-			if err != nil {
-				t.Fatal(err)
-			}
 
 			f, err := os.Create(filename)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = f.Write([]byte(`{"action": `))
+			_, err = f.Write([]byte(`{"action": "ping"`))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -233,7 +229,7 @@ func TestFsipc(t *testing.T) {
 			// before issueing the next one
 			time.Sleep(time.Second)
 
-			_, err = f.Write([]byte(`"ping"}`))
+			_, err = f.Write([]byte(`, "protocol": 1}`))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -255,7 +251,8 @@ func TestFsipc(t *testing.T) {
 		}
 
 		expected := PingRequest{
-			Id: "cb95f27932174600bafab86e2e5204c7",
+			Id:       "cb95f27932174600bafab86e2e5204c7",
+			Protocol: 1,
 		}
 		if !reflect.DeepEqual(*pingRequest, expected) {
 			t.Fatal("unexpected request")

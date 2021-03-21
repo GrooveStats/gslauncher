@@ -14,7 +14,10 @@ This assumes that SM doesn't wait for responses for more than a minute.
 ### Ping
 
 ```jsonc
-{"action": "ping"}
+{
+    "action": "ping",
+    "protocol": 1
+}
 ```
 
 
@@ -86,7 +89,13 @@ Data for at least one player has to be provided.
 The response for ping looks like this:
 
 ```jsonc
-{}
+{
+    "version": {
+        "major": 1,
+        "minor": 0,
+        "patch": 0
+    }
+}
 ```
 
 Responses for network requests look like this:
