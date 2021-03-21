@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"math/rand"
+
+	"github.com/archiveflax/gslauncher/internal/fsipc"
 )
 
 //go:embed fake/*.json
@@ -30,7 +32,7 @@ func fakeNewSession() (*NewSessionResponse, error) {
 	return &response, nil
 }
 
-func fakePlayerScores(chart string, apiKeyPlayer1, apiKeyPlayer2 *string) (*PlayerScoresResponse, error) {
+func fakePlayerScores(request *fsipc.GsPlayerScoresRequest) (*PlayerScoresResponse, error) {
 	switch rand.Intn(2) {
 	case 0:
 		return nil, errors.New("network error")
@@ -42,18 +44,18 @@ func fakePlayerScores(chart string, apiKeyPlayer1, apiKeyPlayer2 *string) (*Play
 		return nil, err
 	}
 
-	if apiKeyPlayer1 == nil {
+	if request.ApiKeyPlayer1 == nil {
 		response.Player1 = nil
 	}
 
-	if apiKeyPlayer2 == nil {
+	if request.ApiKeyPlayer2 == nil {
 		response.Player2 = nil
 	}
 
 	return &response, nil
 }
 
-func fakePlayerLeaderboards(chart string, maxLeaderboardResults *int, apiKeyPlayer1, apiKeyPlayer2 *string) (*PlayerLeaderboardsResponse, error) {
+func fakePlayerLeaderboards(request *fsipc.GsPlayerLeaderboardsRequest) (*PlayerLeaderboardsResponse, error) {
 	switch rand.Intn(2) {
 	case 0:
 		return nil, errors.New("network error")
@@ -65,11 +67,45 @@ func fakePlayerLeaderboards(chart string, maxLeaderboardResults *int, apiKeyPlay
 		return nil, err
 	}
 
-	if maxLeaderboardResults != nil {
-		p1GsLeaderboard := (*response.Player1.GsLeaderboard)[:*maxLeaderboardResults]
-		p1RpgLeaderboard := (*response.Player1.Rpg.RpgLeaderboard)[:*maxLeaderboardResults]
-		p2GsLeaderboard := (*response.Player2.GsLeaderboard)[:*maxLeaderboardResults]
-		p2RpgLeaderboard := (*response.Player2.Rpg.RpgLeaderboard)[:*maxLeaderboardResults]
+	if request.MaxLeaderboardResults != nil {
+		n := *request.MaxLeaderboardResults
+
+		response.Player1.GsLeaderboard = response.Player1.GsLeaderboard[:n]
+		response.Player1.Rpg.RpgLeaderboard = response.Player1.Rpg.RpgLeaderboard[:n]
+		response.Player2.GsLeaderboard = response.Player2.GsLeaderboard[:n]
+		response.Player2.Rpg.RpgLeaderboard = response.Player2.Rpg.RpgLeaderboard[:n]
+	}
+
+	if request.ApiKeyPlayer1 == nil {
+		response.Player1 = nil
+	}
+
+	if request.ApiKeyPlayer2 == nil {
+		response.Player2 = nil
+	}
+
+	return &response, nil
+}
+
+func fakeScoreSubmit(request *fsipc.GsScoreSubmitRequest) (*ScoreSubmitResponse, error) {
+	switch rand.Intn(2) {
+	case 0:
+		return nil, errors.New("network error")
+	}
+
+	var response ScoreSubmitResponse
+	err := loadFakeData("score-submit.json", &response)
+	if err != nil {
+		return nil, err
+	}
+
+	if request.MaxLeaderboardResults != nil {
+		n := *request.MaxLeaderboardResults
+
+		p1GsLeaderboard := (*response.Player1.GsLeaderboard)[:n]
+		p1RpgLeaderboard := (*response.Player1.Rpg.RpgLeaderboard)[:n]
+		p2GsLeaderboard := (*response.Player2.GsLeaderboard)[:n]
+		p2RpgLeaderboard := (*response.Player2.Rpg.RpgLeaderboard)[:n]
 
 		response.Player1.GsLeaderboard = &p1GsLeaderboard
 		response.Player1.Rpg.RpgLeaderboard = &p1RpgLeaderboard
@@ -77,40 +113,80 @@ func fakePlayerLeaderboards(chart string, maxLeaderboardResults *int, apiKeyPlay
 		response.Player2.Rpg.RpgLeaderboard = &p2RpgLeaderboard
 	}
 
-	if apiKeyPlayer1 == nil {
+	if request.Player1 == nil {
 		response.Player1 = nil
+	} else {
+		switch {
+		case request.Player1.Rate <= 33:
+			response.Player1.Result = "score-added"
+			response.Player1.ScoreDelta = nil
+			response.Player1.Rpg = nil
+		case request.Player1.Rate <= 66:
+			response.Player1.Result = "score-added"
+			response.Player1.ScoreDelta = nil
+			response.Player1.Rpg.Result = "score-added"
+			response.Player1.Rpg.ScoreDelta = nil
+			response.Player1.Rpg.RateDelta = nil
+		case request.Player1.Rate <= 100:
+			response.Player1.Result = "score-improved"
+			response.Player1.Rpg.Result = "score-improved"
+		case request.Player1.Rate <= 133:
+			zero := 0
+
+			response.Player1.Result = "score-not-improved"
+			response.Player1.ScoreDelta = &zero
+			response.Player1.Rpg.Result = "score-not-improved"
+			response.Player1.Rpg.ScoreDelta = &zero
+			response.Player1.Rpg.RateDelta = &zero
+		default:
+			response.Player1.Result = "song-not-ranked"
+			response.Player1.ScoreDelta = nil
+			response.Player1.GsLeaderboard = nil
+			response.Player1.Rpg.Result = "song-not-ranked"
+			response.Player1.Rpg.ScoreDelta = nil
+			response.Player1.Rpg.RateDelta = nil
+			response.Player1.Rpg.Progress = nil
+			response.Player1.Rpg.RpgLeaderboard = nil
+		}
 	}
 
-	if apiKeyPlayer2 == nil {
+	if request.Player2 == nil {
 		response.Player2 = nil
+	} else {
+		switch {
+		case request.Player2.Rate <= 33:
+			response.Player2.Result = "score-added"
+			response.Player2.ScoreDelta = nil
+			response.Player2.Rpg = nil
+		case request.Player2.Rate <= 66:
+			response.Player2.Result = "score-added"
+			response.Player2.ScoreDelta = nil
+			response.Player2.Rpg.Result = "score-added"
+			response.Player2.Rpg.ScoreDelta = nil
+			response.Player2.Rpg.RateDelta = nil
+		case request.Player2.Rate <= 100:
+			response.Player2.Result = "score-improved"
+			response.Player2.Rpg.Result = "score-improved"
+		case request.Player2.Rate <= 133:
+			zero := 0
+
+			response.Player2.Result = "score-not-improved"
+			response.Player2.ScoreDelta = &zero
+			response.Player2.Rpg.Result = "score-not-improved"
+			response.Player2.Rpg.ScoreDelta = &zero
+			response.Player2.Rpg.RateDelta = &zero
+		default:
+			response.Player2.Result = "song-not-ranked"
+			response.Player2.ScoreDelta = nil
+			response.Player2.GsLeaderboard = nil
+			response.Player2.Rpg.Result = "song-not-ranked"
+			response.Player2.Rpg.ScoreDelta = nil
+			response.Player2.Rpg.RateDelta = nil
+			response.Player2.Rpg.Progress = nil
+			response.Player2.Rpg.RpgLeaderboard = nil
+		}
 	}
 
-	return &response, nil
-}
-
-func fakeAutoSubmitScore(hash string, rate int, score int) (*AutoSubmitScoreResponse, error) {
-	var filename string
-
-	switch {
-	case rate <= 33:
-		return nil, errors.New("network error")
-	case rate <= 66:
-		filename = "auto-submit-score-added.json"
-	case rate <= 100:
-		filename = "auto-submit-score-added-rpg.json"
-	case rate <= 133:
-		filename = "auto-submit-score-improved.json"
-	case rate <= 166:
-		filename = "auto-submit-score-not-improved.json"
-	default:
-		filename = "auto-submit-score-not-ranked.json"
-	}
-
-	var response AutoSubmitScoreResponse
-	err := loadFakeData(filename, &response)
-	if err != nil {
-		return nil, err
-	}
 	return &response, nil
 }
 

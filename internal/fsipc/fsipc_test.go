@@ -145,16 +145,26 @@ func TestFsipc(t *testing.T) {
 		}
 	})
 
-	t.Run("SubmitScoreRequest", func(t *testing.T) {
+	t.Run("GsScoreSubmitRequest", func(t *testing.T) {
 		go func() {
 			filename := filepath.Join(dir, "requests", "25a1506cdeff4d01b50f8207313f5db1.json")
 			err := os.WriteFile(filename, []byte(`{
-				"action": "groovestats/submit-score",
-				"api-key": "K",
-				"profile-name": "N",
-				"hash": "H",
-				"score": 10000,
-				"rate": 100
+				"action": "groovestats/score-submit",
+				"chart": "H",
+				"player1": {
+					"api-key": "K",
+					"profile-name": "N",
+					"score": 10000,
+					"comment": "C675",
+					"rate": 100
+				},
+				"player2": {
+					"api-key": "K",
+					"profile-name": "N",
+					"score": 9900,
+					"comment": "C700",
+					"rate": 150
+				}
 			}`), 0700)
 			if err != nil {
 				t.Fatal(err)
@@ -166,20 +176,30 @@ func TestFsipc(t *testing.T) {
 			t.Fatal("requests channel closed prematurely")
 		}
 
-		submitScoreRequest, ok := request.(*SubmitScoreRequest)
+		scoreSubmitRequest, ok := request.(*GsScoreSubmitRequest)
 		if !ok {
 			t.Fatal("incorrect request type")
 		}
 
-		expected := SubmitScoreRequest{
-			Id:          "25a1506cdeff4d01b50f8207313f5db1",
-			ApiKey:      "K",
-			ProfileName: "N",
-			Hash:        "H",
-			Score:       10000,
-			Rate:        100,
+		expected := GsScoreSubmitRequest{
+			Id:    "25a1506cdeff4d01b50f8207313f5db1",
+			Chart: "H",
+			Player1: &gsScoreSubmitPlayerData{
+				ApiKey:      "K",
+				ProfileName: "N",
+				Score:       10000,
+				Comment:     "C675",
+				Rate:        100,
+			},
+			Player2: &gsScoreSubmitPlayerData{
+				ApiKey:      "K",
+				ProfileName: "N",
+				Score:       9900,
+				Comment:     "C700",
+				Rate:        150,
+			},
 		}
-		if !reflect.DeepEqual(*submitScoreRequest, expected) {
+		if !reflect.DeepEqual(*scoreSubmitRequest, expected) {
 			t.Fatal("unexpected request")
 		}
 	})

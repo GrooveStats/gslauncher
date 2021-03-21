@@ -74,7 +74,7 @@ func processRequest(ipc *fsipc.FsIpc, gsClient *groovestats.Client, request inte
 		}
 		ipc.WriteResponse(req.Id, response)
 	case *fsipc.GsPlayerScoresRequest:
-		resp, err := gsClient.PlayerScores(req.Chart, req.ApiKeyPlayer1, req.ApiKeyPlayer2)
+		resp, err := gsClient.PlayerScores(req)
 
 		response := fsipc.NetworkResponse{
 			Success: err == nil,
@@ -82,15 +82,15 @@ func processRequest(ipc *fsipc.FsIpc, gsClient *groovestats.Client, request inte
 		}
 		ipc.WriteResponse(req.Id, response)
 	case *fsipc.GsPlayerLeaderboardsRequest:
-		resp, err := gsClient.PlayerLeaderboards(req.Chart, req.MaxLeaderboardResults, req.ApiKeyPlayer1, req.ApiKeyPlayer2)
+		resp, err := gsClient.PlayerLeaderboards(req)
 
 		response := fsipc.NetworkResponse{
 			Success: err == nil,
 			Data:    resp,
 		}
 		ipc.WriteResponse(req.Id, response)
-	case *fsipc.SubmitScoreRequest:
-		resp, err := gsClient.AutoSubmitScore(req.ApiKey, req.Hash, req.Rate, req.Score)
+	case *fsipc.GsScoreSubmitRequest:
+		resp, err := gsClient.ScoreSubmit(req)
 
 		// XXX: download unlocks
 

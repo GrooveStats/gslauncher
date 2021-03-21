@@ -164,8 +164,8 @@ func (fsipc *FsIpc) handleFile(filename string) {
 		request = &GsPlayerScoresRequest{Id: id}
 	case "groovestats/player-leaderboards":
 		request = &GsPlayerLeaderboardsRequest{Id: id}
-	case "groovestats/submit-score":
-		request = &SubmitScoreRequest{Id: id}
+	case "groovestats/score-submit":
+		request = &GsScoreSubmitRequest{Id: id}
 	case "":
 		log.Printf("invalid request %s: missing action", id)
 		return

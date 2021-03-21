@@ -29,53 +29,35 @@ type PlayerScoresResponse struct {
 	Player2 *[]leaderBoardEntry `json:"player2"`
 }
 
+type playerLeaderboardsPlayerData struct {
+	GsLeaderboard []leaderBoardEntry `json:"gsLeaderboard"`
+
+	Rpg *struct {
+		Name           string             `json:"name"`
+		RpgLeaderboard []leaderBoardEntry `json:"rpgLeaderboard"`
+	} `json:"rpg"`
+}
+
 type PlayerLeaderboardsResponse struct {
-	Player1 *struct {
-		GsLeaderboard *[]leaderBoardEntry `json:"gsLeaderboard"`
-
-		Rpg *struct {
-			Name           string              `json:"name"`
-			RpgLeaderboard *[]leaderBoardEntry `json:"rpgLeaderboard"`
-		} `json:"rpg"`
-	} `json:"player1"`
-
-	Player2 *struct {
-		GsLeaderboard *[]leaderBoardEntry `json:"gsLeaderboard"`
-
-		Rpg *struct {
-			Name           string              `json:"name"`
-			RpgLeaderboard *[]leaderBoardEntry `json:"rpgLeaderboard"`
-		} `json:"rpg"`
-	} `json:"player2"`
+	Player1 *playerLeaderboardsPlayerData `json:"player1"`
+	Player2 *playerLeaderboardsPlayerData `json:"player2"`
 }
 
-type scoreEntry struct {
-	Name  string `json:"name"`
-	Score int    `json:"score"`
-	Date  string `json:"date"`
-}
+type scoreSubmitPlayerData struct {
+	Result        string              `json:"result"`
+	ScoreDelta    *int                `json:"scoreDelta,omitempty"`
+	GsLeaderboard *[]leaderBoardEntry `json:"gsLeaderboard"`
 
-type AutoSubmitScoreResponse struct {
-	Result     string  `json:"result"`
-	ScoreDelta *int    `json:"scoreDelta,omitempty"`
-	RankingUrl *string `json:"rankingUrl,omitempty"`
-
-	Profile struct {
-		AvatarUrl string `json:"avatarUrl"`
-	} `json:"profile"`
-	Leaderboard []scoreEntry `json:"leaderboard"`
-
-	RpgData struct {
-		Name *string `json:"name,omitempty"`
-		Url  *string `json:"url,omitempty"`
+	Rpg *struct {
+		Name       string `json:"name,omitempty"`
+		Result     string `json:"result"`
+		ScoreDelta *int   `json:"scoreDelta,omitempty"`
+		RateDelta  *int   `json:"rateDelta,omitempty"`
 
 		Progress *struct {
-			StatImprovements struct {
-				Gold int `json:"gold"`
-				Exp  int `json:"exp"`
-				Tp   int `json:"tp"`
-				Lp   int `json:"lp"`
-				Jp   int `json:"jp"`
+			StatImprovements []struct {
+				Name   string `json:"name"`
+				Gained int    `json:"gained"`
 			} `json:"statImprovements"`
 
 			SkillImprovements []string `json:"skillImprovements"`
@@ -83,14 +65,18 @@ type AutoSubmitScoreResponse struct {
 			QuestsCompleted []struct {
 				Title   string `json:"title"`
 				Rewards []struct {
-					Type            string `json:"type"`
-					Description     string `json:"description"`
-					SongDownloadUrl string `json:"songDownloadUrl"`
+					Type            string  `json:"type"`
+					Description     string  `json:"description"`
+					SongDownloadUrl *string `json:"songDownloadUrl"`
 				} `json:"rewards"`
 			} `json:"questsCompleted"`
-		} `json:"progress,omitempty"`
+		} `json:"progress"`
 
-		Leaderboard []scoreEntry `json:"leaderboard,omitempty"`
-		RivalScores []scoreEntry `json:"rivalScores,omitempty"`
-	} `json:"rpgData"`
+		RpgLeaderboard *[]leaderBoardEntry `json:"rpgLeaderboard"`
+	} `json:"rpg"`
+}
+
+type ScoreSubmitResponse struct {
+	Player1 *scoreSubmitPlayerData `json:"player1"`
+	Player2 *scoreSubmitPlayerData `json:"player2"`
 }

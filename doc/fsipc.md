@@ -54,17 +54,31 @@ At least one of the two API keys has to be provided.
 At least one of the two API keys has to be provided.
 
 
-### Submit Score
+### GrooveStats: Score Submit
 
 ```jsonc
 {
-    "action": "groovestats/submit-score",
-    "api-key": "topsecret",
-    "hash": "somehash",
-    "rate": 199,        // music rate x100
-    "score": 9900       // score x100
+    "action": "groovestats/score-submit",
+    "chart": "somehash",
+    "max-leaderboard-results": 10,              // optional
+    "player1": {                                // optional
+        "api-key": "topsecret",
+        "profile-name": "domp",
+        "rate": 100,                            // music rate x100
+        "comment": "C715, Reverse, Overhead, Cel",
+        "score": 10000                          // score x100
+    },
+    "player2": {                                // optional
+        "api-key": "topsecret",
+        "profile-name": "natano",
+        "rate": 199,                            // music rate x100
+        "comment": "C675, Overhead, Cel",
+        "score": 8630                           // score x100
+    }
 }
 ```
+
+Data for at least one player has to be provided.
 
 
 ## Responses
@@ -118,12 +132,13 @@ The launcher randomly returns either:
 - A leaderboard response for the requested players
 
 
-### Submit Score
+### Score Submit
 
-The response depends on the music rate:
-- rate <= 33: A network error
-- rate <= 66: Score added (no rpgData)
-- rate <= 100: Score added (rpgData)
-- rate <= 133: Score improved
-- rate <= 166: Score improved
-- rate > 166: Song not ranked
+The launcher randomly returns either:
+- A network error
+- A valid response: The result per player depends on the music rate:
+  - rate 0-33: Score added (no rpgData)
+  - rate 34-66: Score added (rpgData)
+  - rate 67-100: Score improved
+  - rate 101-133: Score not improved
+  - rate > 133: Song not ranked

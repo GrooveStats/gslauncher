@@ -1,0 +1,284 @@
+{
+    "player1": {
+        "result": "score-improved",
+        "scoreDelta": 200,
+        "gsLeaderboard": [
+            {
+                "name": "Swindlesmscoop",
+                "machineTag": "SWNDL",
+                "score": 10000,
+                "date": "2020-05-21 19:43:37",
+                "rank": 1,
+                "isSelf": false,
+                "isRival": false
+            },
+            {
+                "name": "Zaniel",
+                "machineTag": "Zane",
+                "score": 9850,
+                "date": "2020-05-21 19:43:37",
+                "rank": 11,
+                "isSelf": false,
+                "isRival": false
+            },
+            {
+                "name": "ITGAlex",
+                "machineTag": "GALEX",
+                "score": 9750,
+                "date": "2020-05-21 19:43:37",
+                "rank": 12,
+                "isSelf": false,
+                "isRival": false
+            },
+            {
+                "name": "Murd",
+                "machineTag": "MURD",
+                "score": 9650,
+                "date": "2020-05-21 19:43:37",
+                "rank": 13,
+                "isSelf": false,
+                "isRival": false
+            },
+            {
+                "name": "dom no bar",
+                "machineTag": "DOMP",
+                "score": 9600,
+                "date": "2020-05-21 19:43:37",
+                "rank": 14,
+                "isSelf": true,
+                "isRival": false
+            },
+            {
+                "name": "Archiflax",
+                "machineTag": "ARCHI",
+                "score": 9210,
+                "date": "2020-05-21 19:43:37",
+                "rank": 22,
+                "isSelf": false,
+                "isRival": true
+            },
+            {
+                "name": "Teejusb",
+                "machineTag": "TEEJ",
+                "score": 8810,
+                "date": "2020-05-21 19:43:37",
+                "rank": 23,
+                "isSelf": false,
+                "isRival": true
+            },
+            {
+                "name": "natano",
+                "machineTag": "NATO",
+                "score": 7810,
+                "date": "2020-05-21 19:43:37",
+                "rank": 44,
+                "isSelf": false,
+                "isRival": true
+            }
+        ],
+        "rpg": {
+            "name": "Stamina RPG 5",
+            "result": "score-improved",
+            "scoreDelta": 200,
+            "rateDelta": 10,
+            "progress": {
+                "statImprovements": [
+                    {"name": "gold", "gained": 69420}
+                ],
+                "skillImprovements": [
+                    "You've reached Skill Level 17 for 220 BPM!"
+                ],
+                "questsCompleted": [
+                    {
+                        "title": "Chips and Chipz",
+                        "rewards": [
+                            {
+                                "type": "ad-hoc",
+                                "description": "Good Job!"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "rpgLeaderboard": [
+                {
+                    "name": "dom no bar",
+                    "machineTag": "DOMP",
+                    "score": 9500,
+                    "date": "2020-05-21 19:43:37",
+                    "rank": 14,
+                    "isSelf": true,
+                    "isRival": false
+                },
+                {
+                    "name": "Archiflax",
+                    "machineTag": "ARCHI",
+                    "score": 9110,
+                    "date": "2020-05-21 19:43:37",
+                    "rank": 22,
+                    "isSelf": false,
+                    "isRival": true
+                },
+                {
+                    "name": "Teejusb",
+                    "machineTag": "TEEJ",
+                    "score": 8710,
+                    "date": "2020-05-21 19:43:37",
+                    "rank": 23,
+                    "isSelf": false,
+                    "isRival": true
+                },
+                {
+                    "name": "natano",
+                    "machineTag": "NATO",
+                    "score": 7710,
+                    "date": "2020-05-21 19:43:37",
+                    "rank": 44,
+                    "isSelf": false,
+                    "isRival": true
+                }
+            ]
+        }
+    },
+    "player2": {
+        "result": "score-improved",
+        "scoreDelta": 200,
+        "gsLeaderboard": [
+            {
+                "name": "Swindlesmscoop",
+                "machineTag": "SWNDL",
+                "score": 10000,
+                "date": "2020-05-21 19:43:37",
+                "rank": 1,
+                "isSelf": false,
+                "isRival": false
+            },
+            {
+                "name": "Zaniel",
+                "machineTag": "Zane",
+                "score": 9850,
+                "date": "2020-05-21 19:43:37",
+                "rank": 11,
+                "isSelf": false,
+                "isRival": false
+            },
+            {
+                "name": "ITGAlex",
+                "machineTag": "GALEX",
+                "score": 9750,
+                "date": "2020-05-21 19:43:37",
+                "rank": 12,
+                "isSelf": false,
+                "isRival": false
+            },
+            {
+                "name": "Murd",
+                "machineTag": "MURD",
+                "score": 9650,
+                "date": "2020-05-21 19:43:37",
+                "rank": 13,
+                "isSelf": false,
+                "isRival": false
+            },
+            {
+                "name": "dom no bar",
+                "machineTag": "DOMP",
+                "score": 9600,
+                "date": "2020-05-21 19:43:37",
+                "rank": 14,
+                "isSelf": true,
+                "isRival": false
+            },
+            {
+                "name": "Archiflax",
+                "machineTag": "ARCHI",
+                "score": 9210,
+                "date": "2020-05-21 19:43:37",
+                "rank": 22,
+                "isSelf": false,
+                "isRival": true
+            },
+            {
+                "name": "Teejusb",
+                "machineTag": "TEEJ",
+                "score": 8810,
+                "date": "2020-05-21 19:43:37",
+                "rank": 23,
+                "isSelf": false,
+                "isRival": true
+            },
+            {
+                "name": "natano",
+                "machineTag": "NATO",
+                "score": 7810,
+                "date": "2020-05-21 19:43:37",
+                "rank": 44,
+                "isSelf": false,
+                "isRival": true
+            }
+        ],
+        "rpg": {
+            "name": "Stamina RPG 5",
+            "result": "score-improved",
+            "scoreDelta": 200,
+            "rateDelta": 10,
+            "progress": {
+                "statImprovements": [
+                    {"name": "gold", "gained": 69420}
+                ],
+                "skillImprovements": [
+                    "You've reached Skill Level 17 for 220 BPM!"
+                ],
+                "questsCompleted": [
+                    {
+                        "title": "Chips and Chipz",
+                        "rewards": [
+                            {
+                                "type": "ad-hoc",
+                                "description": "Good Job!"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "rpgLeaderboard": [
+                {
+                    "name": "dom no bar",
+                    "machineTag": "DOMP",
+                    "score": 9500,
+                    "date": "2020-05-21 19:43:37",
+                    "rank": 14,
+                    "isSelf": true,
+                    "isRival": false
+                },
+                {
+                    "name": "Archiflax",
+                    "machineTag": "ARCHI",
+                    "score": 9110,
+                    "date": "2020-05-21 19:43:37",
+                    "rank": 22,
+                    "isSelf": false,
+                    "isRival": true
+                },
+                {
+                    "name": "Teejusb",
+                    "machineTag": "TEEJ",
+                    "score": 8710,
+                    "date": "2020-05-21 19:43:37",
+                    "rank": 23,
+                    "isSelf": false,
+                    "isRival": true
+                },
+                {
+                    "name": "natano",
+                    "machineTag": "NATO",
+                    "score": 7710,
+                    "date": "2020-05-21 19:43:37",
+                    "rank": 44,
+                    "isSelf": false,
+                    "isRival": true
+                }
+            ]
+        }
+    }
+}

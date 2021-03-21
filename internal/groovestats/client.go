@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/archiveflax/gslauncher/internal/fsipc"
 	"github.com/archiveflax/gslauncher/internal/settings"
 )
 
@@ -65,27 +66,27 @@ func (client *Client) NewSession() (*NewSessionResponse, error) {
 	return &response, nil
 }
 
-func (client *Client) PlayerScores(chart string, apiKeyPlayer1, apiKeyPlayer2 *string) (*PlayerScoresResponse, error) {
+func (client *Client) PlayerScores(request *fsipc.GsPlayerScoresRequest) (*PlayerScoresResponse, error) {
 	if !client.allowPlayerScores {
 		return nil, errors.New("not allowed to fetch player scores")
 	}
 
 	if settings.Get().FakeGroovestats {
-		return fakePlayerScores(chart, apiKeyPlayer1, apiKeyPlayer2)
+		return fakePlayerScores(request)
 	}
 
 	params := url.Values{}
-	params.Add("chart", chart)
+	params.Add("chart", request.Chart)
 
-	req, err := client.newGetRequest("/api/player-scores.php", nil)
+	req, err := client.newGetRequest("/api/player-scores.php", &params)
 	if err != nil {
 		return nil, err
 	}
-	if apiKeyPlayer1 != nil {
-		req.Header.Add("x-api-key-player-1", *apiKeyPlayer1)
+	if request.ApiKeyPlayer1 != nil {
+		req.Header.Add("x-api-key-player-1", *request.ApiKeyPlayer1)
 	}
-	if apiKeyPlayer2 != nil {
-		req.Header.Add("x-api-key-player-2", *apiKeyPlayer2)
+	if request.ApiKeyPlayer2 != nil {
+		req.Header.Add("x-api-key-player-2", *request.ApiKeyPlayer2)
 	}
 
 	var response PlayerScoresResponse
@@ -97,30 +98,30 @@ func (client *Client) PlayerScores(chart string, apiKeyPlayer1, apiKeyPlayer2 *s
 	return &response, nil
 }
 
-func (client *Client) PlayerLeaderboards(chart string, maxLeaderboardResults *int, apiKeyPlayer1, apiKeyPlayer2 *string) (*PlayerLeaderboardsResponse, error) {
+func (client *Client) PlayerLeaderboards(request *fsipc.GsPlayerLeaderboardsRequest) (*PlayerLeaderboardsResponse, error) {
 	if !client.allowPlayerLeaderboards {
 		return nil, errors.New("not allowed to fetch player leaderboards")
 	}
 
 	if settings.Get().FakeGroovestats {
-		return fakePlayerLeaderboards(chart, maxLeaderboardResults, apiKeyPlayer1, apiKeyPlayer2)
+		return fakePlayerLeaderboards(request)
 	}
 
 	params := url.Values{}
-	params.Add("chart", chart)
-	if maxLeaderboardResults != nil {
-		params.Add("maxLeaderboardResults", strconv.Itoa(*maxLeaderboardResults))
+	params.Add("chart", request.Chart)
+	if request.MaxLeaderboardResults != nil {
+		params.Add("maxLeaderboardResults", strconv.Itoa(*request.MaxLeaderboardResults))
 	}
 
-	req, err := client.newGetRequest("/api/player-leaderboards.php", nil)
+	req, err := client.newGetRequest("/api/player-leaderboards.php", &params)
 	if err != nil {
 		return nil, err
 	}
-	if apiKeyPlayer1 != nil {
-		req.Header.Add("x-api-key-player-1", *apiKeyPlayer1)
+	if request.ApiKeyPlayer1 != nil {
+		req.Header.Add("x-api-key-player-1", *request.ApiKeyPlayer1)
 	}
-	if apiKeyPlayer2 != nil {
-		req.Header.Add("x-api-key-player-2", *apiKeyPlayer2)
+	if request.ApiKeyPlayer2 != nil {
+		req.Header.Add("x-api-key-player-2", *request.ApiKeyPlayer2)
 	}
 
 	var response PlayerLeaderboardsResponse
@@ -132,24 +133,58 @@ func (client *Client) PlayerLeaderboards(chart string, maxLeaderboardResults *in
 	return &response, nil
 }
 
-func (client *Client) AutoSubmitScore(apiKey, hash string, rate int, score int) (*AutoSubmitScoreResponse, error) {
+func (client *Client) ScoreSubmit(request *fsipc.GsScoreSubmitRequest) (*ScoreSubmitResponse, error) {
 	if settings.Get().FakeGroovestats {
-		return fakeAutoSubmitScore(hash, rate, score)
+		return fakeScoreSubmit(request)
+	}
+
+	params := url.Values{}
+	params.Add("chart", request.Chart)
+	if request.MaxLeaderboardResults != nil {
+		params.Add("maxLeaderboardResults", strconv.Itoa(*request.MaxLeaderboardResults))
+	}
+
+	type scoreSubmitPlayerData struct {
+		Score   int    `json:"score"`
+		Comment string `json:"comment"`
+		Rate    int    `json:"rate"`
 	}
 
 	data := struct {
-		Hash  string `json:"hash"`
-		Rate  int    `json:"rate"`
-		Score int    `json:"score"`
-	}{hash, rate, score}
+		player1 *scoreSubmitPlayerData
+		player2 *scoreSubmitPlayerData
+	}{nil, nil}
 
-	req, err := client.newPostRequest("/auto-submit-score.php", &data)
+	if request.Player1 != nil {
+		data.player1 = &scoreSubmitPlayerData{
+			Score:   request.Player1.Score,
+			Comment: request.Player1.Comment,
+			Rate:    request.Player1.Rate,
+		}
+	}
+
+	if request.Player2 != nil {
+		data.player2 = &scoreSubmitPlayerData{
+			Score:   request.Player2.Score,
+			Comment: request.Player2.Comment,
+			Rate:    request.Player2.Rate,
+		}
+	}
+
+	req, err := client.newPostRequest("/api/score-submit.php", &params, &data)
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Add("x-api-key", apiKey)
 
-	var response AutoSubmitScoreResponse
+	if request.Player1 != nil {
+		req.Header.Add("x-api-key-player-1", request.Player1.ApiKey)
+	}
+
+	if request.Player2 != nil {
+		req.Header.Add("x-api-key-player-2", request.Player2.ApiKey)
+	}
+
+	var response ScoreSubmitResponse
 	err = client.doRequest(req, &response)
 	if err != nil {
 		return nil, err
@@ -167,8 +202,11 @@ func (client *Client) newGetRequest(path string, params *url.Values) (*http.Requ
 	return http.NewRequest("GET", url, nil)
 }
 
-func (client *Client) newPostRequest(path string, data interface{}) (*http.Request, error) {
+func (client *Client) newPostRequest(path string, params *url.Values, data interface{}) (*http.Request, error) {
 	url := settings.Get().GrooveStatsUrl + path
+	if params != nil {
+		url += "?" + params.Encode()
+	}
 
 	body, err := json.Marshal(data)
 	if err != nil {
