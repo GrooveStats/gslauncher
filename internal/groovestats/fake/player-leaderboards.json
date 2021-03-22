@@ -1,5 +1,6 @@
 {
     "player1": {
+        "chartHash": "",
         "gsLeaderboard": [
             {
                 "name": "Swindlesmscoop",
@@ -117,6 +118,7 @@
         }
     },
     "player2": {
+        "chartHash": "",
         "gsLeaderboard": [
             {
                 "name": "Swindlesmscoop",

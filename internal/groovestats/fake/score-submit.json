@@ -1,6 +1,7 @@
 {
     "player1": {
-        "result": "score-improved",
+        "chartHash": "",
+        "result": "improved",
         "scoreDelta": 200,
         "gsLeaderboard": [
             {
@@ -78,7 +79,7 @@
         ],
         "rpg": {
             "name": "Stamina RPG 5",
-            "result": "score-improved",
+            "result": "improved",
             "scoreDelta": 200,
             "rateDelta": 10,
             "progress": {
@@ -141,7 +142,8 @@
         }
     },
     "player2": {
-        "result": "score-improved",
+        "chartHash": "",
+        "result": "improved",
         "scoreDelta": 200,
         "gsLeaderboard": [
             {
@@ -219,7 +221,7 @@
         ],
         "rpg": {
             "name": "Stamina RPG 5",
-            "result": "score-improved",
+            "result": "improved",
             "scoreDelta": 200,
             "rateDelta": 10,
             "progress": {

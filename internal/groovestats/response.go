@@ -25,11 +25,19 @@ type leaderBoardEntry struct {
 }
 
 type PlayerScoresResponse struct {
-	Player1 *[]leaderBoardEntry `json:"player1"`
-	Player2 *[]leaderBoardEntry `json:"player2"`
+	Player1 *struct {
+		ChartHash     string              `json:"chartHash"`
+		GsLeaderboard *[]leaderBoardEntry `json:"gsLeaderboard"`
+	} `json:"player1"`
+
+	Player2 *struct {
+		ChartHash     string              `json:"chartHash"`
+		GsLeaderboard *[]leaderBoardEntry `json:"gsLeaderboard"`
+	} `json:"player2"`
 }
 
 type playerLeaderboardsPlayerData struct {
+	ChartHash     string             `json:"chartHash"`
 	GsLeaderboard []leaderBoardEntry `json:"gsLeaderboard"`
 
 	Rpg *struct {
@@ -44,6 +52,7 @@ type PlayerLeaderboardsResponse struct {
 }
 
 type scoreSubmitPlayerData struct {
+	ChartHash     string              `json:"chartHash"`
 	Result        string              `json:"result"`
 	ScoreDelta    *int                `json:"scoreDelta,omitempty"`
 	GsLeaderboard *[]leaderBoardEntry `json:"gsLeaderboard"`

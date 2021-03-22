@@ -123,7 +123,7 @@ func (app *App) showSettingsDialog() {
 		})
 		fakeGsDdosCheck.SetChecked(data.FakeGsDdos)
 
-		options := []string{"score-added", "score-improved", "score-not-improved", "score-not-ranked"}
+		options := []string{"score-added", "improved", "score-not-improved", "score-not-ranked"}
 		fakeGsSubmitResultSelect := widget.NewSelect(options, func(selected string) {
 			data.FakeGsSubmitResult = selected
 		})

@@ -33,13 +33,18 @@ This assumes that SM doesn't wait for responses for more than a minute.
 ```jsonc
 {
     "action": "groovestats/player-scores",
-    "chart": "somehash",                        // the hash of the chart
-    "api-key-player-1": "topsecret",            // optional
-    "api-key-player-2": "topsecret"             // optional
+    "player1": {                                // optional
+        "chartHash": "somehash",
+        "apiKey": "topsecret"
+    },
+    "player1": {                                // optional
+        "chartHash": "somehash",
+        "apiKey": "topsecret"
+    }
 }
 ```
 
-At least one of the two API keys has to be provided.
+Data for at least one player has to be provided.
 
 
 ### GrooveStats: Player Leaderboards
@@ -47,14 +52,19 @@ At least one of the two API keys has to be provided.
 ```jsonc
 {
     "action": "groovestats/player-leaderboards",
-    "chart": "somehash",                        // the hash of the chart
-    "max-leaderboard-results": 10,              // optional
-    "api-key-player-1": "topsecret",            // optional
-    "api-key-player-2": "topsecret"             // optional
+    "maxLeaderboardResults": 10,              // optional
+    "player1": {                                // optional
+        "chartHash": "somehash",
+        "apiKey": "topsecret"
+    },
+    "player1": {                                // optional
+        "chartHash": "somehash",
+        "apiKey": "topsecret"
+    }
 }
 ```
 
-At least one of the two API keys has to be provided.
+Data for at least one player has to be provided.
 
 
 ### GrooveStats: Score Submit
@@ -62,18 +72,19 @@ At least one of the two API keys has to be provided.
 ```jsonc
 {
     "action": "groovestats/score-submit",
-    "chart": "somehash",
-    "max-leaderboard-results": 10,              // optional
+    "maxLeaderboardResults": 10,                // optional
     "player1": {                                // optional
-        "api-key": "topsecret",
-        "profile-name": "domp",
+        "apiKey": "topsecret",
+        "profileName": "domp",
+        "chartHash": "somehash",
         "rate": 100,                            // music rate x100
         "comment": "C715, Reverse, Overhead, Cel",
         "score": 10000                          // score x100
     },
     "player2": {                                // optional
-        "api-key": "topsecret",
-        "profile-name": "natano",
+        "apiKey": "topsecret",
+        "profileName": "natano",
+        "chartHash": "somehash",
         "rate": 199,                            // music rate x100
         "comment": "C675, Overhead, Cel",
         "score": 8630                           // score x100

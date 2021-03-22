@@ -44,12 +44,16 @@ func fakePlayerScores(request *fsipc.GsPlayerScoresRequest) (*PlayerScoresRespon
 		return nil, err
 	}
 
-	if request.ApiKeyPlayer1 == nil {
+	if request.Player1 == nil {
 		response.Player1 = nil
+	} else {
+		response.Player1.ChartHash = request.Player1.ChartHash
 	}
 
-	if request.ApiKeyPlayer2 == nil {
+	if request.Player2 == nil {
 		response.Player2 = nil
+	} else {
+		response.Player2.ChartHash = request.Player2.ChartHash
 	}
 
 	return &response, nil
@@ -80,12 +84,16 @@ func fakePlayerLeaderboards(request *fsipc.GsPlayerLeaderboardsRequest) (*Player
 		response.Player2.Rpg = nil
 	}
 
-	if request.ApiKeyPlayer1 == nil {
+	if request.Player1 == nil {
 		response.Player1 = nil
+	} else {
+		response.Player1.ChartHash = request.Player1.ChartHash
 	}
 
-	if request.ApiKeyPlayer2 == nil {
+	if request.Player2 == nil {
 		response.Player2 = nil
+	} else {
+		response.Player2.ChartHash = request.Player2.ChartHash
 	}
 
 	return &response, nil
@@ -128,11 +136,11 @@ func fakeScoreSubmit(request *fsipc.GsScoreSubmitRequest) (*ScoreSubmitResponse,
 		response.Player2.Rpg.Result = "score-added"
 		response.Player2.Rpg.ScoreDelta = nil
 		response.Player2.Rpg.RateDelta = nil
-	case "score-improved":
-		response.Player1.Result = "score-improved"
-		response.Player1.Rpg.Result = "score-improved"
-		response.Player2.Result = "score-improved"
-		response.Player2.Rpg.Result = "score-improved"
+	case "improved":
+		response.Player1.Result = "improved"
+		response.Player1.Rpg.Result = "improved"
+		response.Player2.Result = "improved"
+		response.Player2.Rpg.Result = "improved"
 	case "score-not-improved":
 		zero := 0
 
@@ -174,10 +182,14 @@ func fakeScoreSubmit(request *fsipc.GsScoreSubmitRequest) (*ScoreSubmitResponse,
 
 	if request.Player1 == nil {
 		response.Player1 = nil
+	} else {
+		response.Player1.ChartHash = request.Player1.ChartHash
 	}
 
 	if request.Player2 == nil {
 		response.Player2 = nil
+	} else {
+		response.Player2.ChartHash = request.Player2.ChartHash
 	}
 
 	return &response, nil

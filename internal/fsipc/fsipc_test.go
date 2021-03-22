@@ -17,6 +17,22 @@ func TestFsipc(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	getRequest := func() interface{} {
+		var request interface{}
+		var ok bool
+
+		select {
+		case request, ok = <-ipc.Requests:
+			if !ok {
+				t.Fatal("requests channel closed prematurely")
+			}
+		case <-time.After(10 * time.Second):
+			t.Fatal("request not received")
+		}
+
+		return request
+	}
+
 	t.Run("PingRequest", func(t *testing.T) {
 		go func() {
 			filename := filepath.Join(dir, "requests", "bda6a8a9d7924c149697e13b93aa68bf.json")
@@ -29,11 +45,7 @@ func TestFsipc(t *testing.T) {
 			}
 		}()
 
-		request, ok := <-ipc.Requests
-		if !ok {
-			t.Fatal("requests channel closed prematurely")
-		}
-
+		request := getRequest()
 		pingRequest, ok := request.(*PingRequest)
 		if !ok {
 			t.Fatal("incorrect request type")
@@ -59,11 +71,7 @@ func TestFsipc(t *testing.T) {
 			}
 		}()
 
-		request, ok := <-ipc.Requests
-		if !ok {
-			t.Fatal("requests channel closed prematurely")
-		}
-
+		request := getRequest()
 		newSessionRequest, ok := request.(*GsNewSessionRequest)
 		if !ok {
 			t.Fatal("incorrect request type")
@@ -82,30 +90,29 @@ func TestFsipc(t *testing.T) {
 			filename := filepath.Join(dir, "requests", "8eef8847d10041e2b519ac28165e9a24.json")
 			err := os.WriteFile(filename, []byte(`{
 				"action": "groovestats/player-scores",
-				"chart": "H",
-				"api-key-player-2": "K"
+				"player2": {
+					"chartHash": "H",
+					"apiKey": "K"
+				}
 			}`), 0700)
 			if err != nil {
 				t.Fatal(err)
 			}
 		}()
 
-		request, ok := <-ipc.Requests
-		if !ok {
-			t.Fatal("requests channel closed prematurely")
-		}
-
+		request := getRequest()
 		playerScoresRequest, ok := request.(*GsPlayerScoresRequest)
 		if !ok {
 			t.Fatal("incorrect request type")
 		}
 
-		key := "K"
 		expected := GsPlayerScoresRequest{
-			Id:            "8eef8847d10041e2b519ac28165e9a24",
-			Chart:         "H",
-			ApiKeyPlayer1: nil,
-			ApiKeyPlayer2: &key,
+			Id:      "8eef8847d10041e2b519ac28165e9a24",
+			Player1: nil,
+			Player2: &gsPlayerData{
+				ChartHash: "H",
+				ApiKey:    "K",
+			},
 		}
 		if !reflect.DeepEqual(*playerScoresRequest, expected) {
 			t.Fatal("unexpected request")
@@ -117,30 +124,29 @@ func TestFsipc(t *testing.T) {
 			filename := filepath.Join(dir, "requests", "68b50a36752141d58700b4d252dfee15.json")
 			err := os.WriteFile(filename, []byte(`{
 				"action": "groovestats/player-leaderboards",
-				"chart": "H",
-				"api-key-player-1": "K"
+				"player1": {
+					"chartHash": "H",
+					"apiKey": "K"
+				}
 			}`), 0700)
 			if err != nil {
 				t.Fatal(err)
 			}
 		}()
 
-		request, ok := <-ipc.Requests
-		if !ok {
-			t.Fatal("requests channel closed prematurely")
-		}
-
+		request := getRequest()
 		playerLeaderboardsRequest, ok := request.(*GsPlayerLeaderboardsRequest)
 		if !ok {
 			t.Fatal("incorrect request type")
 		}
 
-		key := "K"
 		expected := GsPlayerLeaderboardsRequest{
-			Id:            "68b50a36752141d58700b4d252dfee15",
-			Chart:         "H",
-			ApiKeyPlayer1: &key,
-			ApiKeyPlayer2: nil,
+			Id: "68b50a36752141d58700b4d252dfee15",
+			Player1: &gsPlayerData{
+				ChartHash: "H",
+				ApiKey:    "K",
+			},
+			Player2: nil,
 		}
 		if !reflect.DeepEqual(*playerLeaderboardsRequest, expected) {
 			t.Fatal("unexpected request")
@@ -152,17 +158,18 @@ func TestFsipc(t *testing.T) {
 			filename := filepath.Join(dir, "requests", "25a1506cdeff4d01b50f8207313f5db1.json")
 			err := os.WriteFile(filename, []byte(`{
 				"action": "groovestats/score-submit",
-				"chart": "H",
 				"player1": {
-					"api-key": "K",
-					"profile-name": "N",
+					"apiKey": "K",
+					"profileName": "N",
+					"chartHash": "H",
 					"score": 10000,
 					"comment": "C675",
 					"rate": 100
 				},
 				"player2": {
-					"api-key": "K",
-					"profile-name": "N",
+					"apiKey": "K",
+					"profileName": "N",
+					"chartHash": "H",
 					"score": 9900,
 					"comment": "C700",
 					"rate": 150
@@ -173,22 +180,18 @@ func TestFsipc(t *testing.T) {
 			}
 		}()
 
-		request, ok := <-ipc.Requests
-		if !ok {
-			t.Fatal("requests channel closed prematurely")
-		}
-
+		request := getRequest()
 		scoreSubmitRequest, ok := request.(*GsScoreSubmitRequest)
 		if !ok {
 			t.Fatal("incorrect request type")
 		}
 
 		expected := GsScoreSubmitRequest{
-			Id:    "25a1506cdeff4d01b50f8207313f5db1",
-			Chart: "H",
+			Id: "25a1506cdeff4d01b50f8207313f5db1",
 			Player1: &gsScoreSubmitPlayerData{
 				ApiKey:      "K",
 				ProfileName: "N",
+				ChartHash:   "H",
 				Score:       10000,
 				Comment:     "C675",
 				Rate:        100,
@@ -196,6 +199,7 @@ func TestFsipc(t *testing.T) {
 			Player2: &gsScoreSubmitPlayerData{
 				ApiKey:      "K",
 				ProfileName: "N",
+				ChartHash:   "H",
 				Score:       9900,
 				Comment:     "C700",
 				Rate:        150,
@@ -240,11 +244,7 @@ func TestFsipc(t *testing.T) {
 			}
 		}()
 
-		request, ok := <-ipc.Requests
-		if !ok {
-			t.Fatal("requests channel closed prematurely")
-		}
-
+		request := getRequest()
 		pingRequest, ok := request.(*PingRequest)
 		if !ok {
 			t.Fatal("incorrect request type")

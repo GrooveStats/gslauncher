@@ -76,17 +76,22 @@ func (client *Client) PlayerScores(request *fsipc.GsPlayerScoresRequest) (*Playe
 	}
 
 	params := url.Values{}
-	params.Add("chart", request.Chart)
+	if request.Player1 != nil {
+		params.Add("chartHashP1", request.Player1.ChartHash)
+	}
+	if request.Player2 != nil {
+		params.Add("chartHashP2", request.Player2.ChartHash)
+	}
 
 	req, err := client.newGetRequest("/api/player-scores.php", &params)
 	if err != nil {
 		return nil, err
 	}
-	if request.ApiKeyPlayer1 != nil {
-		req.Header.Add("x-api-key-player-1", *request.ApiKeyPlayer1)
+	if request.Player1 != nil {
+		req.Header.Add("x-api-key-player-1", request.Player1.ApiKey)
 	}
-	if request.ApiKeyPlayer2 != nil {
-		req.Header.Add("x-api-key-player-2", *request.ApiKeyPlayer2)
+	if request.Player2 != nil {
+		req.Header.Add("x-api-key-player-2", request.Player2.ApiKey)
 	}
 
 	var response PlayerScoresResponse
@@ -108,7 +113,12 @@ func (client *Client) PlayerLeaderboards(request *fsipc.GsPlayerLeaderboardsRequ
 	}
 
 	params := url.Values{}
-	params.Add("chart", request.Chart)
+	if request.Player1 != nil {
+		params.Add("chartHashP1", request.Player1.ChartHash)
+	}
+	if request.Player2 != nil {
+		params.Add("chartHashP2", request.Player2.ChartHash)
+	}
 	if request.MaxLeaderboardResults != nil {
 		params.Add("maxLeaderboardResults", strconv.Itoa(*request.MaxLeaderboardResults))
 	}
@@ -117,11 +127,11 @@ func (client *Client) PlayerLeaderboards(request *fsipc.GsPlayerLeaderboardsRequ
 	if err != nil {
 		return nil, err
 	}
-	if request.ApiKeyPlayer1 != nil {
-		req.Header.Add("x-api-key-player-1", *request.ApiKeyPlayer1)
+	if request.Player1 != nil {
+		req.Header.Add("x-api-key-player-1", request.Player1.ApiKey)
 	}
-	if request.ApiKeyPlayer2 != nil {
-		req.Header.Add("x-api-key-player-2", *request.ApiKeyPlayer2)
+	if request.Player2 != nil {
+		req.Header.Add("x-api-key-player-2", request.Player2.ApiKey)
 	}
 
 	var response PlayerLeaderboardsResponse
@@ -139,7 +149,12 @@ func (client *Client) ScoreSubmit(request *fsipc.GsScoreSubmitRequest) (*ScoreSu
 	}
 
 	params := url.Values{}
-	params.Add("chart", request.Chart)
+	if request.Player1 != nil {
+		params.Add("chartHashP1", request.Player1.ChartHash)
+	}
+	if request.Player2 != nil {
+		params.Add("chartHashP2", request.Player2.ChartHash)
+	}
 	if request.MaxLeaderboardResults != nil {
 		params.Add("maxLeaderboardResults", strconv.Itoa(*request.MaxLeaderboardResults))
 	}
