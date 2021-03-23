@@ -2,10 +2,12 @@ package gui
 
 import (
 	"os/exec"
+	"strconv"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/data/validation"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
@@ -134,6 +136,16 @@ func (app *App) showSettingsDialog() {
 		})
 		fakeGsRpgCheck.SetChecked(data.FakeGsRpg)
 
+		fakeGsNetDelayEntry := widget.NewEntry()
+		fakeGsNetDelayEntry.Validator = validation.NewRegexp(`^\d+$`, "Must contain a number")
+		fakeGsNetDelayEntry.Text = strconv.Itoa(data.FakeGsNetDelay)
+		fakeGsNetDelayEntry.OnChanged = func(s string) {
+			n, err := strconv.Atoi(s)
+			if err == nil {
+				data.FakeGsNetDelay = n
+			}
+		}
+
 		fakeGsCheck := widget.NewCheck("", func(checked bool) {
 			data.FakeGs = checked
 
@@ -142,11 +154,13 @@ func (app *App) showSettingsDialog() {
 				fakeGsDdosCheck.Enable()
 				fakeGsSubmitResultSelect.Enable()
 				fakeGsRpgCheck.Enable()
+				fakeGsNetDelayEntry.Enable()
 			} else {
 				fakeGsNetworkErrorCheck.Disable()
 				fakeGsDdosCheck.Disable()
 				fakeGsSubmitResultSelect.Disable()
 				fakeGsRpgCheck.Disable()
+				fakeGsNetDelayEntry.Disable()
 			}
 		})
 		fakeGsCheck.SetChecked(data.FakeGs)
@@ -156,6 +170,7 @@ func (app *App) showSettingsDialog() {
 			fakeGsDdosCheck.Disable()
 			fakeGsSubmitResultSelect.Disable()
 			fakeGsRpgCheck.Disable()
+			fakeGsNetDelayEntry.Disable()
 		}
 
 		items = append(
@@ -165,6 +180,7 @@ func (app *App) showSettingsDialog() {
 			widget.NewFormItem("[DEBUG] >> DDoS Protection", fakeGsDdosCheck),
 			widget.NewFormItem("[DEBUG] >> Score Submit Result", fakeGsSubmitResultSelect),
 			widget.NewFormItem("[DEBUG] >> RPG active", fakeGsRpgCheck),
+			widget.NewFormItem("[DEBUG] >> Network Delay (Seconds)", fakeGsNetDelayEntry),
 		)
 
 		gsUrlEntry := widget.NewEntry()

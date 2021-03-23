@@ -4,6 +4,7 @@ import (
 	"embed"
 	"encoding/json"
 	"errors"
+	"time"
 
 	"github.com/archiveflax/gslauncher/internal/fsipc"
 	"github.com/archiveflax/gslauncher/internal/settings"
@@ -13,6 +14,9 @@ import (
 var fs embed.FS
 
 func fakeNewSession() (*NewSessionResponse, error) {
+	delay := time.Duration(settings.Get().FakeGsNetDelay)
+	time.Sleep(delay * time.Second)
+
 	if settings.Get().FakeGsNetworkError {
 		return nil, errors.New("network error")
 	}
@@ -34,6 +38,9 @@ func fakeNewSession() (*NewSessionResponse, error) {
 }
 
 func fakePlayerScores(request *fsipc.GsPlayerScoresRequest) (*PlayerScoresResponse, error) {
+	delay := time.Duration(settings.Get().FakeGsNetDelay)
+	time.Sleep(delay * time.Second)
+
 	if settings.Get().FakeGsNetworkError {
 		return nil, errors.New("network error")
 	}
@@ -60,6 +67,9 @@ func fakePlayerScores(request *fsipc.GsPlayerScoresRequest) (*PlayerScoresRespon
 }
 
 func fakePlayerLeaderboards(request *fsipc.GsPlayerLeaderboardsRequest) (*PlayerLeaderboardsResponse, error) {
+	delay := time.Duration(settings.Get().FakeGsNetDelay)
+	time.Sleep(delay * time.Second)
+
 	if settings.Get().FakeGsNetworkError {
 		return nil, errors.New("network error")
 	}
@@ -100,6 +110,9 @@ func fakePlayerLeaderboards(request *fsipc.GsPlayerLeaderboardsRequest) (*Player
 }
 
 func fakeScoreSubmit(request *fsipc.GsScoreSubmitRequest) (*ScoreSubmitResponse, error) {
+	delay := time.Duration(settings.Get().FakeGsNetDelay)
+	time.Sleep(delay * time.Second)
+
 	if settings.Get().FakeGsNetworkError {
 		return nil, errors.New("network error")
 	}

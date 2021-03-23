@@ -21,6 +21,7 @@ type Settings struct {
 	FakeGsDdos         bool   `json:"-"`
 	FakeGsSubmitResult string `json:"-"`
 	FakeGsRpg          bool   `json:"-"`
+	FakeGsNetDelay     int    `json:"-"`
 	GrooveStatsUrl     string `json:"-"`
 }
 
@@ -99,6 +100,7 @@ func getDefaults() Settings {
 		FakeGsDdos:         false,
 		FakeGsSubmitResult: "score-added",
 		FakeGsRpg:          true,
+		FakeGsNetDelay:     0,
 		GrooveStatsUrl:     grooveStatsUrl,
 	}
 }
