@@ -82,7 +82,7 @@ func getDefaults() Settings {
 		}
 	}
 
-	grooveStatsUrl := "https://www.groovestats.com"
+	grooveStatsUrl := "https://api.groovestats.com"
 	if debug {
 		grooveStatsUrl = "http://localhost:9090"
 	}
