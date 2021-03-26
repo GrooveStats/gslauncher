@@ -48,7 +48,7 @@ func (client *Client) NewSession() (*NewSessionResponse, error) {
 		return response, nil
 	}
 
-	req, err := client.newGetRequest("/api/new-session.php", nil)
+	req, err := client.newGetRequest("/new-session.php", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +83,7 @@ func (client *Client) PlayerScores(request *fsipc.GsPlayerScoresRequest) (*Playe
 		params.Add("chartHashP2", request.Player2.ChartHash)
 	}
 
-	req, err := client.newGetRequest("/api/player-scores.php", &params)
+	req, err := client.newGetRequest("/player-scores.php", &params)
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +123,7 @@ func (client *Client) PlayerLeaderboards(request *fsipc.GsPlayerLeaderboardsRequ
 		params.Add("maxLeaderboardResults", strconv.Itoa(*request.MaxLeaderboardResults))
 	}
 
-	req, err := client.newGetRequest("/api/player-leaderboards.php", &params)
+	req, err := client.newGetRequest("/player-leaderboards.php", &params)
 	if err != nil {
 		return nil, err
 	}
@@ -186,7 +186,7 @@ func (client *Client) ScoreSubmit(request *fsipc.GsScoreSubmitRequest) (*ScoreSu
 		}
 	}
 
-	req, err := client.newPostRequest("/api/score-submit.php", &params, &data)
+	req, err := client.newPostRequest("/score-submit.php", &params, &data)
 	if err != nil {
 		return nil, err
 	}
