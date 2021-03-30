@@ -72,7 +72,7 @@ func processRequest(ipc *fsipc.FsIpc, gsClient *groovestats.Client, request inte
 		}
 		ipc.WriteResponse(req.Id, response)
 	case *fsipc.GsNewSessionRequest:
-		resp, err := gsClient.NewSession()
+		resp, err := gsClient.NewSession(req)
 
 		response := fsipc.NetworkResponse{
 			Success: err == nil,

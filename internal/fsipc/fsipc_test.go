@@ -64,7 +64,8 @@ func TestFsipc(t *testing.T) {
 		go func() {
 			filename := filepath.Join(dir, "requests", "b787ae38ea0c465e8d853015db940915.json")
 			err := os.WriteFile(filename, []byte(`{
-				"action": "groovestats/new-session"
+				"action": "groovestats/new-session",
+				"chartHashVersion": 3
 			}`), 0700)
 			if err != nil {
 				t.Fatal(err)
@@ -78,7 +79,8 @@ func TestFsipc(t *testing.T) {
 		}
 
 		expected := GsNewSessionRequest{
-			Id: "b787ae38ea0c465e8d853015db940915",
+			Id:               "b787ae38ea0c465e8d853015db940915",
+			ChartHashVersion: 3,
 		}
 		if !reflect.DeepEqual(*newSessionRequest, expected) {
 			t.Fatal("unexpected request")

@@ -24,7 +24,10 @@ This assumes that SM doesn't wait for responses for more than a minute.
 ### GrooveStats: New Session
 
 ```jsonc
-{"action": "groovestats/new-session"}
+{
+    "action": "groovestats/new-session",
+    "chartHashVersion": 3
+}
 ```
 
 

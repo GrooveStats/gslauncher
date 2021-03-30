@@ -12,6 +12,8 @@ type NewSessionResponse struct {
 		PlayerScores       bool `json:"playerScores"`
 		PlayerLeaderboards bool `json:"playerLeaderboards"`
 	} `json:"servicesAllowed"`
+
+	ServicesResult string `json:"servicesResult"`
 }
 
 type leaderBoardEntry struct {

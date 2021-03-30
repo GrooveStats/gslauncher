@@ -34,7 +34,7 @@ func NewClient() *Client {
 	}
 }
 
-func (client *Client) NewSession() (*NewSessionResponse, error) {
+func (client *Client) NewSession(request *fsipc.GsNewSessionRequest) (*NewSessionResponse, error) {
 	if settings.Get().FakeGs {
 		response, err := fakeNewSession()
 		if err != nil {
@@ -48,7 +48,10 @@ func (client *Client) NewSession() (*NewSessionResponse, error) {
 		return response, nil
 	}
 
-	req, err := client.newGetRequest("/new-session.php", nil)
+	params := url.Values{}
+	params.Add("chartHashVersion", strconv.Itoa(request.ChartHashVersion))
+
+	req, err := client.newGetRequest("/new-session.php", &params)
 	if err != nil {
 		return nil, err
 	}

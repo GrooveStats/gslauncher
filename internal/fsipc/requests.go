@@ -6,7 +6,8 @@ type PingRequest struct {
 }
 
 type GsNewSessionRequest struct {
-	Id string `json:"-"`
+	Id               string `json:"-"`
+	ChartHashVersion int    `json:"chartHashVersion" validate:"required"`
 }
 
 type gsPlayerData struct {
