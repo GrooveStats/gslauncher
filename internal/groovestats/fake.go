@@ -14,31 +14,35 @@ import (
 var fs embed.FS
 
 func fakeNewSession() (*NewSessionResponse, error) {
-	delay := time.Duration(settings.Get().FakeGsNetDelay)
+	delay := time.Duration(settings.Get().FakeGsNetworkDelay)
 	time.Sleep(delay * time.Second)
 
 	if settings.Get().FakeGsNetworkError {
 		return nil, errors.New("network error")
 	}
 
-	var filename string
-
-	if settings.Get().FakeGsDdos {
-		filename = "new-session-ddos.json"
-	} else {
-		filename = "new-session.json"
-	}
-
 	var response NewSessionResponse
-	err := loadFakeData(filename, &response)
+	err := loadFakeData("new-session.json", &response)
 	if err != nil {
 		return nil, err
 	}
+
+	if !settings.Get().FakeGsRpg {
+		response.ActiveEvents = nil
+	}
+
+	response.ServicesResult = settings.Get().FakeGsNewSessionResult
+	if response.ServicesResult != "OK" {
+		response.ServicesAllowed.ScoreSubmit = false
+		response.ServicesAllowed.PlayerScores = false
+		response.ServicesAllowed.PlayerLeaderboards = false
+	}
+
 	return &response, nil
 }
 
 func fakePlayerScores(request *fsipc.GsPlayerScoresRequest) (*PlayerScoresResponse, error) {
-	delay := time.Duration(settings.Get().FakeGsNetDelay)
+	delay := time.Duration(settings.Get().FakeGsNetworkDelay)
 	time.Sleep(delay * time.Second)
 
 	if settings.Get().FakeGsNetworkError {
@@ -67,7 +71,7 @@ func fakePlayerScores(request *fsipc.GsPlayerScoresRequest) (*PlayerScoresRespon
 }
 
 func fakePlayerLeaderboards(request *fsipc.GsPlayerLeaderboardsRequest) (*PlayerLeaderboardsResponse, error) {
-	delay := time.Duration(settings.Get().FakeGsNetDelay)
+	delay := time.Duration(settings.Get().FakeGsNetworkDelay)
 	time.Sleep(delay * time.Second)
 
 	if settings.Get().FakeGsNetworkError {
@@ -110,7 +114,7 @@ func fakePlayerLeaderboards(request *fsipc.GsPlayerLeaderboardsRequest) (*Player
 }
 
 func fakeScoreSubmit(request *fsipc.GsScoreSubmitRequest) (*ScoreSubmitResponse, error) {
-	delay := time.Duration(settings.Get().FakeGsNetDelay)
+	delay := time.Duration(settings.Get().FakeGsNetworkDelay)
 	time.Sleep(delay * time.Second)
 
 	if settings.Get().FakeGsNetworkError {

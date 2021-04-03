@@ -120,12 +120,23 @@ func (app *App) showSettingsDialog() {
 		})
 		fakeGsNetworkErrorCheck.SetChecked(data.FakeGsNetworkError)
 
-		fakeGsDdosCheck := widget.NewCheck("", func(checked bool) {
-			data.FakeGsDdos = checked
-		})
-		fakeGsDdosCheck.SetChecked(data.FakeGsDdos)
+		fakeGsNetDelayEntry := widget.NewEntry()
+		fakeGsNetDelayEntry.Validator = validation.NewRegexp(`^\d+$`, "Must contain a number")
+		fakeGsNetDelayEntry.Text = strconv.Itoa(data.FakeGsNetworkDelay)
+		fakeGsNetDelayEntry.OnChanged = func(s string) {
+			n, err := strconv.Atoi(s)
+			if err == nil {
+				data.FakeGsNetworkDelay = n
+			}
+		}
 
-		options := []string{"score-added", "improved", "score-not-improved", "score-not-ranked"}
+		options := []string{"OK", "UNSUPPORTED_CHART_HASH", "MAINTENANCE"}
+		fakeGsNewSessionResultSelect := widget.NewSelect(options, func(selected string) {
+			data.FakeGsNewSessionResult = selected
+		})
+		fakeGsNewSessionResultSelect.SetSelected(data.FakeGsNewSessionResult)
+
+		options = []string{"score-added", "improved", "score-not-improved", "score-not-ranked"}
 		fakeGsSubmitResultSelect := widget.NewSelect(options, func(selected string) {
 			data.FakeGsSubmitResult = selected
 		})
@@ -136,28 +147,18 @@ func (app *App) showSettingsDialog() {
 		})
 		fakeGsRpgCheck.SetChecked(data.FakeGsRpg)
 
-		fakeGsNetDelayEntry := widget.NewEntry()
-		fakeGsNetDelayEntry.Validator = validation.NewRegexp(`^\d+$`, "Must contain a number")
-		fakeGsNetDelayEntry.Text = strconv.Itoa(data.FakeGsNetDelay)
-		fakeGsNetDelayEntry.OnChanged = func(s string) {
-			n, err := strconv.Atoi(s)
-			if err == nil {
-				data.FakeGsNetDelay = n
-			}
-		}
-
 		fakeGsCheck := widget.NewCheck("", func(checked bool) {
 			data.FakeGs = checked
 
 			if checked {
 				fakeGsNetworkErrorCheck.Enable()
-				fakeGsDdosCheck.Enable()
+				fakeGsNewSessionResultSelect.Enable()
 				fakeGsSubmitResultSelect.Enable()
 				fakeGsRpgCheck.Enable()
 				fakeGsNetDelayEntry.Enable()
 			} else {
 				fakeGsNetworkErrorCheck.Disable()
-				fakeGsDdosCheck.Disable()
+				fakeGsNewSessionResultSelect.Disable()
 				fakeGsSubmitResultSelect.Disable()
 				fakeGsRpgCheck.Disable()
 				fakeGsNetDelayEntry.Disable()
@@ -167,7 +168,7 @@ func (app *App) showSettingsDialog() {
 
 		if !data.FakeGs {
 			fakeGsNetworkErrorCheck.Disable()
-			fakeGsDdosCheck.Disable()
+			fakeGsNewSessionResultSelect.Disable()
 			fakeGsSubmitResultSelect.Disable()
 			fakeGsRpgCheck.Disable()
 			fakeGsNetDelayEntry.Disable()
@@ -177,10 +178,10 @@ func (app *App) showSettingsDialog() {
 			items,
 			widget.NewFormItem("[DEBUG] Simulate GrooveStats Requests", fakeGsCheck),
 			widget.NewFormItem("[DEBUG] >> Network Error", fakeGsNetworkErrorCheck),
-			widget.NewFormItem("[DEBUG] >> DDoS Protection", fakeGsDdosCheck),
+			widget.NewFormItem("[DEBUG] >> Network Delay (Seconds)", fakeGsNetDelayEntry),
+			widget.NewFormItem("[DEBUG] >> New Session Result", fakeGsNewSessionResultSelect),
 			widget.NewFormItem("[DEBUG] >> Score Submit Result", fakeGsSubmitResultSelect),
 			widget.NewFormItem("[DEBUG] >> RPG active", fakeGsRpgCheck),
-			widget.NewFormItem("[DEBUG] >> Network Delay (Seconds)", fakeGsNetDelayEntry),
 		)
 
 		gsUrlEntry := widget.NewEntry()
