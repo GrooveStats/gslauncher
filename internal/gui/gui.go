@@ -18,6 +18,7 @@ import (
 type App struct {
 	app     fyne.App
 	mainWin fyne.Window
+	smCmd   *exec.Cmd
 }
 
 func NewApp() *App {
@@ -36,22 +37,55 @@ func NewApp() *App {
 		})),
 	))
 
+	launchButton := widget.NewButton("Launch StepMania", nil)
+	launchButton.OnTapped = func() {
+		cmd := exec.Command(settings.Get().SmExePath)
+
+		err := cmd.Start()
+		if err != nil {
+			dialog.ShowError(err, app.mainWin)
+			return
+		}
+
+		app.smCmd = cmd
+		launchButton.Disable()
+
+		go func() {
+			cmd.Wait()
+			app.smCmd = nil
+			launchButton.Enable()
+		}()
+	}
+	launchButton.Importance = widget.HighImportance
+
 	app.mainWin.SetContent(container.NewVBox(
-		widget.NewButton("Launch StepMania", func() {
-			cmd := exec.Command(settings.Get().SmExePath)
-
-			err := cmd.Start()
-			if err != nil {
-				dialog.ShowError(err, app.mainWin)
-				return
-			}
-
-			go cmd.Wait()
-		}),
+		launchButton,
 	))
 
 	app.mainWin.CenterOnScreen()
 	app.mainWin.Show()
+
+	app.mainWin.SetCloseIntercept(func() {
+		cmd := app.smCmd
+		if cmd != nil {
+			confirmDialog := dialog.NewConfirm(
+				"Stop StepMania?",
+				"Closing the launcher will stop StepMania as well.",
+				func(confirmed bool) {
+					if confirmed {
+						cmd.Process.Kill()
+						app.mainWin.Close()
+					}
+				},
+				app.mainWin,
+			)
+			confirmDialog.SetConfirmText("Stop StepMania")
+			confirmDialog.SetDismissText("Keep Running")
+			confirmDialog.Show()
+		} else {
+			app.mainWin.Close()
+		}
+	})
 
 	return app
 }
