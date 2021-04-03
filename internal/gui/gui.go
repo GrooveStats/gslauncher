@@ -99,7 +99,7 @@ func (app *App) showSettingsDialog() {
 
 	smExeButton := widget.NewButton("Select", nil)
 	smExeButton.OnTapped = func() {
-		dialog.ShowFileOpen(func(file fyne.URIReadCloser, err error) {
+		fileDialog := dialog.NewFileOpen(func(file fyne.URIReadCloser, err error) {
 			if err != nil || file == nil {
 				return
 			}
@@ -108,12 +108,14 @@ func (app *App) showSettingsDialog() {
 			data.SmExePath = path
 			smExeButton.SetText(path)
 		}, app.mainWin)
+		fileDialog.Resize(fyne.NewSize(700, 500))
+		fileDialog.Show()
 	}
 	smExeButton.SetText(data.SmExePath)
 
 	smDirButton := widget.NewButton("Select", nil)
 	smDirButton.OnTapped = func() {
-		dialog.ShowFolderOpen(func(dir fyne.ListableURI, err error) {
+		fileDialog := dialog.NewFolderOpen(func(dir fyne.ListableURI, err error) {
 			if err != nil || dir == nil {
 				return
 			}
@@ -122,6 +124,8 @@ func (app *App) showSettingsDialog() {
 			data.SmDataDir = path
 			smDirButton.SetText(path)
 		}, app.mainWin)
+		fileDialog.Resize(fyne.NewSize(700, 500))
+		fileDialog.Show()
 	}
 	smDirButton.SetText(data.SmDataDir)
 
