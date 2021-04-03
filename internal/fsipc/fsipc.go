@@ -91,7 +91,7 @@ func (fsipc *FsIpc) loop() {
 				return
 			}
 
-			if event.Op&fsnotify.Write == fsnotify.Write {
+			if event.Op&fsnotify.Create == fsnotify.Create {
 				fsipc.handleFile(event.Name)
 			}
 		case err, ok := <-fsipc.watcher.Errors:
@@ -134,12 +134,6 @@ func (fsipc *FsIpc) handleFile(filename string) {
 	data, err := os.ReadFile(filename)
 	if err != nil {
 		log.Printf("failed to read %s: %v", basename, err)
-		return
-	}
-
-	if !json.Valid(data) {
-		// If we get here the request file is probaly not fully written
-		// yet. Let's try again on the next write event.
 		return
 	}
 
