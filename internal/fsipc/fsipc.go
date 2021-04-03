@@ -107,6 +107,10 @@ func (fsipc *FsIpc) loop() {
 }
 
 func (fsipc *FsIpc) handleFile(filename string) {
+	if !strings.HasSuffix(filename, ".json") {
+		return
+	}
+
 	basename := filepath.Base(filename)
 	id := strings.TrimSuffix(basename, ".json")
 
@@ -116,7 +120,7 @@ func (fsipc *FsIpc) handleFile(filename string) {
 		return
 	}
 
-	if !info.Mode().IsRegular() || !strings.HasSuffix(filename, ".json") {
+	if !info.Mode().IsRegular() {
 		return
 	}
 
