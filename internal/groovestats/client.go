@@ -147,6 +147,10 @@ func (client *Client) PlayerLeaderboards(request *fsipc.GsPlayerLeaderboardsRequ
 }
 
 func (client *Client) ScoreSubmit(request *fsipc.GsScoreSubmitRequest) (*ScoreSubmitResponse, error) {
+	if !client.allowScoreSubmit {
+		return nil, errors.New("not allowed to submit scores")
+	}
+
 	if settings.Get().FakeGs {
 		return fakeScoreSubmit(request)
 	}
