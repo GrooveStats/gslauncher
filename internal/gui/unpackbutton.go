@@ -7,8 +7,8 @@ import (
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 
-	"github.com/archiveflax/gslauncher/internal/settings"
-	"github.com/archiveflax/gslauncher/internal/unlocks"
+	"github.com/GrooveStats/gslauncher/internal/settings"
+	"github.com/GrooveStats/gslauncher/internal/unlocks"
 )
 
 type unpackButton struct {

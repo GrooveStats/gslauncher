@@ -9,7 +9,7 @@ Building the binary is straight-forward. Just run go build to create the
 executable (this assumes you already have git and golang installed).
 
 ```sh
-git clone git@github.com:archiveflax/gslauncher.git
+git clone git@github.com:GrooveStats/gslauncher.git
 cd gslauncher
 go build ./cmd/gslauncher/
 ```

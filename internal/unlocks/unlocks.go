@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/archiveflax/gslauncher/internal/settings"
+	"github.com/GrooveStats/gslauncher/internal/settings"
 )
 
 type DownloadStatus int

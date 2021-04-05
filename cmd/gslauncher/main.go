@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 
-	"github.com/archiveflax/gslauncher/internal/gui"
-	"github.com/archiveflax/gslauncher/internal/settings"
-	"github.com/archiveflax/gslauncher/internal/unlocks"
+	"github.com/GrooveStats/gslauncher/internal/gui"
+	"github.com/GrooveStats/gslauncher/internal/settings"
+	"github.com/GrooveStats/gslauncher/internal/unlocks"
 )
 
 func main() {

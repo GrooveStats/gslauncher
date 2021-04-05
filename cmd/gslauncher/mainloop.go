@@ -5,10 +5,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/archiveflax/gslauncher/internal/fsipc"
-	"github.com/archiveflax/gslauncher/internal/groovestats"
-	"github.com/archiveflax/gslauncher/internal/settings"
-	"github.com/archiveflax/gslauncher/internal/unlocks"
+	"github.com/GrooveStats/gslauncher/internal/fsipc"
+	"github.com/GrooveStats/gslauncher/internal/groovestats"
+	"github.com/GrooveStats/gslauncher/internal/settings"
+	"github.com/GrooveStats/gslauncher/internal/unlocks"
 )
 
 func mainLoop(unlockManager *unlocks.Manager) {

@@ -10,7 +10,7 @@ import (
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 
-	"github.com/archiveflax/gslauncher/internal/unlocks"
+	"github.com/GrooveStats/gslauncher/internal/unlocks"
 )
 
 type unlockInfo struct {

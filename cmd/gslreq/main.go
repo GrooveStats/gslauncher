@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/archiveflax/gslauncher/internal/settings"
+	"github.com/GrooveStats/gslauncher/internal/settings"
 )
 
 func main() {

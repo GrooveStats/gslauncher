@@ -1,4 +1,4 @@
-module github.com/archiveflax/gslauncher
+module github.com/GrooveStats/gslauncher
 
 go 1.16
 

@@ -6,8 +6,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/archiveflax/gslauncher/internal/fsipc"
-	"github.com/archiveflax/gslauncher/internal/settings"
+	"github.com/GrooveStats/gslauncher/internal/fsipc"
+	"github.com/GrooveStats/gslauncher/internal/settings"
 )
 
 //go:embed fake/*.json
