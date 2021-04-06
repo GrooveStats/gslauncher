@@ -31,7 +31,12 @@ func NewApp(unlockManager *unlocks.Manager) *App {
 
 	app.app.Settings().SetTheme(theme.DarkTheme())
 
-	app.mainWin = app.app.NewWindow("GrooveStats Launcher")
+	appName := "GrooveStats Launcher"
+	if settings.Get().Debug {
+		appName += " (debug)"
+	}
+
+	app.mainWin = app.app.NewWindow(appName)
 	app.mainWin.Resize(fyne.NewSize(800, 600))
 
 	app.mainWin.SetMainMenu(fyne.NewMainMenu(
