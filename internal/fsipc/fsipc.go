@@ -14,8 +14,10 @@ import (
 )
 
 type FsIpc struct {
-	Requests chan interface{}
-	RootDir  string
+	Requests                     chan interface{}
+	GsPlayerScoresRequests       chan *GsPlayerScoresRequest
+	GsPlayerLeaderboardsRequests chan *GsPlayerLeaderboardsRequest
+	RootDir                      string
 
 	requestDir  string
 	responseDir string
@@ -55,12 +57,14 @@ func New(rootDir string) (*FsIpc, error) {
 	}
 
 	fsipc := FsIpc{
-		Requests:    make(chan interface{}),
-		RootDir:     rootDir,
-		requestDir:  requestDir,
-		responseDir: responseDir,
-		watcher:     watcher,
-		shutdown:    make(chan bool),
+		Requests:                     make(chan interface{}),
+		GsPlayerScoresRequests:       make(chan *GsPlayerScoresRequest, 1),
+		GsPlayerLeaderboardsRequests: make(chan *GsPlayerLeaderboardsRequest, 1),
+		RootDir:                      rootDir,
+		requestDir:                   requestDir,
+		responseDir:                  responseDir,
+		watcher:                      watcher,
+		shutdown:                     make(chan bool),
 	}
 
 	err = fsipc.watcher.Add(fsipc.requestDir)
@@ -78,6 +82,8 @@ func (fsipc *FsIpc) Close() error {
 	fsipc.shutdown <- true
 
 	close(fsipc.Requests)
+	close(fsipc.GsPlayerScoresRequests)
+	close(fsipc.GsPlayerLeaderboardsRequests)
 	close(fsipc.shutdown)
 
 	return fsipc.watcher.Close()
@@ -185,7 +191,28 @@ func (fsipc *FsIpc) handleFile(filename string) {
 		return
 	}
 
-	fsipc.Requests <- request
+	switch req := request.(type) {
+	case *GsPlayerScoresRequest:
+		// empty the buffer
+		select {
+		case <-fsipc.GsPlayerScoresRequests:
+			// do nothing
+		default:
+			// do nothing
+		}
+		fsipc.GsPlayerScoresRequests <- req
+	case *GsPlayerLeaderboardsRequest:
+		// empty the buffer
+		select {
+		case <-fsipc.GsPlayerLeaderboardsRequests:
+			// do nothing
+		default:
+			// do nothing
+		}
+		fsipc.GsPlayerLeaderboardsRequests <- req
+	default:
+		fsipc.Requests <- request
+	}
 
 	err = os.Remove(filename)
 	if err != nil {

@@ -50,8 +50,11 @@ func mainLoop(unlockManager *unlocks.Manager) {
 	loop:
 		for {
 			select {
+			case request := <-ipc.GsPlayerScoresRequests:
+				processRequest(ipc, gsClient, request, unlockManager)
+			case request := <-ipc.GsPlayerLeaderboardsRequests:
+				processRequest(ipc, gsClient, request, unlockManager)
 			case request := <-ipc.Requests:
-				log.Printf("REQ: %#v", request)
 				processRequest(ipc, gsClient, request, unlockManager)
 			case <-reload:
 				break loop
@@ -63,6 +66,8 @@ func mainLoop(unlockManager *unlocks.Manager) {
 }
 
 func processRequest(ipc *fsipc.FsIpc, gsClient *groovestats.Client, request interface{}, unlockManager *unlocks.Manager) {
+	log.Printf("REQ: %#v", request)
+
 	switch req := request.(type) {
 	case *fsipc.PingRequest:
 		response := fsipc.PingResponse{

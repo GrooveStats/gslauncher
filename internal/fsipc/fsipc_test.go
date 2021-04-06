@@ -28,11 +28,19 @@ func TestFsipc(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	getRequest := func() interface{} {
+	getRequest := func(t *testing.T) interface{} {
 		var request interface{}
 		var ok bool
 
 		select {
+		case request, ok = <-ipc.GsPlayerScoresRequests:
+			if !ok {
+				t.Fatal("player-scores requests channel closed prematurely")
+			}
+		case request, ok = <-ipc.GsPlayerLeaderboardsRequests:
+			if !ok {
+				t.Fatal("player-leaderboards requests channel closed prematurely")
+			}
 		case request, ok = <-ipc.Requests:
 			if !ok {
 				t.Fatal("requests channel closed prematurely")
@@ -56,7 +64,7 @@ func TestFsipc(t *testing.T) {
 			}
 		}()
 
-		request := getRequest()
+		request := getRequest(t)
 		pingRequest, ok := request.(*PingRequest)
 		if !ok {
 			t.Fatal("incorrect request type")
@@ -83,7 +91,7 @@ func TestFsipc(t *testing.T) {
 			}
 		}()
 
-		request := getRequest()
+		request := getRequest(t)
 		newSessionRequest, ok := request.(*GsNewSessionRequest)
 		if !ok {
 			t.Fatal("incorrect request type")
@@ -113,7 +121,7 @@ func TestFsipc(t *testing.T) {
 			}
 		}()
 
-		request := getRequest()
+		request := getRequest(t)
 		playerScoresRequest, ok := request.(*GsPlayerScoresRequest)
 		if !ok {
 			t.Fatal("incorrect request type")
@@ -132,6 +140,58 @@ func TestFsipc(t *testing.T) {
 		}
 	})
 
+	t.Run("GsPlayerScoresRequestDuplicate", func(t *testing.T) {
+		filename := filepath.Join(dir, "requests", "26ff392e4b894617b59c39beef4adfae.json")
+		err := writeRequest(filename, []byte(`{
+			"action": "groovestats/player-scores",
+			"player2": {
+				"chartHash": "H",
+				"apiKey": "K"
+			}
+		}`))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		time.Sleep(100 * time.Millisecond)
+
+		filename = filepath.Join(dir, "requests", "3fd78791f6a04689ad7dcb6887b418cc.json")
+		err = writeRequest(filename, []byte(`{
+			"action": "groovestats/player-scores",
+			"player2": {
+				"chartHash": "H",
+				"apiKey": "K"
+			}
+		}`))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		time.Sleep(100 * time.Millisecond)
+
+		request := getRequest(t)
+		playerScoresRequest, ok := request.(*GsPlayerScoresRequest)
+		if !ok {
+			t.Fatal("incorrect request type")
+		}
+
+		expected := GsPlayerScoresRequest{
+			Id:      "3fd78791f6a04689ad7dcb6887b418cc",
+			Player1: nil,
+			Player2: &gsPlayerData{
+				ChartHash: "H",
+				ApiKey:    "K",
+			},
+		}
+		if !reflect.DeepEqual(*playerScoresRequest, expected) {
+			t.Fatal("unexpected request")
+		}
+
+		if len(ipc.GsPlayerScoresRequests) > 0 {
+			t.Fatal("old request not discarded")
+		}
+	})
+
 	t.Run("GsPlayerLeaderboardsRequest", func(t *testing.T) {
 		go func() {
 			filename := filepath.Join(dir, "requests", "68b50a36752141d58700b4d252dfee15.json")
@@ -147,7 +207,7 @@ func TestFsipc(t *testing.T) {
 			}
 		}()
 
-		request := getRequest()
+		request := getRequest(t)
 		playerLeaderboardsRequest, ok := request.(*GsPlayerLeaderboardsRequest)
 		if !ok {
 			t.Fatal("incorrect request type")
@@ -193,7 +253,7 @@ func TestFsipc(t *testing.T) {
 			}
 		}()
 
-		request := getRequest()
+		request := getRequest(t)
 		scoreSubmitRequest, ok := request.(*GsScoreSubmitRequest)
 		if !ok {
 			t.Fatal("incorrect request type")
