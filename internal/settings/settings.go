@@ -96,7 +96,7 @@ func getDefaults() Settings {
 		UserUnlocks:  false,
 
 		Debug:                  debug,
-		FakeGs:                 false,
+		FakeGs:                 debug,
 		FakeGsNetworkError:     false,
 		FakeGsNetworkDelay:     0,
 		FakeGsNewSessionResult: "OK",
