@@ -13,6 +13,13 @@ import (
 //go:embed fake/*.json
 var fs embed.FS
 
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
 func fakeNewSession() (*NewSessionResponse, error) {
 	delay := time.Duration(settings.Get().FakeGsNetworkDelay)
 	time.Sleep(delay * time.Second)
@@ -86,11 +93,13 @@ func fakePlayerLeaderboards(request *fsipc.GsPlayerLeaderboardsRequest) (*Player
 
 	if request.MaxLeaderboardResults != nil {
 		n := *request.MaxLeaderboardResults
+		p1 := response.Player1
+		p2 := response.Player2
 
-		response.Player1.GsLeaderboard = response.Player1.GsLeaderboard[:n]
-		response.Player1.Rpg.RpgLeaderboard = response.Player1.Rpg.RpgLeaderboard[:n]
-		response.Player2.GsLeaderboard = response.Player2.GsLeaderboard[:n]
-		response.Player2.Rpg.RpgLeaderboard = response.Player2.Rpg.RpgLeaderboard[:n]
+		p1.GsLeaderboard = p1.GsLeaderboard[:min(n, len(p1.GsLeaderboard))]
+		p1.Rpg.RpgLeaderboard = p1.Rpg.RpgLeaderboard[:min(n, len(p1.Rpg.RpgLeaderboard))]
+		p2.GsLeaderboard = p2.GsLeaderboard[:min(n, len(p2.GsLeaderboard))]
+		p2.Rpg.RpgLeaderboard = p2.Rpg.RpgLeaderboard[:min(n, len(p2.Rpg.RpgLeaderboard))]
 	}
 
 	if !settings.Get().FakeGsRpg {
@@ -129,16 +138,18 @@ func fakeScoreSubmit(request *fsipc.GsScoreSubmitRequest) (*ScoreSubmitResponse,
 
 	if request.MaxLeaderboardResults != nil {
 		n := *request.MaxLeaderboardResults
+		p1 := response.Player1
+		p2 := response.Player2
 
-		p1GsLeaderboard := (*response.Player1.GsLeaderboard)[:n]
-		p1RpgLeaderboard := (*response.Player1.Rpg.RpgLeaderboard)[:n]
-		p2GsLeaderboard := (*response.Player2.GsLeaderboard)[:n]
-		p2RpgLeaderboard := (*response.Player2.Rpg.RpgLeaderboard)[:n]
+		p1GsLeaderboard := (*p1.GsLeaderboard)[:min(n, len(*p1.GsLeaderboard))]
+		p1RpgLeaderboard := (*p1.Rpg.RpgLeaderboard)[:min(n, len(*p1.Rpg.RpgLeaderboard))]
+		p2GsLeaderboard := (*p2.GsLeaderboard)[:min(n, len(*p2.GsLeaderboard))]
+		p2RpgLeaderboard := (*p2.Rpg.RpgLeaderboard)[:min(n, len(*p2.Rpg.RpgLeaderboard))]
 
-		response.Player1.GsLeaderboard = &p1GsLeaderboard
-		response.Player1.Rpg.RpgLeaderboard = &p1RpgLeaderboard
-		response.Player2.GsLeaderboard = &p2GsLeaderboard
-		response.Player2.Rpg.RpgLeaderboard = &p2RpgLeaderboard
+		p1.GsLeaderboard = &p1GsLeaderboard
+		p1.Rpg.RpgLeaderboard = &p1RpgLeaderboard
+		p2.GsLeaderboard = &p2GsLeaderboard
+		p2.Rpg.RpgLeaderboard = &p2RpgLeaderboard
 	}
 
 	switch settings.Get().FakeGsSubmitResult {
