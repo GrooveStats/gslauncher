@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/GrooveStats/gslauncher/internal/fsipc"
 	"github.com/GrooveStats/gslauncher/internal/groovestats"
@@ -47,21 +48,23 @@ func mainLoop(unlockManager *unlocks.Manager) {
 			continue
 		}
 
-	loop:
-		for {
-			select {
-			case request := <-ipc.GsPlayerScoresRequests:
+		var wg sync.WaitGroup
+
+		loop := func(ch chan interface{}) {
+			wg.Add(1)
+			for request := range ch {
 				processRequest(ipc, gsClient, request, unlockManager)
-			case request := <-ipc.GsPlayerLeaderboardsRequests:
-				processRequest(ipc, gsClient, request, unlockManager)
-			case request := <-ipc.Requests:
-				processRequest(ipc, gsClient, request, unlockManager)
-			case <-reload:
-				break loop
 			}
+			wg.Done()
 		}
 
+		go loop(ipc.GsPlayerScoresRequests)
+		go loop(ipc.GsPlayerLeaderboardsRequests)
+		go loop(ipc.Requests)
+
+		<-reload
 		ipc.Close()
+		wg.Wait()
 	}
 }
 

@@ -15,8 +15,8 @@ import (
 
 type FsIpc struct {
 	Requests                     chan interface{}
-	GsPlayerScoresRequests       chan *GsPlayerScoresRequest
-	GsPlayerLeaderboardsRequests chan *GsPlayerLeaderboardsRequest
+	GsPlayerScoresRequests       chan interface{}
+	GsPlayerLeaderboardsRequests chan interface{}
 	RootDir                      string
 
 	requestDir  string
@@ -57,9 +57,9 @@ func New(rootDir string) (*FsIpc, error) {
 	}
 
 	fsipc := FsIpc{
-		Requests:                     make(chan interface{}),
-		GsPlayerScoresRequests:       make(chan *GsPlayerScoresRequest, 1),
-		GsPlayerLeaderboardsRequests: make(chan *GsPlayerLeaderboardsRequest, 1),
+		Requests:                     make(chan interface{}, 10),
+		GsPlayerScoresRequests:       make(chan interface{}, 1),
+		GsPlayerLeaderboardsRequests: make(chan interface{}, 1),
 		RootDir:                      rootDir,
 		requestDir:                   requestDir,
 		responseDir:                  responseDir,
