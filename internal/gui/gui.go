@@ -1,7 +1,6 @@
 package gui
 
 import (
-	"os/exec"
 	"strconv"
 
 	"fyne.io/fyne/v2"
@@ -13,6 +12,7 @@ import (
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 
+	"github.com/GrooveStats/gslauncher/internal/session"
 	"github.com/GrooveStats/gslauncher/internal/settings"
 	"github.com/GrooveStats/gslauncher/internal/unlocks"
 )
@@ -21,7 +21,7 @@ type App struct {
 	app          fyne.App
 	mainWin      fyne.Window
 	unlockWidget *UnlockWidget
-	smCmd        *exec.Cmd
+	session      *session.Session
 }
 
 func NewApp(unlockManager *unlocks.Manager) *App {
@@ -47,20 +47,18 @@ func NewApp(unlockManager *unlocks.Manager) *App {
 
 	launchButton := widget.NewButton("Launch StepMania", nil)
 	launchButton.OnTapped = func() {
-		cmd := exec.Command(settings.Get().SmExePath)
-
-		err := cmd.Start()
+		session, err := session.Launch(unlockManager)
 		if err != nil {
 			dialog.ShowError(err, app.mainWin)
 			return
 		}
 
-		app.smCmd = cmd
+		app.session = session
 		launchButton.Disable()
 
 		go func() {
-			cmd.Wait()
-			app.smCmd = nil
+			session.Wait()
+			app.session = nil
 			launchButton.Enable()
 		}()
 	}
@@ -78,14 +76,15 @@ func NewApp(unlockManager *unlocks.Manager) *App {
 	app.mainWin.Show()
 
 	app.mainWin.SetCloseIntercept(func() {
-		cmd := app.smCmd
-		if cmd != nil {
+		session := app.session
+
+		if session != nil {
 			confirmDialog := dialog.NewConfirm(
 				"Stop StepMania?",
 				"Closing the launcher will stop StepMania as well.",
 				func(confirmed bool) {
 					if confirmed {
-						cmd.Process.Kill()
+						app.session.Kill()
 						app.mainWin.Close()
 					}
 				},

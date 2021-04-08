@@ -26,7 +26,6 @@ type Settings struct {
 }
 
 var settings Settings = getDefaults()
-var updateCallback func(Settings, Settings)
 
 func Get() Settings {
 	return settings
@@ -49,16 +48,7 @@ func Load() error {
 }
 
 func Update(newSettings Settings) {
-	oldSettings := settings
 	settings = newSettings
-
-	if updateCallback != nil {
-		updateCallback(oldSettings, newSettings)
-	}
-}
-
-func SetUpdateCallback(callback func(Settings, Settings)) {
-	updateCallback = callback
 }
 
 func getDefaults() Settings {

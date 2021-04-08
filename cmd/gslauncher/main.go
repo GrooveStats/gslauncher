@@ -17,8 +17,6 @@ func main() {
 		return
 	}
 
-	go mainLoop(unlockManager)
-
 	app := gui.NewApp(unlockManager)
 	app.Run()
 }
