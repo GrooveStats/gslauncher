@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/fsnotify/fsnotify"
@@ -23,6 +24,7 @@ type FsIpc struct {
 	responseDir string
 	watcher     *fsnotify.Watcher
 	shutdown    chan bool
+	wg          sync.WaitGroup
 }
 
 func New(rootDir string) (*FsIpc, error) {
@@ -57,7 +59,7 @@ func New(rootDir string) (*FsIpc, error) {
 	}
 
 	fsipc := FsIpc{
-		Requests:                     make(chan interface{}, 10),
+		Requests:                     make(chan interface{}, 5),
 		GsPlayerScoresRequests:       make(chan interface{}, 1),
 		GsPlayerLeaderboardsRequests: make(chan interface{}, 1),
 		RootDir:                      rootDir,
@@ -79,17 +81,30 @@ func New(rootDir string) (*FsIpc, error) {
 }
 
 func (fsipc *FsIpc) Close() error {
-	fsipc.shutdown <- true
+	close(fsipc.shutdown)
+	fsipc.wg.Wait()
 
 	close(fsipc.Requests)
 	close(fsipc.GsPlayerScoresRequests)
 	close(fsipc.GsPlayerLeaderboardsRequests)
-	close(fsipc.shutdown)
+
+	err := os.RemoveAll(fsipc.requestDir)
+	if err != nil {
+		return err
+	}
+
+	err = os.RemoveAll(fsipc.responseDir)
+	if err != nil {
+		return err
+	}
 
 	return fsipc.watcher.Close()
 }
 
 func (fsipc *FsIpc) loop() {
+	fsipc.wg.Add(1)
+	defer fsipc.wg.Done()
+
 	for {
 		select {
 		case event, ok := <-fsipc.watcher.Events:
@@ -235,11 +250,17 @@ func (fsipc *FsIpc) WriteResponse(id string, data interface{}) error {
 		// SM only waits up to one minute for a reply, so when the
 		// response is too old, discard it.
 		go func() {
-			<-time.After(time.Minute)
+			fsipc.wg.Add(1)
+			defer fsipc.wg.Done()
 
-			err := os.Remove(filename)
-			if err != nil {
-				log.Printf("failed to delete %s: %v", filename, err)
+			select {
+			case <-time.After(time.Minute):
+				err := os.Remove(filename)
+				if err != nil {
+					log.Printf("failed to delete %s: %v", filename, err)
+				}
+			case <-fsipc.shutdown:
+				return
 			}
 		}()
 	}
