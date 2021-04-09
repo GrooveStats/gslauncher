@@ -30,6 +30,7 @@ func NewApp(unlockManager *unlocks.Manager) *App {
 	}
 
 	app.app.Settings().SetTheme(theme.DarkTheme())
+	app.app.SetIcon(groovestatsLogo)
 
 	appName := "GrooveStats Launcher"
 	if settings.Get().Debug {
