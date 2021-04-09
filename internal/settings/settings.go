@@ -82,8 +82,7 @@ func getDefaults() Settings {
 		}
 	}
 
-	// XXX: switch to https before releasing
-	grooveStatsUrl := "http://api.groovestats.com"
+	grooveStatsUrl := "https://api.groovestats.com"
 	if debug {
 		grooveStatsUrl = "http://localhost:9090"
 	}
