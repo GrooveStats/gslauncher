@@ -41,9 +41,16 @@ func NewApp(unlockManager *unlocks.Manager) *App {
 	app.mainWin.Resize(fyne.NewSize(800, 600))
 
 	app.mainWin.SetMainMenu(fyne.NewMainMenu(
-		fyne.NewMenu("File", fyne.NewMenuItem("Settings", func() {
-			app.showSettingsDialog()
-		})),
+		fyne.NewMenu(
+			"File",
+			fyne.NewMenuItem("Settings", func() {
+				app.showSettingsDialog()
+			}),
+			fyne.NewMenuItemSeparator(),
+			fyne.NewMenuItem("Quit", func() {
+				app.maybeQuit()
+			}),
+		),
 	))
 
 	launchButton := widget.NewButton("Launch StepMania", nil)
@@ -76,34 +83,36 @@ func NewApp(unlockManager *unlocks.Manager) *App {
 	app.mainWin.CenterOnScreen()
 	app.mainWin.Show()
 
-	app.mainWin.SetCloseIntercept(func() {
-		session := app.session
-
-		if session != nil {
-			confirmDialog := dialog.NewConfirm(
-				"Stop StepMania?",
-				"Closing the launcher will stop StepMania as well.",
-				func(confirmed bool) {
-					if confirmed {
-						app.session.Kill()
-						app.mainWin.Close()
-					}
-				},
-				app.mainWin,
-			)
-			confirmDialog.SetConfirmText("Stop StepMania")
-			confirmDialog.SetDismissText("Keep Running")
-			confirmDialog.Show()
-		} else {
-			app.mainWin.Close()
-		}
-	})
+	app.mainWin.SetCloseIntercept(app.maybeQuit)
 
 	return app
 }
 
 func (app *App) Run() {
 	app.app.Run()
+}
+
+func (app *App) maybeQuit() {
+	session := app.session
+
+	if session != nil {
+		confirmDialog := dialog.NewConfirm(
+			"Stop StepMania?",
+			"Closing the launcher will stop StepMania as well.",
+			func(confirmed bool) {
+				if confirmed {
+					app.session.Kill()
+					app.mainWin.Close()
+				}
+			},
+			app.mainWin,
+		)
+		confirmDialog.SetConfirmText("Stop StepMania")
+		confirmDialog.SetDismissText("Keep Running")
+		confirmDialog.Show()
+	} else {
+		app.mainWin.Close()
+	}
 }
 
 func (app *App) showSettingsDialog() {
