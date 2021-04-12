@@ -37,7 +37,8 @@ type UserData struct {
 type Unlock struct {
 	DownloadUrl      string
 	RpgName          string
-	Description      string
+	QuestTitle       string
+	SongDescriptions []string
 	DownloadStatus   DownloadStatus
 	DownloadError    error
 	DownloadSize     int64
@@ -75,7 +76,7 @@ func NewManager() (*Manager, error) {
 	return &manager, nil
 }
 
-func (manager *Manager) AddUnlock(description, url, rpgName, profileName string) {
+func (manager *Manager) AddUnlock(questTitle, url, rpgName, profileName string, songDescriptions []string) {
 	for _, unlock := range manager.Unlocks {
 		if unlock.DownloadUrl == url {
 			user := UserData{
@@ -90,9 +91,10 @@ func (manager *Manager) AddUnlock(description, url, rpgName, profileName string)
 	}
 
 	unlock := &Unlock{
-		DownloadUrl: url,
-		RpgName:     rpgName,
-		Description: description,
+		DownloadUrl:      url,
+		RpgName:          rpgName,
+		QuestTitle:       questTitle,
+		SongDescriptions: songDescriptions,
 		Users: []*UserData{
 			&UserData{
 				ProfileName: profileName,

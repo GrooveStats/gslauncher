@@ -86,14 +86,23 @@ func (unlockWidget *UnlockWidget) handleUpdate(unlock *unlocks.Unlock) {
 		errorLabel.Wrapping = fyne.TextWrapWord
 		errorLabel.Alignment = fyne.TextAlignCenter
 
+		questTitleLabel := widget.NewLabel(unlock.QuestTitle)
+		questTitleLabel.TextStyle.Bold = true
+
+		descriptionsLabel := widget.NewLabel(strings.Join(unlock.SongDescriptions, "\n"))
+		descriptionsLabel.Alignment = fyne.TextAlignCenter
+
 		vbox := container.NewVBox(
 			container.NewHBox(
-				widget.NewLabel(unlock.Description),
+				questTitleLabel,
 				layout.NewSpacer(),
 				successIcon,
 				errorIcon,
 				downloadButton,
 				unpackButton,
+			),
+			container.NewCenter(
+				descriptionsLabel,
 			),
 			downloadProgress,
 			unpackProgress,

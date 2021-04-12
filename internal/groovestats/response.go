@@ -76,10 +76,10 @@ type scoreSubmitPlayerData struct {
 			QuestsCompleted []struct {
 				Title   string `json:"title"`
 				Rewards []struct {
-					Type            string  `json:"type"`
-					Description     string  `json:"description"`
-					SongDownloadUrl *string `json:"songDownloadUrl"`
+					Type        string `json:"type"`
+					Description string `json:"description"`
 				} `json:"rewards"`
+				SongDownloadUrl *string `json:"songDownloadUrl"`
 			} `json:"questsCompleted"`
 		} `json:"progress"`
 
