@@ -95,7 +95,13 @@ func (sess *Session) startIpc() error {
 }
 
 func (sess *Session) startSM() error {
-	cmd := exec.Command(settings.Get().SmExePath)
+	smExePath := settings.Get().SmExePath
+
+	// Let's launch StepMania! We also have to set the working directory,
+	// because SM 5.3 (outfox) for Linux searches for bundled shared
+	// libraries in the current working directory.
+	cmd := exec.Command(smExePath)
+	cmd.Dir = filepath.Dir(smExePath)
 
 	err := cmd.Start()
 	if err != nil {
