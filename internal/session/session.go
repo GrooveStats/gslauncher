@@ -112,6 +112,23 @@ func (sess *Session) startSM() error {
 	return nil
 }
 
+func newNetworkResponse(data interface{}, err error) *fsipc.NetworkResponse {
+	status := "success"
+	if err != nil {
+		switch err.(type) {
+		case *groovestats.DisabledError:
+			status = "disabled"
+		default:
+			status = "fail"
+		}
+	}
+
+	return &fsipc.NetworkResponse{
+		Status: status,
+		Data:   data,
+	}
+}
+
 func (sess *Session) processRequest(request interface{}) {
 	log.Printf("REQ: %#v", request)
 
@@ -128,26 +145,17 @@ func (sess *Session) processRequest(request interface{}) {
 	case *fsipc.GsNewSessionRequest:
 		resp, err := sess.gsClient.NewSession(req)
 
-		response := fsipc.NetworkResponse{
-			Success: err == nil,
-			Data:    resp,
-		}
+		response := newNetworkResponse(resp, err)
 		sess.ipc.WriteResponse(req.Id, response)
 	case *fsipc.GsPlayerScoresRequest:
 		resp, err := sess.gsClient.PlayerScores(req)
 
-		response := fsipc.NetworkResponse{
-			Success: err == nil,
-			Data:    resp,
-		}
+		response := newNetworkResponse(resp, err)
 		sess.ipc.WriteResponse(req.Id, response)
 	case *fsipc.GsPlayerLeaderboardsRequest:
 		resp, err := sess.gsClient.PlayerLeaderboards(req)
 
-		response := fsipc.NetworkResponse{
-			Success: err == nil,
-			Data:    resp,
-		}
+		response := newNetworkResponse(resp, err)
 		sess.ipc.WriteResponse(req.Id, response)
 	case *fsipc.GsScoreSubmitRequest:
 		resp, err := sess.gsClient.ScoreSubmit(req)
@@ -200,10 +208,7 @@ func (sess *Session) processRequest(request interface{}) {
 			}
 		}
 
-		response := fsipc.NetworkResponse{
-			Success: err == nil,
-			Data:    resp,
-		}
+		response := newNetworkResponse(resp, err)
 		sess.ipc.WriteResponse(req.Id, response)
 	default:
 		panic("unknown request type")

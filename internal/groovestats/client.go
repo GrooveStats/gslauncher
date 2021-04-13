@@ -3,7 +3,6 @@ package groovestats
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -13,6 +12,14 @@ import (
 	"github.com/GrooveStats/gslauncher/internal/fsipc"
 	"github.com/GrooveStats/gslauncher/internal/settings"
 )
+
+type DisabledError struct {
+	reason string
+}
+
+func (e *DisabledError) Error() string {
+	return fmt.Sprintf("endpoint disabled: %s", e.reason)
+}
 
 type Client struct {
 	client *http.Client
@@ -71,7 +78,7 @@ func (client *Client) NewSession(request *fsipc.GsNewSessionRequest) (*NewSessio
 
 func (client *Client) PlayerScores(request *fsipc.GsPlayerScoresRequest) (*PlayerScoresResponse, error) {
 	if !client.allowPlayerScores {
-		return nil, errors.New("not allowed to fetch player scores")
+		return nil, &DisabledError{reason: "not allowed to fetch player scores"}
 	}
 
 	if settings.Get().FakeGs {
@@ -108,7 +115,7 @@ func (client *Client) PlayerScores(request *fsipc.GsPlayerScoresRequest) (*Playe
 
 func (client *Client) PlayerLeaderboards(request *fsipc.GsPlayerLeaderboardsRequest) (*PlayerLeaderboardsResponse, error) {
 	if !client.allowPlayerLeaderboards {
-		return nil, errors.New("not allowed to fetch player leaderboards")
+		return nil, &DisabledError{reason: "not allowed to fetch player leaderboards"}
 	}
 
 	if settings.Get().FakeGs {
@@ -148,7 +155,7 @@ func (client *Client) PlayerLeaderboards(request *fsipc.GsPlayerLeaderboardsRequ
 
 func (client *Client) ScoreSubmit(request *fsipc.GsScoreSubmitRequest) (*ScoreSubmitResponse, error) {
 	if !client.allowScoreSubmit {
-		return nil, errors.New("not allowed to submit scores")
+		return nil, &DisabledError{reason: "not allowed to submit scores"}
 	}
 
 	if settings.Get().FakeGs {
@@ -240,7 +247,7 @@ func (client *Client) newPostRequest(path string, params *url.Values, data inter
 
 func (client *Client) doRequest(req *http.Request, response interface{}) error {
 	if client.permanentError {
-		return errors.New("request not sent due to protocol violation")
+		return &DisabledError{reason: "request not sent due to protocol violation"}
 	}
 
 	resp, err := client.client.Do(req)

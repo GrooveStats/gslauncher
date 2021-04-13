@@ -116,8 +116,8 @@ Responses for network requests look like this:
 
 ```jsonc
 {
-    success: true,
-    data: {}    // data returned by the endpoint
+    status: "success",  // or "fail" or "disabled"
+    data: {}            // data returned by the endpoint
 }
 ```
 
