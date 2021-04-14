@@ -3,11 +3,14 @@ package fsipc
 import (
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/fsnotify/fsnotify"
@@ -113,7 +116,7 @@ func (fsipc *FsIpc) loop() {
 			}
 
 			if event.Op&fsnotify.Create == fsnotify.Create {
-				fsipc.handleFile(event.Name)
+				go fsipc.handleFile(event.Name)
 			}
 		case err, ok := <-fsipc.watcher.Errors:
 			if !ok {
@@ -125,6 +128,31 @@ func (fsipc *FsIpc) loop() {
 			return
 		}
 	}
+}
+
+func readFilePatient(filename string) ([]byte, error) {
+	var data []byte
+	var err error
+
+	if runtime.GOOS == "windows" {
+		for retry := 0; retry < 10; retry++ {
+			data, err = os.ReadFile(filename)
+
+			if patherr, ok := err.(*fs.PathError); ok {
+				// ERROR_SHARING_VIOLATION
+				if patherr.Err == syscall.Errno(0x20) {
+					time.Sleep(100 * time.Millisecond)
+					continue
+				}
+			}
+
+			break
+		}
+	} else {
+		data, err = os.ReadFile(filename)
+	}
+
+	return data, err
 }
 
 func (fsipc *FsIpc) handleFile(filename string) {
@@ -156,7 +184,7 @@ func (fsipc *FsIpc) handleFile(filename string) {
 		return
 	}
 
-	data, err := os.ReadFile(filename)
+	data, err := readFilePatient(filename)
 	if err != nil {
 		log.Printf("failed to read %s: %v", basename, err)
 		return
