@@ -1,4 +1,4 @@
-# gslauncher
+# Building the GrooveStats Launcher
 
 Repository for the Groovestats Launcher for the Simply Love SM5 theme.
 
