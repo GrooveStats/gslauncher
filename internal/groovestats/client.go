@@ -11,6 +11,7 @@ import (
 
 	"github.com/GrooveStats/gslauncher/internal/fsipc"
 	"github.com/GrooveStats/gslauncher/internal/settings"
+	"github.com/GrooveStats/gslauncher/internal/stats"
 )
 
 type DisabledError struct {
@@ -42,6 +43,8 @@ func NewClient() *Client {
 }
 
 func (client *Client) NewSession(request *fsipc.GsNewSessionRequest) (*NewSessionResponse, error) {
+	stats.GsNewSessionCount++
+
 	if settings.Get().FakeGs {
 		response, err := fakeNewSession()
 		if err != nil {
@@ -81,6 +84,8 @@ func (client *Client) PlayerScores(request *fsipc.GsPlayerScoresRequest) (*Playe
 		return nil, &DisabledError{reason: "not allowed to fetch player scores"}
 	}
 
+	stats.GsPlayerScoresCount++
+
 	if settings.Get().FakeGs {
 		return fakePlayerScores(request)
 	}
@@ -117,6 +122,8 @@ func (client *Client) PlayerLeaderboards(request *fsipc.GsPlayerLeaderboardsRequ
 	if !client.allowPlayerLeaderboards {
 		return nil, &DisabledError{reason: "not allowed to fetch player leaderboards"}
 	}
+
+	stats.GsPlayerLeaderboardsCount++
 
 	if settings.Get().FakeGs {
 		return fakePlayerLeaderboards(request)
@@ -157,6 +164,8 @@ func (client *Client) ScoreSubmit(request *fsipc.GsScoreSubmitRequest) (*ScoreSu
 	if !client.allowScoreSubmit {
 		return nil, &DisabledError{reason: "not allowed to submit scores"}
 	}
+
+	stats.GsScoreSubmitCount++
 
 	if settings.Get().FakeGs {
 		return fakeScoreSubmit(request)

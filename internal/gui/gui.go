@@ -1,6 +1,7 @@
 package gui
 
 import (
+	"fmt"
 	"strconv"
 
 	"fyne.io/fyne/v2"
@@ -14,6 +15,7 @@ import (
 
 	"github.com/GrooveStats/gslauncher/internal/session"
 	"github.com/GrooveStats/gslauncher/internal/settings"
+	"github.com/GrooveStats/gslauncher/internal/stats"
 	"github.com/GrooveStats/gslauncher/internal/unlocks"
 )
 
@@ -49,6 +51,12 @@ func NewApp(unlockManager *unlocks.Manager) *App {
 			fyne.NewMenuItemSeparator(),
 			fyne.NewMenuItem("Quit", func() {
 				app.maybeQuit()
+			}),
+		),
+		fyne.NewMenu(
+			"View",
+			fyne.NewMenuItem("Statistics", func() {
+				app.showStatisticsDialog()
 			}),
 		),
 	))
@@ -261,4 +269,13 @@ func (app *App) showSettingsDialog() {
 			}
 		}
 	}, app.mainWin)
+}
+
+func (app *App) showStatisticsDialog() {
+	message := fmt.Sprintf("GET /new-session.php: %d\n", stats.GsNewSessionCount)
+	message += fmt.Sprintf("GET /player-scores.php: %d\n", stats.GsPlayerScoresCount)
+	message += fmt.Sprintf("GET /player-leaderboards.php: %d\n", stats.GsPlayerLeaderboardsCount)
+	message += fmt.Sprintf("POST /score-submit.php: %d\n", stats.GsScoreSubmitCount)
+
+	dialog.ShowInformation("Statistics", message, app.mainWin)
 }
