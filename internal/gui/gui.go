@@ -2,6 +2,7 @@ package gui
 
 import (
 	"fmt"
+	"runtime"
 	"strconv"
 
 	"fyne.io/fyne/v2"
@@ -17,6 +18,7 @@ import (
 	"github.com/GrooveStats/gslauncher/internal/settings"
 	"github.com/GrooveStats/gslauncher/internal/stats"
 	"github.com/GrooveStats/gslauncher/internal/unlocks"
+	"github.com/GrooveStats/gslauncher/internal/version"
 )
 
 type App struct {
@@ -57,6 +59,12 @@ func NewApp(unlockManager *unlocks.Manager) *App {
 			"View",
 			fyne.NewMenuItem("Statistics", func() {
 				app.showStatisticsDialog()
+			}),
+		),
+		fyne.NewMenu(
+			"Help",
+			fyne.NewMenuItem("About", func() {
+				app.showAboutDialog()
 			}),
 		),
 	))
@@ -278,4 +286,16 @@ func (app *App) showStatisticsDialog() {
 	message += fmt.Sprintf("POST /score-submit.php: %d\n", stats.GsScoreSubmitCount)
 
 	dialog.ShowInformation("Statistics", message, app.mainWin)
+}
+
+func (app *App) showAboutDialog() {
+	message := fmt.Sprintf(
+		"GrooveStats Launcher\n%s (%s %s)",
+		version.Formatted(), runtime.GOOS, runtime.GOARCH,
+	)
+	if settings.Get().Debug {
+		message += "\ndebug"
+	}
+
+	dialog.ShowInformation("About", message, app.mainWin)
 }

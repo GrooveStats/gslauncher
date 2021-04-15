@@ -12,6 +12,7 @@ import (
 	"github.com/GrooveStats/gslauncher/internal/groovestats"
 	"github.com/GrooveStats/gslauncher/internal/settings"
 	"github.com/GrooveStats/gslauncher/internal/unlocks"
+	"github.com/GrooveStats/gslauncher/internal/version"
 )
 
 type Session struct {
@@ -136,9 +137,9 @@ func (sess *Session) processRequest(request interface{}) {
 	case *fsipc.PingRequest:
 		response := fsipc.PingResponse{
 			Version: fsipc.PingVersion{
-				Major: 1,
-				Minor: 0,
-				Patch: 0,
+				Major: version.Major,
+				Minor: version.Minor,
+				Patch: version.Patch,
 			},
 		}
 		sess.ipc.WriteResponse(req.Id, response)
