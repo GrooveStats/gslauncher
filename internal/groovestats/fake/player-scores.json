@@ -1,6 +1,7 @@
 {
     "player1": {
         "chartHash": "",
+        "isRanked": true,
         "gsLeaderboard": [
             {
                 "name": "Bran",
@@ -9,7 +10,8 @@
                 "date": "2020-05-21 19:43:37",
                 "rank": 1,
                 "isSelf": false,
-                "isRival": false
+                "isRival": false,
+                "isFail": false
             },
             {
                 "name": "Archiflax",
@@ -18,7 +20,8 @@
                 "date": "2020-05-21 19:43:37",
                 "rank": 4,
                 "isSelf": false,
-                "isRival": true
+                "isRival": true,
+                "isFail": false
             },
             {
                 "name": "dom no bar",
@@ -27,7 +30,8 @@
                 "date": "2020-05-21 19:43:37",
                 "rank": 7,
                 "isSelf": true,
-                "isRival": false
+                "isRival": false,
+                "isFail": false
             },
             {
                 "name": "Teejusb",
@@ -36,7 +40,8 @@
                 "date": "2020-05-21 19:43:37",
                 "rank": 13,
                 "isSelf": false,
-                "isRival": true
+                "isRival": true,
+                "isFail": false
             },
             {
                 "name": "natano",
@@ -45,12 +50,14 @@
                 "date": "2020-05-21 19:43:37",
                 "rank": 14,
                 "isSelf": false,
-                "isRival": true
+                "isRival": true,
+                "isFail": true
             }
         ]
     },
     "player2": {
         "chartHash": "",
+        "isRanked": true,
         "gsLeaderboard": [
             {
                 "name": "Alice",
@@ -59,7 +66,8 @@
                 "date": "2020-05-21 19:43:37",
                 "rank": 7,
                 "isSelf": false,
-                "isRival": true
+                "isRival": true,
+                "isFail": false
             },
             {
                 "name": "Bob",
@@ -68,7 +76,8 @@
                 "date": "2020-05-21 19:43:37",
                 "rank": 1,
                 "isSelf": false,
-                "isRival": true
+                "isRival": true,
+                "isFail": true
             }
         ]
     }

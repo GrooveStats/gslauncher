@@ -182,23 +182,15 @@ func fakeScoreSubmit(request *fsipc.GsScoreSubmitRequest) (*ScoreSubmitResponse,
 		response.Player2.Rpg.Result = "score-not-improved"
 		response.Player2.Rpg.ScoreDelta = &zero
 		response.Player2.Rpg.RateDelta = &zero
-	case "score-not-ranked":
-		response.Player1.Result = "song-not-ranked"
+	case "chart-not-ranked":
+		response.Player1.IsRanked = false
 		response.Player1.ScoreDelta = nil
 		response.Player1.GsLeaderboard = nil
-		response.Player1.Rpg.Result = "song-not-ranked"
-		response.Player1.Rpg.ScoreDelta = nil
-		response.Player1.Rpg.RateDelta = nil
-		response.Player1.Rpg.Progress = nil
-		response.Player1.Rpg.RpgLeaderboard = nil
-		response.Player2.Result = "song-not-ranked"
+		response.Player1.Rpg = nil
+		response.Player1.IsRanked = false
 		response.Player2.ScoreDelta = nil
 		response.Player2.GsLeaderboard = nil
-		response.Player2.Rpg.Result = "song-not-ranked"
-		response.Player2.Rpg.ScoreDelta = nil
-		response.Player2.Rpg.RateDelta = nil
-		response.Player2.Rpg.Progress = nil
-		response.Player2.Rpg.RpgLeaderboard = nil
+		response.Player2.Rpg = nil
 	default:
 		panic("unknown submit result")
 	}

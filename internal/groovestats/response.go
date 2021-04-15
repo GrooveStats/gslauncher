@@ -24,22 +24,23 @@ type leaderBoardEntry struct {
 	Rank       int     `json:"rank"`
 	IsSelf     bool    `json:"isSelf"`
 	IsRival    bool    `json:"isRival"`
+	IsFail     bool    `json:"isFail"`
+}
+
+type playerScoresPlayerData struct {
+	ChartHash     string              `json:"chartHash"`
+	IsRanked      bool                `json:"isRanked"`
+	GsLeaderboard *[]leaderBoardEntry `json:"gsLeaderboard"`
 }
 
 type PlayerScoresResponse struct {
-	Player1 *struct {
-		ChartHash     string              `json:"chartHash"`
-		GsLeaderboard *[]leaderBoardEntry `json:"gsLeaderboard"`
-	} `json:"player1"`
-
-	Player2 *struct {
-		ChartHash     string              `json:"chartHash"`
-		GsLeaderboard *[]leaderBoardEntry `json:"gsLeaderboard"`
-	} `json:"player2"`
+	Player1 *playerScoresPlayerData `json:"player1"`
+	Player2 *playerScoresPlayerData `json:"player2"`
 }
 
 type playerLeaderboardsPlayerData struct {
 	ChartHash     string             `json:"chartHash"`
+	IsRanked      bool               `json:"isRanked"`
 	GsLeaderboard []leaderBoardEntry `json:"gsLeaderboard"`
 
 	Rpg *struct {
@@ -55,12 +56,13 @@ type PlayerLeaderboardsResponse struct {
 
 type scoreSubmitPlayerData struct {
 	ChartHash     string              `json:"chartHash"`
-	Result        string              `json:"result"`
+	IsRanked      bool                `json:"isRanked"`
+	Result        string              `json:"result,omitempty"`
 	ScoreDelta    *int                `json:"scoreDelta,omitempty"`
 	GsLeaderboard *[]leaderBoardEntry `json:"gsLeaderboard"`
 
 	Rpg *struct {
-		Name       string `json:"name,omitempty"`
+		Name       string `json:"name"`
 		Result     string `json:"result"`
 		ScoreDelta *int   `json:"scoreDelta,omitempty"`
 		RateDelta  *int   `json:"rateDelta,omitempty"`

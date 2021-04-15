@@ -1,6 +1,7 @@
 {
     "player1": {
         "chartHash": "",
+        "isRanked": true,
         "gsLeaderboard": [
             {
                 "name": "Swindlesmscoop",
@@ -9,7 +10,8 @@
                 "date": "2020-05-21 19:43:37",
                 "rank": 1,
                 "isSelf": false,
-                "isRival": false
+                "isRival": false,
+                "isFail": false
             },
             {
                 "name": "Zaniel",
@@ -18,7 +20,8 @@
                 "date": "2020-05-21 19:43:37",
                 "rank": 11,
                 "isSelf": false,
-                "isRival": false
+                "isRival": false,
+                "isFail": false
             },
             {
                 "name": "ITGAlex",
@@ -27,7 +30,8 @@
                 "date": "2020-05-21 19:43:37",
                 "rank": 12,
                 "isSelf": false,
-                "isRival": false
+                "isRival": false,
+                "isFail": false
             },
             {
                 "name": "Murd",
@@ -36,7 +40,8 @@
                 "date": "2020-05-21 19:43:37",
                 "rank": 13,
                 "isSelf": false,
-                "isRival": false
+                "isRival": false,
+                "isFail": false
             },
             {
                 "name": "dom no bar",
@@ -45,7 +50,8 @@
                 "date": "2020-05-21 19:43:37",
                 "rank": 14,
                 "isSelf": true,
-                "isRival": false
+                "isRival": false,
+                "isFail": false
             },
             {
                 "name": "Archiflax",
@@ -54,7 +60,8 @@
                 "date": "2020-05-21 19:43:37",
                 "rank": 22,
                 "isSelf": false,
-                "isRival": true
+                "isRival": true,
+                "isFail": false
             },
             {
                 "name": "Teejusb",
@@ -63,7 +70,8 @@
                 "date": "2020-05-21 19:43:37",
                 "rank": 23,
                 "isSelf": false,
-                "isRival": true
+                "isRival": true,
+                "isFail": false
             },
             {
                 "name": "natano",
@@ -72,7 +80,8 @@
                 "date": "2020-05-21 19:43:37",
                 "rank": 44,
                 "isSelf": false,
-                "isRival": true
+                "isRival": true,
+                "isFail": true
             }
         ],
         "rpg": {
@@ -85,7 +94,8 @@
                     "date": "2020-05-21 19:43:37",
                     "rank": 14,
                     "isSelf": true,
-                    "isRival": false
+                    "isRival": false,
+                    "isFail": false
                 },
                 {
                     "name": "Archiflax",
@@ -94,7 +104,8 @@
                     "date": "2020-05-21 19:43:37",
                     "rank": 22,
                     "isSelf": false,
-                    "isRival": true
+                    "isRival": true,
+                    "isFail": false
                 },
                 {
                     "name": "Teejusb",
@@ -103,7 +114,8 @@
                     "date": "2020-05-21 19:43:37",
                     "rank": 23,
                     "isSelf": false,
-                    "isRival": true
+                    "isRival": true,
+                    "isFail": false
                 },
                 {
                     "name": "natano",
@@ -112,13 +124,15 @@
                     "date": "2020-05-21 19:43:37",
                     "rank": 44,
                     "isSelf": false,
-                    "isRival": true
+                    "isRival": true,
+                    "isFail": false
                 }
             ]
         }
     },
     "player2": {
         "chartHash": "",
+        "isRanked": true,
         "gsLeaderboard": [
             {
                 "name": "Swindlesmscoop",
@@ -127,7 +141,8 @@
                 "date": "2020-05-21 19:43:37",
                 "rank": 1,
                 "isSelf": false,
-                "isRival": false
+                "isRival": false,
+                "isFail": false
             },
             {
                 "name": "Zaniel",
@@ -136,7 +151,8 @@
                 "date": "2020-05-21 19:43:37",
                 "rank": 11,
                 "isSelf": false,
-                "isRival": false
+                "isRival": false,
+                "isFail": false
             },
             {
                 "name": "ITGAlex",
@@ -145,7 +161,8 @@
                 "date": "2020-05-21 19:43:37",
                 "rank": 12,
                 "isSelf": false,
-                "isRival": false
+                "isRival": false,
+                "isFail": false
             },
             {
                 "name": "Murd",
@@ -154,7 +171,8 @@
                 "date": "2020-05-21 19:43:37",
                 "rank": 13,
                 "isSelf": false,
-                "isRival": false
+                "isRival": false,
+                "isFail": false
             },
             {
                 "name": "dom no bar",
@@ -163,7 +181,8 @@
                 "date": "2020-05-21 19:43:37",
                 "rank": 14,
                 "isSelf": true,
-                "isRival": false
+                "isRival": false,
+                "isFail": false
             },
             {
                 "name": "Archiflax",
@@ -172,7 +191,8 @@
                 "date": "2020-05-21 19:43:37",
                 "rank": 22,
                 "isSelf": false,
-                "isRival": true
+                "isRival": true,
+                "isFail": false
             },
             {
                 "name": "Teejusb",
@@ -181,7 +201,8 @@
                 "date": "2020-05-21 19:43:37",
                 "rank": 23,
                 "isSelf": false,
-                "isRival": true
+                "isRival": true,
+                "isFail": true
             },
             {
                 "name": "natano",
@@ -190,7 +211,8 @@
                 "date": "2020-05-21 19:43:37",
                 "rank": 44,
                 "isSelf": false,
-                "isRival": true
+                "isRival": true,
+                "isFail": false
             }
         ],
         "rpg": {
@@ -203,7 +225,8 @@
                     "date": "2020-05-21 19:43:37",
                     "rank": 14,
                     "isSelf": true,
-                    "isRival": false
+                    "isRival": false,
+                    "isFail": false
                 },
                 {
                     "name": "Archiflax",
@@ -212,7 +235,8 @@
                     "date": "2020-05-21 19:43:37",
                     "rank": 22,
                     "isSelf": false,
-                    "isRival": true
+                    "isRival": true,
+                    "isFail": false
                 },
                 {
                     "name": "Teejusb",
@@ -221,7 +245,8 @@
                     "date": "2020-05-21 19:43:37",
                     "rank": 23,
                     "isSelf": false,
-                    "isRival": true
+                    "isRival": true,
+                    "isFail": false
                 },
                 {
                     "name": "natano",
@@ -230,7 +255,8 @@
                     "date": "2020-05-21 19:43:37",
                     "rank": 44,
                     "isSelf": false,
-                    "isRival": true
+                    "isRival": true,
+                    "isFail": false
                 }
             ]
         }

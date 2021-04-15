@@ -195,7 +195,7 @@ func (app *App) showSettingsDialog() {
 		})
 		fakeGsNewSessionResultSelect.SetSelected(data.FakeGsNewSessionResult)
 
-		options = []string{"score-added", "improved", "score-not-improved", "score-not-ranked"}
+		options = []string{"score-added", "improved", "score-not-improved", "chart-not-ranked"}
 		fakeGsSubmitResultSelect := widget.NewSelect(options, func(selected string) {
 			data.FakeGsSubmitResult = selected
 		})
