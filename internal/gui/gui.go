@@ -2,6 +2,7 @@ package gui
 
 import (
 	"fmt"
+	"net/url"
 	"runtime"
 	"strconv"
 
@@ -63,6 +64,15 @@ func NewApp(unlockManager *unlocks.Manager) *App {
 		),
 		fyne.NewMenu(
 			"Help",
+			fyne.NewMenuItem("Setup", func() {
+				url, err := url.Parse("https://github.com/GrooveStats/gslauncher#readme")
+				if err != nil {
+					return
+				}
+
+				app.app.OpenURL(url)
+			}),
+			fyne.NewMenuItemSeparator(),
 			fyne.NewMenuItem("About", func() {
 				app.showAboutDialog()
 			}),
