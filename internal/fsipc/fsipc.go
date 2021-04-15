@@ -135,7 +135,7 @@ func readFilePatient(filename string) ([]byte, error) {
 	var err error
 
 	if runtime.GOOS == "windows" {
-		for retry := 0; retry < 10; retry++ {
+		for retry := 0; retry < 30; retry++ {
 			data, err = os.ReadFile(filename)
 
 			if patherr, ok := err.(*fs.PathError); ok {
