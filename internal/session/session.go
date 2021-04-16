@@ -41,8 +41,8 @@ func Launch(unlockManager *unlocks.Manager) (*Session, error) {
 		return nil, fmt.Errorf("failed to run StepMania: %w", err)
 	}
 
+	sess.wg.Add(1)
 	go func() {
-		sess.wg.Add(1)
 		sess.cmd.Wait()
 		sess.ipc.Close()
 		sess.wg.Done()
@@ -80,13 +80,14 @@ func (sess *Session) startIpc() error {
 	}
 
 	processChannel := func(ch chan interface{}) {
-		sess.wg.Add(1)
+		defer sess.wg.Done()
+
 		for request := range ch {
 			sess.processRequest(request)
 		}
-		sess.wg.Done()
 	}
 
+	sess.wg.Add(3)
 	go processChannel(ipc.GsPlayerScoresRequests)
 	go processChannel(ipc.GsPlayerLeaderboardsRequests)
 	go processChannel(ipc.Requests)

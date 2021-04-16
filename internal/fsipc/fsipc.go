@@ -78,6 +78,7 @@ func New(rootDir string) (*FsIpc, error) {
 		return nil, err
 	}
 
+	fsipc.wg.Add(1)
 	go fsipc.loop()
 
 	return &fsipc, nil
@@ -105,7 +106,6 @@ func (fsipc *FsIpc) Close() error {
 }
 
 func (fsipc *FsIpc) loop() {
-	fsipc.wg.Add(1)
 	defer fsipc.wg.Done()
 
 	for {
@@ -116,6 +116,7 @@ func (fsipc *FsIpc) loop() {
 			}
 
 			if event.Op&fsnotify.Create == fsnotify.Create {
+				fsipc.wg.Add(1)
 				go fsipc.handleFile(event.Name)
 			}
 		case err, ok := <-fsipc.watcher.Errors:
@@ -156,6 +157,8 @@ func readFilePatient(filename string) ([]byte, error) {
 }
 
 func (fsipc *FsIpc) handleFile(filename string) {
+	defer fsipc.wg.Done()
+
 	if !strings.HasSuffix(filename, ".json") {
 		return
 	}
@@ -277,8 +280,8 @@ func (fsipc *FsIpc) WriteResponse(id string, data interface{}) error {
 	if err == nil {
 		// SM only waits up to one minute for a reply, so when the
 		// response is too old, discard it.
+		fsipc.wg.Add(1)
 		go func() {
-			fsipc.wg.Add(1)
 			defer fsipc.wg.Done()
 
 			select {
