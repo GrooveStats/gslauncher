@@ -2,8 +2,9 @@
 
 The file system layout is like this:
 
-- requests/: request files. The filename format is <id>.json.
-- responses/: response files. The filename matches the request filename.
+- `/Save/GrooveStats`
+  - `requests/`: request files. The filename format is `<id>.json`.
+  - `responses/`: response files. The filename matches the request filename.
 
 Stale requests and response files (older than 1 minute) are removed regularly.
 This assumes that SM doesn't wait for responses for more than a minute.
@@ -111,6 +112,9 @@ The response for ping looks like this:
     }
 }
 ```
+
+In case the theme requests a protocol version that is not supported, the
+launcher will drop the request and not write a respone.
 
 Responses for network requests look like this:
 

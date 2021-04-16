@@ -135,6 +135,10 @@ func (sess *Session) processRequest(request interface{}) {
 
 	switch req := request.(type) {
 	case *fsipc.PingRequest:
+		if req.Protocol != version.Protocol {
+			break
+		}
+
 		response := fsipc.PingResponse{
 			Version: fsipc.PingVersion{
 				Major: version.Major,
@@ -142,6 +146,7 @@ func (sess *Session) processRequest(request interface{}) {
 				Patch: version.Patch,
 			},
 		}
+
 		sess.ipc.WriteResponse(req.Id, response)
 	case *fsipc.GsNewSessionRequest:
 		resp, err := sess.gsClient.NewSession(req)
