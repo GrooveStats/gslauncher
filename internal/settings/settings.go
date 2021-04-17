@@ -8,6 +8,7 @@ import (
 )
 
 type Settings struct {
+	FirstLaunch  bool `json:"-"`
 	SmExePath    string
 	SmDataDir    string
 	AutoDownload bool
@@ -44,7 +45,13 @@ func Load() error {
 		return err
 	}
 
-	return json.Unmarshal(data, &settings)
+	err = json.Unmarshal(data, &settings)
+	if err != nil {
+		return err
+	}
+
+	settings.FirstLaunch = false
+	return nil
 }
 
 func Update(newSettings Settings) {
@@ -78,6 +85,7 @@ func getDefaults() Settings {
 	}
 
 	return Settings{
+		FirstLaunch:  true,
 		SmExePath:    smExePath,
 		SmDataDir:    smDataDir,
 		AutoDownload: false,
