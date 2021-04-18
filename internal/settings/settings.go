@@ -109,6 +109,7 @@ func getDefaults() Settings {
 	switch runtime.GOOS {
 	case "windows":
 		smExePath = "C:\\Games\\StepMania 5.1\\Program\\StepMania.exe"
+		// "C:\\Games\\StepMania 5.3 Outfox\\Program\\StepMania.exe"
 
 		configDir, err := os.UserConfigDir()
 		if err == nil {
@@ -123,11 +124,6 @@ func getDefaults() Settings {
 		}
 	}
 
-	grooveStatsUrl := "https://api.groovestats.com"
-	if debug {
-		grooveStatsUrl = "http://localhost:9090"
-	}
-
 	return Settings{
 		FirstLaunch:      true,
 		SmExePath:        smExePath,
@@ -136,13 +132,13 @@ func getDefaults() Settings {
 		UserUnlocks:      false,
 
 		Debug:                  debug,
-		FakeGs:                 debug,
+		FakeGs:                 false,
 		FakeGsNetworkError:     false,
 		FakeGsNetworkDelay:     0,
 		FakeGsNewSessionResult: "OK",
 		FakeGsSubmitResult:     "score-added",
 		FakeGsRpg:              true,
-		GrooveStatsUrl:         grooveStatsUrl,
+		GrooveStatsUrl:         "https://api.groovestats.com",
 	}
 }
 
