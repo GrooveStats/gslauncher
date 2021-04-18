@@ -3,6 +3,9 @@ package gui
 import (
 	"fmt"
 	"net/url"
+	"os"
+	"os/exec"
+	"path/filepath"
 	"runtime"
 
 	"fyne.io/fyne/v2"
@@ -43,6 +46,23 @@ func NewApp(unlockManager *unlocks.Manager) *App {
 	app.mainWin = app.app.NewWindow(appName)
 	app.mainWin.Resize(fyne.NewSize(800, 600))
 
+	logsMenuItem := fyne.NewMenuItem("StepMania Logs", nil)
+	logsMenuItem.ChildMenu = fyne.NewMenu(
+		"",
+		fyne.NewMenuItem("info.txt", func() {
+			app.openSMLog("info.txt")
+		}),
+		fyne.NewMenuItem("log.txt", func() {
+			app.openSMLog("log.txt")
+		}),
+		fyne.NewMenuItem("timelog.txt", func() {
+			app.openSMLog("timelog.txt")
+		}),
+		fyne.NewMenuItem("userlog.txt", func() {
+			app.openSMLog("userlog.txt")
+		}),
+	)
+
 	app.mainWin.SetMainMenu(fyne.NewMainMenu(
 		fyne.NewMenu(
 			"File",
@@ -56,6 +76,7 @@ func NewApp(unlockManager *unlocks.Manager) *App {
 		),
 		fyne.NewMenu(
 			"View",
+			logsMenuItem,
 			fyne.NewMenuItem("Statistics", func() {
 				app.showStatisticsDialog()
 			}),
@@ -162,4 +183,27 @@ func (app *App) showAboutDialog() {
 	}
 
 	dialog.ShowInformation("About", message, app.mainWin)
+}
+
+func (app *App) openSMLog(filename string) {
+	logPath := filepath.Join(settings.Get().SmDataDir, "Logs", filename)
+
+	_, err := os.Stat(logPath)
+	if err != nil {
+		dialog.ShowError(err, app.mainWin)
+		return
+	}
+
+	var cmd *exec.Cmd
+
+	if runtime.GOOS == "windows" {
+		cmd = exec.Command("rundll32.exe", "url.dll,FileProtocolHandler", logPath)
+	} else {
+		cmd = exec.Command("xdg-open", logPath)
+	}
+
+	err = cmd.Run()
+	if err != nil {
+		dialog.ShowError(err, app.mainWin)
+	}
 }
