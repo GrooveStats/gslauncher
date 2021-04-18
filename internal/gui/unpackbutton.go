@@ -14,8 +14,7 @@ import (
 type unpackButton struct {
 	widget.Button
 
-	unlockManager *unlocks.Manager
-	unlock        *unlocks.Unlock
+	unlock *unlocks.Unlock
 }
 
 func (button *unpackButton) Tapped(e *fyne.PointEvent) {
@@ -25,12 +24,11 @@ func (button *unpackButton) Tapped(e *fyne.PointEvent) {
 		for _, u := range button.unlock.Users {
 			user := u
 
-			switch user.UnpackStatus {
-			case unlocks.NotUnpacked, unlocks.UnpackFailed:
+			if user.UnpackStatus == unlocks.NotUnpacked {
 				menuItem := fyne.NewMenuItem(
 					"Unpack for "+user.ProfileName,
 					func() {
-						go button.unlockManager.UnpackUser(button.unlock, user)
+						button.unlock.QueueUnpack(user)
 					},
 				)
 				items = append(items, menuItem)
@@ -50,19 +48,18 @@ func (button *unpackButton) Tapped(e *fyne.PointEvent) {
 			e.AbsolutePosition,
 		)
 	} else {
-		go button.unlockManager.Unpack(button.unlock)
+		button.unlock.QueueUnpack(nil)
 	}
 }
 
-func newUnpackButton(unlockManager *unlocks.Manager, unlock *unlocks.Unlock) *unpackButton {
+func newUnpackButton(unlock *unlocks.Unlock) *unpackButton {
 	button := &unpackButton{
 		Button: widget.Button{
 			Text: "Unpack",
 			Icon: theme.FolderOpenIcon(),
 		},
 
-		unlockManager: unlockManager,
-		unlock:        unlock,
+		unlock: unlock,
 	}
 
 	button.ExtendBaseWidget(button)

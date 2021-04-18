@@ -15,6 +15,7 @@ import (
 
 type unlockInfo struct {
 	unlock           *unlocks.Unlock
+	vbox             *fyne.Container
 	downloadButton   *widget.Button
 	downloadProgress *widget.ProgressBar
 	unpackButton     *unpackButton
@@ -48,6 +49,12 @@ func NewUnlockWidget(unlockManager *unlocks.Manager) *UnlockWidget {
 	return unlockWidget
 }
 
+func (unlockWidget *UnlockWidget) Refresh() {
+	for _, info := range unlockWidget.unlockInfos {
+		info.unlock.QueueRefresh()
+	}
+}
+
 func (unlockWidget *UnlockWidget) handleUpdate(unlock *unlocks.Unlock) {
 	info, ok := unlockWidget.unlockInfos[unlock]
 
@@ -55,11 +62,11 @@ func (unlockWidget *UnlockWidget) handleUpdate(unlock *unlocks.Unlock) {
 		unlockWidget.emptyLabel.Hide()
 
 		downloadButton := widget.NewButton("Download", func() {
-			go unlockWidget.unlockManager.Download(unlock)
+			unlock.QueueDownload()
 		})
 		downloadButton.SetIcon(theme.DownloadIcon())
 
-		unpackButton := newUnpackButton(unlockWidget.unlockManager, unlock)
+		unpackButton := newUnpackButton(unlock)
 
 		downloadProgress := widget.NewProgressBar()
 		downloadProgress.Min = 0
@@ -110,9 +117,11 @@ func (unlockWidget *UnlockWidget) handleUpdate(unlock *unlocks.Unlock) {
 		)
 		unlockWidget.vbox.Add(vbox)
 		unlockWidget.vbox.Add(widget.NewSeparator())
+		unlockWidget.vbox.Refresh()
 
 		info = &unlockInfo{
 			unlock:           unlock,
+			vbox:             vbox,
 			downloadButton:   downloadButton,
 			downloadProgress: downloadProgress,
 			unpackButton:     unpackButton,
@@ -132,8 +141,15 @@ func (unlockWidget *UnlockWidget) handleUpdate(unlock *unlocks.Unlock) {
 		info.unpackProgress.Hide()
 		info.unpackProgress.Stop()
 		info.successIcon.Hide()
-		info.errorIcon.Hide()
-		info.errorLabel.Hide()
+
+		if unlock.DownloadError == nil {
+			info.errorIcon.Hide()
+			info.errorLabel.Hide()
+		} else {
+			info.errorIcon.Show()
+			info.errorLabel.Show()
+			info.errorLabel.SetText(fmt.Sprintf("Download failed: %v", unlock.DownloadError))
+		}
 	case unlocks.Downloading:
 		progress := float64(unlock.DownloadProgress) / float64(unlock.DownloadSize)
 
@@ -158,32 +174,34 @@ func (unlockWidget *UnlockWidget) handleUpdate(unlock *unlocks.Unlock) {
 			switch user.UnpackStatus {
 			case unlocks.NotUnpacked:
 				unpacked = false
+
+				if user.UnpackError != nil {
+					unpackErrors = append(
+						unpackErrors,
+						fmt.Sprintf("Unpack failed: %v", user.UnpackError),
+					)
+				}
 			case unlocks.Unpacking:
 				unpacking = true
-			case unlocks.UnpackFailed:
-				unpacked = false
-
-				unpackErrors = append(
-					unpackErrors,
-					fmt.Sprintf("Unpack failed: %v", user.UnpackError),
-				)
 			}
-		}
-
-		if unpacked {
-			info.unpackButton.Hide()
-			info.successIcon.Show()
-		} else {
-			info.unpackButton.Show()
-			info.successIcon.Hide()
 		}
 
 		if unpacking {
 			info.unpackProgress.Show()
 			info.unpackProgress.Start()
+			info.unpackButton.Hide()
+			info.successIcon.Hide()
 		} else {
 			info.unpackProgress.Hide()
 			info.unpackProgress.Stop()
+
+			if unpacked {
+				info.unpackButton.Hide()
+				info.successIcon.Show()
+			} else {
+				info.unpackButton.Show()
+				info.successIcon.Hide()
+			}
 		}
 
 		if len(unpackErrors) > 0 {
@@ -194,16 +212,9 @@ func (unlockWidget *UnlockWidget) handleUpdate(unlock *unlocks.Unlock) {
 			info.errorIcon.Hide()
 			info.errorLabel.Hide()
 		}
-	case unlocks.DownloadFailed:
-		info.downloadButton.Show()
-		info.downloadProgress.Hide()
-		info.unpackButton.Hide()
-		info.unpackProgress.Hide()
-		info.unpackProgress.Stop()
-		info.errorIcon.Show()
-		info.errorLabel.Show()
-		info.errorLabel.SetText(fmt.Sprintf("Download failed: %v", unlock.DownloadError))
 	}
+
+	info.vbox.Refresh()
 }
 
 func formatBytes(n int64) string {

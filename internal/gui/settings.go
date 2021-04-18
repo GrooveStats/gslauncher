@@ -45,15 +45,25 @@ func (app *App) getSettingsFormItems(data *settings.Settings) []*widget.FormItem
 	}
 	smDirButton.SetText(data.SmDataDir)
 
-	autoDownloadCheck := widget.NewCheck("", func(checked bool) {
-		data.AutoDownload = checked
+	options := []string{"Off", "Download Only", "Download and Unpack"}
+	autoDownloadSelect := widget.NewSelect(options, func(selected string) {
+		switch selected {
+		case "Off":
+			data.AutoDownloadMode = settings.AutoDownloadOff
+		case "Download Only":
+			data.AutoDownloadMode = settings.AutoDownloadOnly
+		case "Download and Unpack":
+			data.AutoDownloadMode = settings.AutoDownloadAndUnpack
+		}
 	})
-	autoDownloadCheck.SetChecked(data.AutoDownload)
-
-	autoUnpackCheck := widget.NewCheck("", func(checked bool) {
-		data.AutoUnpack = checked
-	})
-	autoUnpackCheck.SetChecked(data.AutoUnpack)
+	switch data.AutoDownloadMode {
+	case settings.AutoDownloadOff:
+		autoDownloadSelect.SetSelected("Off")
+	case settings.AutoDownloadOnly:
+		autoDownloadSelect.SetSelected("Download Only")
+	case settings.AutoDownloadAndUnpack:
+		autoDownloadSelect.SetSelected("Download and Unpack")
+	}
 
 	userUnlocksCheck := widget.NewCheck("", func(checked bool) {
 		data.UserUnlocks = checked
@@ -63,8 +73,7 @@ func (app *App) getSettingsFormItems(data *settings.Settings) []*widget.FormItem
 	return []*widget.FormItem{
 		widget.NewFormItem("StepMania 5 Executable", smExeButton),
 		widget.NewFormItem("StepMania 5 Data Directory", smDirButton),
-		widget.NewFormItem("Auto-Download Unlocks", autoDownloadCheck),
-		widget.NewFormItem("Auto-Unpack Unlocks", autoUnpackCheck),
+		widget.NewFormItem("Auto-Download Unlocks", autoDownloadSelect),
 		widget.NewFormItem("Separate Unlocks by User", userUnlocksCheck),
 	}
 }
@@ -188,6 +197,8 @@ func (app *App) showSettingsDialog() {
 			if err != nil {
 				dialog.ShowError(err, app.mainWin)
 			}
+
+			app.unlockWidget.Refresh()
 		}
 	}, app.mainWin)
 }

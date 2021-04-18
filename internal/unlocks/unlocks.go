@@ -16,7 +16,6 @@ const (
 	NotDownloaded DownloadStatus = iota
 	Downloading
 	Downloaded
-	DownloadFailed
 )
 
 type UnpackStatus int
@@ -25,7 +24,6 @@ const (
 	NotUnpacked UnpackStatus = iota
 	Unpacking
 	Unpacked
-	UnpackFailed
 )
 
 type UserData struct {
@@ -46,6 +44,7 @@ type Unlock struct {
 	Users            []*UserData
 
 	download *Download
+	queue    chan interface{}
 }
 
 type Manager struct {
@@ -79,15 +78,24 @@ func NewManager() (*Manager, error) {
 func (manager *Manager) AddUnlock(questTitle, url, rpgName, profileName string, songDescriptions []string) {
 	for _, unlock := range manager.Unlocks {
 		if unlock.DownloadUrl == url {
-			user := UserData{
+			user := &UserData{
 				ProfileName: profileName,
 			}
-			unlock.Users = append(unlock.Users, &user)
-			manager.detectUnpackStatus(unlock, &user)
+			unlock.Users = append(unlock.Users, user)
+			manager.detectUnpackStatus(unlock, user)
 
 			manager.updateCallback(unlock)
+
+			mode := settings.Get().AutoDownloadMode
+			if mode == settings.AutoDownloadAndUnpack {
+				unlock.QueueUnpack(user)
+			}
 			return
 		}
+	}
+
+	user := &UserData{
+		ProfileName: profileName,
 	}
 
 	unlock := &Unlock{
@@ -96,10 +104,10 @@ func (manager *Manager) AddUnlock(questTitle, url, rpgName, profileName string, 
 		QuestTitle:       questTitle,
 		SongDescriptions: songDescriptions,
 		Users: []*UserData{
-			&UserData{
-				ProfileName: profileName,
-			},
+			user,
 		},
+
+		queue: make(chan interface{}, 10),
 	}
 	manager.detectDownloadStatus(unlock)
 	manager.detectUnpackStatus(unlock, unlock.Users[0])
@@ -108,17 +116,15 @@ func (manager *Manager) AddUnlock(questTitle, url, rpgName, profileName string, 
 
 	manager.updateCallback(unlock)
 
-	/*
-		if settings.Get().AutoDownload {
-			go func() {
-				manager.Download(&unlock)
+	go manager.processQueue(unlock)
 
-				if settings.Get().AutoUnpack {
-					manager.unpack(&unlock)
-				}
-			}()
+	mode := settings.Get().AutoDownloadMode
+	if mode == settings.AutoDownloadOnly || mode == settings.AutoDownloadAndUnpack {
+		unlock.QueueDownload()
+		if mode == settings.AutoDownloadAndUnpack {
+			unlock.QueueUnpack(user)
 		}
-	*/
+	}
 }
 
 func (manager *Manager) SetUpdateCallback(callback func(*Unlock)) {
@@ -132,7 +138,7 @@ func (manager *Manager) detectDownloadStatus(unlock *Unlock) {
 	if os.IsNotExist(err) {
 		unlock.DownloadStatus = NotDownloaded
 	} else if err != nil {
-		unlock.DownloadStatus = DownloadFailed
+		unlock.DownloadStatus = NotDownloaded
 		unlock.DownloadError = err
 	} else {
 		unlock.DownloadStatus = Downloaded
@@ -156,7 +162,7 @@ func (manager *Manager) detectUnpackStatus(unlock *Unlock, user *UserData) {
 	if os.IsNotExist(err) {
 		user.UnpackStatus = NotUnpacked
 	} else if err != nil {
-		user.UnpackStatus = UnpackFailed
+		user.UnpackStatus = NotUnpacked
 		user.UnpackError = err
 	} else {
 		user.UnpackStatus = Unpacked
@@ -187,7 +193,7 @@ func (manager *Manager) getCookiePath(unlock *Unlock, profileName *string) strin
 	return filepath.Join(manager.getUnpackPath(unlock, profileName), cookieName)
 }
 
-func (manager *Manager) Download(unlock *Unlock) {
+func (manager *Manager) download(unlock *Unlock) {
 	unlock.DownloadStatus = Downloading
 	unlock.DownloadError = nil
 
@@ -198,7 +204,7 @@ func (manager *Manager) Download(unlock *Unlock) {
 		unlock.DownloadSize = info.TotalSize
 		unlock.DownloadProgress = info.Downloaded
 		if info.Error != nil {
-			unlock.DownloadStatus = DownloadFailed
+			unlock.DownloadStatus = NotDownloaded
 			unlock.DownloadError = info.Error
 		}
 		manager.updateCallback(unlock)
@@ -210,11 +216,7 @@ func (manager *Manager) Download(unlock *Unlock) {
 	manager.updateCallback(unlock)
 }
 
-func (manager *Manager) Unpack(unlock *Unlock) {
-	if settings.Get().UserUnlocks {
-		panic("user unlocks are on")
-	}
-
+func (manager *Manager) unpack(unlock *Unlock) {
 	for _, user := range unlock.Users {
 		user.UnpackStatus = Unpacking
 		user.UnpackError = nil
@@ -227,7 +229,7 @@ func (manager *Manager) Unpack(unlock *Unlock) {
 	err := unzip(filename, unpackDir)
 	if err != nil {
 		for _, user := range unlock.Users {
-			user.UnpackStatus = UnpackFailed
+			user.UnpackStatus = NotUnpacked
 			user.UnpackError = err
 		}
 		manager.updateCallback(unlock)
@@ -243,11 +245,7 @@ func (manager *Manager) Unpack(unlock *Unlock) {
 	manager.updateCallback(unlock)
 }
 
-func (manager *Manager) UnpackUser(unlock *Unlock, user *UserData) {
-	if !settings.Get().UserUnlocks {
-		panic("user unlocks are off")
-	}
-
+func (manager *Manager) unpackUser(unlock *Unlock, user *UserData) {
 	user.UnpackStatus = Unpacking
 	user.UnpackError = nil
 	manager.updateCallback(unlock)
@@ -257,7 +255,7 @@ func (manager *Manager) UnpackUser(unlock *Unlock, user *UserData) {
 
 	err := unzip(filename, unpackDir)
 	if err != nil {
-		user.UnpackStatus = UnpackFailed
+		user.UnpackStatus = NotUnpacked
 		user.UnpackError = err
 		manager.updateCallback(unlock)
 		return
@@ -267,5 +265,12 @@ func (manager *Manager) UnpackUser(unlock *Unlock, user *UserData) {
 	os.WriteFile(cookiePath, []byte(""), 0600)
 
 	user.UnpackStatus = Unpacked
+	manager.updateCallback(unlock)
+}
+
+func (manager *Manager) refresh(unlock *Unlock) {
+	for _, user := range unlock.Users {
+		manager.detectUnpackStatus(unlock, user)
+	}
 	manager.updateCallback(unlock)
 }

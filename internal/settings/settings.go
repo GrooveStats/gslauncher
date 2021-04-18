@@ -7,13 +7,57 @@ import (
 	"runtime"
 )
 
+type AutoDownloadMode int
+
+const (
+	AutoDownloadOff AutoDownloadMode = iota
+	AutoDownloadOnly
+	AutoDownloadAndUnpack
+)
+
+func (m *AutoDownloadMode) UnmarshalJSON(b []byte) error {
+	var s string
+	if err := json.Unmarshal(b, &s); err != nil {
+		return err
+	}
+
+	switch s {
+	case "off":
+		*m = AutoDownloadOff
+	case "download-only":
+		*m = AutoDownloadOnly
+	case "download-and-unpack":
+		*m = AutoDownloadAndUnpack
+	default:
+		*m = AutoDownloadOff
+	}
+
+	return nil
+}
+
+func (m AutoDownloadMode) MarshalJSON() ([]byte, error) {
+	var s string
+
+	switch m {
+	case AutoDownloadOff:
+		s = "off"
+	case AutoDownloadOnly:
+		s = "download-only"
+	case AutoDownloadAndUnpack:
+		s = "download-and-unpack"
+	default:
+		s = "off"
+	}
+
+	return json.Marshal(s)
+}
+
 type Settings struct {
-	FirstLaunch  bool `json:"-"`
-	SmExePath    string
-	SmDataDir    string
-	AutoDownload bool
-	AutoUnpack   bool
-	UserUnlocks  bool
+	FirstLaunch      bool `json:"-"`
+	SmExePath        string
+	SmDataDir        string
+	AutoDownloadMode AutoDownloadMode
+	UserUnlocks      bool
 
 	// debug settings, not stored in the json
 	Debug                  bool   `json:"-"`
@@ -85,12 +129,11 @@ func getDefaults() Settings {
 	}
 
 	return Settings{
-		FirstLaunch:  true,
-		SmExePath:    smExePath,
-		SmDataDir:    smDataDir,
-		AutoDownload: false,
-		AutoUnpack:   false,
-		UserUnlocks:  false,
+		FirstLaunch:      true,
+		SmExePath:        smExePath,
+		SmDataDir:        smDataDir,
+		AutoDownloadMode: AutoDownloadOff,
+		UserUnlocks:      false,
 
 		Debug:                  debug,
 		FakeGs:                 debug,

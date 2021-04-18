@@ -26,7 +26,7 @@ type FsIpc struct {
 	requestDir  string
 	responseDir string
 	watcher     *fsnotify.Watcher
-	shutdown    chan bool
+	shutdown    chan struct{}
 	wg          sync.WaitGroup
 }
 
@@ -69,7 +69,7 @@ func New(rootDir string) (*FsIpc, error) {
 		requestDir:                   requestDir,
 		responseDir:                  responseDir,
 		watcher:                      watcher,
-		shutdown:                     make(chan bool),
+		shutdown:                     make(chan struct{}),
 	}
 
 	err = fsipc.watcher.Add(fsipc.requestDir)
