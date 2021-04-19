@@ -50,16 +50,20 @@ func NewApp(unlockManager *unlocks.Manager) *App {
 	logsMenuItem.ChildMenu = fyne.NewMenu(
 		"",
 		fyne.NewMenuItem("info.txt", func() {
-			app.openSMLog("info.txt")
+			filename := filepath.Join(settings.Get().SmDataDir, "Logs", "info.txt")
+			app.viewLogfile(filename)
 		}),
 		fyne.NewMenuItem("log.txt", func() {
-			app.openSMLog("log.txt")
+			filename := filepath.Join(settings.Get().SmDataDir, "Logs", "log.txt")
+			app.viewLogfile(filename)
 		}),
 		fyne.NewMenuItem("timelog.txt", func() {
-			app.openSMLog("timelog.txt")
+			filename := filepath.Join(settings.Get().SmDataDir, "Logs", "timelog.txt")
+			app.viewLogfile(filename)
 		}),
 		fyne.NewMenuItem("userlog.txt", func() {
-			app.openSMLog("userlog.txt")
+			filename := filepath.Join(settings.Get().SmDataDir, "Logs", "userlog.txt")
+			app.viewLogfile(filename)
 		}),
 	)
 
@@ -77,6 +81,16 @@ func NewApp(unlockManager *unlocks.Manager) *App {
 		fyne.NewMenu(
 			"View",
 			logsMenuItem,
+			fyne.NewMenuItem("Launcher Log", func() {
+				cacheDir, err := os.UserCacheDir()
+				if err != nil {
+					dialog.ShowError(err, app.mainWin)
+					return
+				}
+
+				filename := filepath.Join(cacheDir, "groovestats-launcher", "log.txt")
+				app.viewLogfile(filename)
+			}),
 			fyne.NewMenuItem("Statistics", func() {
 				app.showStatisticsDialog()
 			}),
@@ -185,10 +199,8 @@ func (app *App) showAboutDialog() {
 	dialog.ShowInformation("About", message, app.mainWin)
 }
 
-func (app *App) openSMLog(filename string) {
-	logPath := filepath.Join(settings.Get().SmDataDir, "Logs", filename)
-
-	_, err := os.Stat(logPath)
+func (app *App) viewLogfile(filename string) {
+	_, err := os.Stat(filename)
 	if err != nil {
 		dialog.ShowError(err, app.mainWin)
 		return
@@ -196,10 +208,11 @@ func (app *App) openSMLog(filename string) {
 
 	var cmd *exec.Cmd
 
+	// Open the file with the default application
 	if runtime.GOOS == "windows" {
-		cmd = exec.Command("rundll32.exe", "url.dll,FileProtocolHandler", logPath)
+		cmd = exec.Command("rundll32.exe", "url.dll,FileProtocolHandler", filename)
 	} else {
-		cmd = exec.Command("xdg-open", logPath)
+		cmd = exec.Command("xdg-open", filename)
 	}
 
 	err = cmd.Run()
