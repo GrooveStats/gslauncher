@@ -189,12 +189,12 @@ func (client *Client) ScoreSubmit(request *fsipc.GsScoreSubmitRequest) (*ScoreSu
 	}
 
 	data := struct {
-		player1 *scoreSubmitPlayerData
-		player2 *scoreSubmitPlayerData
+		Player1 *scoreSubmitPlayerData `json:"player1"`
+		Player2 *scoreSubmitPlayerData `json:"player2"`
 	}{nil, nil}
 
 	if request.Player1 != nil {
-		data.player1 = &scoreSubmitPlayerData{
+		data.Player1 = &scoreSubmitPlayerData{
 			Score:   request.Player1.Score,
 			Comment: request.Player1.Comment,
 			Rate:    request.Player1.Rate,
@@ -202,7 +202,7 @@ func (client *Client) ScoreSubmit(request *fsipc.GsScoreSubmitRequest) (*ScoreSu
 	}
 
 	if request.Player2 != nil {
-		data.player2 = &scoreSubmitPlayerData{
+		data.Player2 = &scoreSubmitPlayerData{
 			Score:   request.Player2.Score,
 			Comment: request.Player2.Comment,
 			Rate:    request.Player2.Rate,
