@@ -15,6 +15,8 @@ import (
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/go-playground/validator/v10"
+
+	"github.com/GrooveStats/gslauncher/internal/settings"
 )
 
 type FsIpc struct {
@@ -124,7 +126,7 @@ func (fsipc *FsIpc) loop() {
 				return
 			}
 
-			log.Print("fsnotify error: ", err)
+			log.Printf("fsnotify error: %v", err)
 		case <-fsipc.shutdown:
 			return
 		}
@@ -179,7 +181,7 @@ func (fsipc *FsIpc) handleFile(filename string) {
 	// SM only waits up to one minute for a reply, so if the request is too
 	// old, just discard it.
 	if info.ModTime().Add(time.Minute).Before(time.Now()) {
-		log.Print("discarding stale request: ", id)
+		log.Printf("discarding stale request: %s", id)
 		err = os.Remove(filename)
 		if err != nil {
 			log.Printf("failed to delete %s: %v", basename, err)
@@ -265,6 +267,10 @@ func (fsipc *FsIpc) handleFile(filename string) {
 		log.Printf("failed to delete %s: %v", basename, err)
 	}
 
+	if settings.Get().Debug {
+		log.Printf("received request %s: %s", id, data)
+	}
+
 	return
 }
 
@@ -272,6 +278,10 @@ func (fsipc *FsIpc) WriteResponse(id string, data interface{}) error {
 	b, err := json.Marshal(data)
 	if err != nil {
 		return err
+	}
+
+	if settings.Get().Debug {
+		log.Printf("writing response for %s: %s", id, b)
 	}
 
 	filename := filepath.Join(fsipc.responseDir, id+".json")

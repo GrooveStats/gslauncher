@@ -5,10 +5,12 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 
 	"github.com/GrooveStats/gslauncher/internal/gui"
 	"github.com/GrooveStats/gslauncher/internal/settings"
 	"github.com/GrooveStats/gslauncher/internal/unlocks"
+	"github.com/GrooveStats/gslauncher/internal/version"
 )
 
 func redirectLog() {
@@ -35,6 +37,7 @@ func redirectLog() {
 
 func main() {
 	redirectLog()
+	log.Printf("GrooveStats Launcher %s (%s %s)", version.Formatted(), runtime.GOOS, runtime.GOARCH)
 
 	settings.Load()
 

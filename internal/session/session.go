@@ -132,8 +132,6 @@ func newNetworkResponse(data interface{}, err error) *fsipc.NetworkResponse {
 }
 
 func (sess *Session) processRequest(request interface{}) {
-	log.Printf("REQ: %#v", request)
-
 	switch req := request.(type) {
 	case *fsipc.PingRequest:
 		if req.Protocol != version.Protocol {
@@ -152,15 +150,27 @@ func (sess *Session) processRequest(request interface{}) {
 	case *fsipc.GsNewSessionRequest:
 		resp, err := sess.gsClient.NewSession(req)
 
+		if err != nil {
+			log.Printf("failed to start new session: %v", err)
+		}
+
 		response := newNetworkResponse(resp, err)
 		sess.ipc.WriteResponse(req.Id, response)
 	case *fsipc.GsPlayerScoresRequest:
 		resp, err := sess.gsClient.PlayerScores(req)
 
+		if err != nil {
+			log.Printf("failed to fetch player scores: %v", err)
+		}
+
 		response := newNetworkResponse(resp, err)
 		sess.ipc.WriteResponse(req.Id, response)
 	case *fsipc.GsPlayerLeaderboardsRequest:
 		resp, err := sess.gsClient.PlayerLeaderboards(req)
+
+		if err != nil {
+			log.Printf("failed to fetch player leaderboards: %v", err)
+		}
 
 		response := newNetworkResponse(resp, err)
 		sess.ipc.WriteResponse(req.Id, response)
@@ -213,6 +223,8 @@ func (sess *Session) processRequest(request interface{}) {
 					)
 				}
 			}
+		} else {
+			log.Printf("failed to submit score: %v", err)
 		}
 
 		response := newNetworkResponse(resp, err)
