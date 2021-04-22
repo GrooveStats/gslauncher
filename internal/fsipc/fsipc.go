@@ -226,6 +226,10 @@ func (fsipc *FsIpc) handleFile(filename string) {
 		return
 	}
 
+	if settings.Get().Debug {
+		log.Printf("received request %s: %s", id, data)
+	}
+
 	err = json.Unmarshal(data, request)
 	if err != nil {
 		log.Printf("failed to unmarshal request %s: %v", id, err)
@@ -265,10 +269,6 @@ func (fsipc *FsIpc) handleFile(filename string) {
 	err = os.Remove(filename)
 	if err != nil {
 		log.Printf("failed to delete %s: %v", basename, err)
-	}
-
-	if settings.Get().Debug {
-		log.Printf("received request %s: %s", id, data)
 	}
 
 	return
