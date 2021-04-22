@@ -36,6 +36,9 @@ type playerScoresPlayerData struct {
 type PlayerScoresResponse struct {
 	Player1 *playerScoresPlayerData `json:"player1"`
 	Player2 *playerScoresPlayerData `json:"player2"`
+
+	// added by the launcher
+	Cached bool `json:"cached"`
 }
 
 type playerLeaderboardsPlayerData struct {

@@ -9,6 +9,7 @@ require (
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20210410170116-ea3d685f79fb // indirect
 	github.com/go-playground/validator/v10 v10.5.0
 	github.com/godbus/dbus/v5 v5.0.4 // indirect
+	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/srwiley/oksvg v0.0.0-20210320200257-875f767ac39a // indirect
 	github.com/stretchr/testify v1.7.0 // indirect

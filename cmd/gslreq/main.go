@@ -43,7 +43,7 @@ func main() {
 	}
 
 	for i := 0; i < 60; i++ {
-		time.Sleep(500 * time.Millisecond)
+		time.Sleep(100 * time.Millisecond)
 
 		f, err := os.Open(responseFile)
 		if err != nil {

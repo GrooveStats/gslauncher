@@ -181,6 +181,7 @@ func (app *App) maybeQuit() {
 func (app *App) showStatisticsDialog() {
 	message := fmt.Sprintf("GET /new-session.php: %d\n", stats.GsNewSessionCount)
 	message += fmt.Sprintf("GET /player-scores.php: %d\n", stats.GsPlayerScoresCount)
+	message += fmt.Sprintf("GET /player-scores.php (cached): %d\n", stats.GsPlayerScoresCachedCount)
 	message += fmt.Sprintf("GET /player-leaderboards.php: %d\n", stats.GsPlayerLeaderboardsCount)
 	message += fmt.Sprintf("POST /score-submit.php: %d\n", stats.GsScoreSubmitCount)
 

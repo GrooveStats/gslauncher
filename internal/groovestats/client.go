@@ -9,6 +9,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/hashicorp/golang-lru"
+
 	"github.com/GrooveStats/gslauncher/internal/fsipc"
 	"github.com/GrooveStats/gslauncher/internal/settings"
 	"github.com/GrooveStats/gslauncher/internal/stats"
@@ -24,6 +26,7 @@ func (e *DisabledError) Error() string {
 
 type Client struct {
 	client *http.Client
+	cache  *lru.Cache
 
 	allowScoreSubmit        bool
 	allowPlayerScores       bool
@@ -32,8 +35,11 @@ type Client struct {
 }
 
 func NewClient() *Client {
+	cache, _ := lru.New(512)
+
 	return &Client{
 		client: &http.Client{Timeout: 15 * time.Second},
+		cache:  cache,
 
 		allowScoreSubmit:        false,
 		allowPlayerScores:       false,
@@ -80,6 +86,12 @@ func (client *Client) NewSession(request *fsipc.GsNewSessionRequest) (*NewSessio
 }
 
 func (client *Client) PlayerScores(request *fsipc.GsPlayerScoresRequest) (*PlayerScoresResponse, error) {
+	cachedResponse := client.getPlayerScores(request)
+	if cachedResponse != nil {
+		stats.GsPlayerScoresCachedCount++
+		return cachedResponse, nil
+	}
+
 	if !client.allowPlayerScores {
 		return nil, &DisabledError{reason: "not allowed to fetch player scores"}
 	}
@@ -114,6 +126,8 @@ func (client *Client) PlayerScores(request *fsipc.GsPlayerScoresRequest) (*Playe
 	if err != nil {
 		return nil, err
 	}
+
+	client.addPlayerScores(request, &response)
 
 	return &response, nil
 }
@@ -227,6 +241,8 @@ func (client *Client) ScoreSubmit(request *fsipc.GsScoreSubmitRequest) (*ScoreSu
 	if err != nil {
 		return nil, err
 	}
+
+	client.removePlayerScores(request)
 
 	return &response, nil
 }
