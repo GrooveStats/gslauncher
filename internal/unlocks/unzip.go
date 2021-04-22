@@ -2,7 +2,7 @@ package unlocks
 
 import (
 	"archive/zip"
-	"errors"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -19,11 +19,14 @@ func unzip(archivePath, targetDir string) error {
 	for _, f := range reader.File {
 		parts := strings.SplitN(f.Name, "/", 2)
 		if len(parts) < 2 {
-			return errors.New("unsupported zip directory layout")
+			return fmt.Errorf("unsupported zip directory layout: %s", f.Name)
 		}
 
-		fname := filepath.Clean(strings.ReplaceAll(parts[1], "/", string(os.PathSeparator)))
-		fpath := filepath.Join(targetDir, fname)
+		fpath := filepath.Join(targetDir, filepath.FromSlash(parts[1]))
+		if !strings.HasPrefix(fpath, filepath.Clean(targetDir)+string(os.PathSeparator)) {
+			return fmt.Errorf("illegal file path: %s", f.Name)
+		}
+
 		info := f.FileInfo()
 
 		if info.IsDir() {

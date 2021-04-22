@@ -2,7 +2,6 @@ package unlocks
 
 import (
 	"fmt"
-	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -196,22 +195,6 @@ func (manager *Manager) getCookiePath(unlock *Unlock, profileName *string) strin
 func (manager *Manager) download(unlock *Unlock) {
 	unlock.DownloadStatus = Downloading
 	unlock.DownloadError = nil
-
-	downloadUrl, err := url.Parse(unlock.DownloadUrl)
-	if err != nil {
-		unlock.DownloadStatus = NotDownloaded
-		unlock.DownloadError = err
-		manager.updateCallback(unlock)
-		return
-	}
-
-	host := downloadUrl.Host
-	if host != "groovestats.com" && !strings.HasSuffix(host, ".groovestats.com") {
-		unlock.DownloadStatus = NotDownloaded
-		unlock.DownloadError = fmt.Errorf("Not hosted on groovestats.com, but %s", host)
-		manager.updateCallback(unlock)
-		return
-	}
 
 	filename := manager.getCachePath(unlock)
 	download := Fetch(unlock.DownloadUrl, filename)
