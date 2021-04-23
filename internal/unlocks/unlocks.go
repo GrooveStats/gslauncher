@@ -130,6 +130,21 @@ func (manager *Manager) SetUpdateCallback(callback func(*Unlock)) {
 	manager.updateCallback = callback
 }
 
+func (manager *Manager) HasPending() bool {
+	for _, unlock := range manager.Unlocks {
+		if unlock.DownloadStatus != Downloaded {
+			return true
+		}
+		for _, user := range unlock.Users {
+			if user.UnpackStatus != Unpacked {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
 func (manager *Manager) detectDownloadStatus(unlock *Unlock) {
 	filename := manager.getCachePath(unlock)
 

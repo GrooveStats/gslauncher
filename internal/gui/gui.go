@@ -24,15 +24,20 @@ import (
 )
 
 type App struct {
-	app          fyne.App
-	mainWin      fyne.Window
-	unlockWidget *UnlockWidget
-	session      *session.Session
+	app           fyne.App
+	mainWin       fyne.Window
+	unlockManager *unlocks.Manager
+	unlockWidget  *UnlockWidget
+	launchButton  *widget.Button
+	session       *session.Session
+	autolaunch    bool
 }
 
-func NewApp(unlockManager *unlocks.Manager) *App {
+func NewApp(unlockManager *unlocks.Manager, autolaunch bool) *App {
 	app := &App{
-		app: app.New(),
+		app:           app.New(),
+		unlockManager: unlockManager,
+		autolaunch:    autolaunch,
 	}
 
 	app.app.Settings().SetTheme(theme.DarkTheme())
@@ -75,7 +80,7 @@ func NewApp(unlockManager *unlocks.Manager) *App {
 			}),
 			fyne.NewMenuItemSeparator(),
 			fyne.NewMenuItem("Quit", func() {
-				app.maybeQuit()
+				go app.maybeQuit()
 			}),
 		),
 		fyne.NewMenu(
@@ -112,39 +117,24 @@ func NewApp(unlockManager *unlocks.Manager) *App {
 		),
 	))
 
-	launchButton := widget.NewButton("Launch StepMania", nil)
-	launchButton.OnTapped = func() {
-		session, err := session.Launch(unlockManager)
-		if err != nil {
-			dialog.ShowError(err, app.mainWin)
-			return
-		}
-
-		app.session = session
-		launchButton.Disable()
-
-		go func() {
-			session.Wait()
-			app.session = nil
-			launchButton.Enable()
-		}()
-	}
-	launchButton.Importance = widget.HighImportance
+	app.launchButton = widget.NewButton("Launch StepMania", nil)
+	app.launchButton.OnTapped = app.launchSM
+	app.launchButton.Importance = widget.HighImportance
 
 	app.unlockWidget = NewUnlockWidget(unlockManager)
 
 	app.mainWin.SetContent(container.NewVBox(
 		app.unlockWidget.vbox,
 		layout.NewSpacer(),
-		container.NewPadded(launchButton),
+		container.NewPadded(app.launchButton),
 	))
 
 	app.mainWin.CenterOnScreen()
 	app.mainWin.Show()
 
-	app.mainWin.SetCloseIntercept(app.maybeQuit)
+	app.mainWin.SetCloseIntercept(func() { go app.maybeQuit() })
 
-	if settings.Get().FirstLaunch {
+	if settings.Get().FirstLaunch && !autolaunch {
 		app.showFirstLaunchDialog()
 	}
 
@@ -152,30 +142,81 @@ func NewApp(unlockManager *unlocks.Manager) *App {
 }
 
 func (app *App) Run() {
+	if app.autolaunch {
+		app.launchSM()
+	}
+
 	app.app.Run()
+}
+
+func (app *App) launchSM() {
+	session, err := session.Launch(app.unlockManager)
+	if err != nil {
+		dialog.ShowError(err, app.mainWin)
+		return
+	}
+
+	app.session = session
+	app.launchButton.Disable()
+
+	go func() {
+		session.Wait()
+		app.session = nil
+		app.launchButton.Enable()
+
+		if app.autolaunch && !app.unlockManager.HasPending() {
+			app.mainWin.Close()
+		}
+	}()
 }
 
 func (app *App) maybeQuit() {
 	session := app.session
+	ch := make(chan bool, 10)
 
 	if session != nil {
 		confirmDialog := dialog.NewConfirm(
 			"Stop StepMania?",
 			"Closing the launcher will stop StepMania as well.",
 			func(confirmed bool) {
-				if confirmed {
-					app.session.Kill()
-					app.mainWin.Close()
-				}
+				ch <- confirmed
 			},
 			app.mainWin,
 		)
 		confirmDialog.SetConfirmText("Stop StepMania")
 		confirmDialog.SetDismissText("Keep Running")
 		confirmDialog.Show()
-	} else {
-		app.mainWin.Close()
+
+		confirmed := <-ch
+		if confirmed {
+			session.Kill()
+		} else {
+			return
+		}
 	}
+
+	if app.unlockManager.HasPending() {
+		confirmDialog := dialog.NewConfirm(
+			"Discard unlocks?",
+			"Closing the launcher will also discard pending unlocks.\n"+
+				"If you want to get them after closing the launcher"+
+				" you will have to download them from the RPG website.",
+			func(confirmed bool) {
+				ch <- confirmed
+			},
+			app.mainWin,
+		)
+		confirmDialog.SetConfirmText("Discard Unlocks")
+		confirmDialog.SetDismissText("Keep Running")
+		confirmDialog.Show()
+
+		confirmed := <-ch
+		if !confirmed {
+			return
+		}
+	}
+
+	app.mainWin.Close()
 }
 
 func (app *App) showStatisticsDialog() {

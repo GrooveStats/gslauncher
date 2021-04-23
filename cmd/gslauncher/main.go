@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"io"
 	"log"
 	"os"
@@ -36,6 +37,9 @@ func redirectLog() {
 }
 
 func main() {
+	autolaunch := flag.Bool("autolaunch", false, "automatically launch StepMania")
+	flag.Parse()
+
 	redirectLog()
 	log.Printf("GrooveStats Launcher %s (%s %s)", version.Formatted(), runtime.GOOS, runtime.GOARCH)
 
@@ -47,6 +51,6 @@ func main() {
 		return
 	}
 
-	app := gui.NewApp(unlockManager)
+	app := gui.NewApp(unlockManager, *autolaunch)
 	app.Run()
 }
