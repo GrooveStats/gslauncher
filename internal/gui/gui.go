@@ -123,11 +123,11 @@ func NewApp(unlockManager *unlocks.Manager, autolaunch bool) *App {
 
 	app.unlockWidget = NewUnlockWidget(unlockManager)
 
-	app.mainWin.SetContent(container.NewVBox(
+	app.mainWin.SetContent(container.NewVScroll(container.NewVBox(
 		app.unlockWidget.vbox,
 		layout.NewSpacer(),
 		container.NewPadded(app.launchButton),
-	))
+	)))
 
 	app.mainWin.CenterOnScreen()
 	app.mainWin.Show()
