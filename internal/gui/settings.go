@@ -1,16 +1,57 @@
 package gui
 
 import (
+	"os"
+	"path/filepath"
+	"runtime"
 	"strconv"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/data/validation"
 	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/storage"
 	"fyne.io/fyne/v2/widget"
 
 	"github.com/GrooveStats/gslauncher/internal/settings"
 )
+
+func pathToUrl(fpath string) (fyne.ListableURI, error) {
+	fpath = filepath.ToSlash(fpath)
+
+	uri, err := storage.ParseURI("file://" + fpath)
+	if err != nil {
+		return nil, err
+	}
+
+	return storage.ListerForURI(uri)
+}
+
+func abbreviatePath(fpath string) string {
+	if runtime.GOOS == "windows" {
+		configDir, err := os.UserConfigDir()
+		if err == nil {
+			rel, err := filepath.Rel(configDir, fpath)
+			if err == nil {
+				fpath = "%AppData%\\" + rel
+			}
+		}
+	} else {
+		homedir, err := os.UserHomeDir()
+		if err == nil {
+			rel, err := filepath.Rel(homedir, fpath)
+			if err == nil {
+				fpath = "~/" + rel
+			}
+		}
+	}
+
+	if len(fpath) > 55 {
+		fpath = fpath[:52] + "..."
+	}
+
+	return fpath
+}
 
 func (app *App) getSettingsFormItems(data *settings.Settings) []*widget.FormItem {
 	smExeButton := widget.NewButton("Select", nil)
@@ -20,14 +61,18 @@ func (app *App) getSettingsFormItems(data *settings.Settings) []*widget.FormItem
 				return
 			}
 
-			path := file.URI().Path()
+			path := filepath.FromSlash(file.URI().Path())
 			data.SmExePath = path
 			smExeButton.SetText(path)
 		}, app.mainWin)
+		uri, err := pathToUrl(filepath.Dir(data.SmExePath))
+		if err == nil {
+			fileDialog.SetLocation(uri)
+		}
 		fileDialog.Resize(fyne.NewSize(700, 500))
 		fileDialog.Show()
 	}
-	smExeButton.SetText(data.SmExePath)
+	smExeButton.SetText(abbreviatePath(data.SmExePath))
 
 	smDirButton := widget.NewButton("Select", nil)
 	smDirButton.OnTapped = func() {
@@ -36,14 +81,18 @@ func (app *App) getSettingsFormItems(data *settings.Settings) []*widget.FormItem
 				return
 			}
 
-			path := dir.Path()
+			path := filepath.FromSlash(dir.Path())
 			data.SmDataDir = path
 			smDirButton.SetText(path)
 		}, app.mainWin)
+		uri, err := pathToUrl(data.SmDataDir)
+		if err == nil {
+			fileDialog.SetLocation(uri)
+		}
 		fileDialog.Resize(fyne.NewSize(700, 500))
 		fileDialog.Show()
 	}
-	smDirButton.SetText(data.SmDataDir)
+	smDirButton.SetText(abbreviatePath(data.SmDataDir))
 
 	options := []string{"Off", "Download Only", "Download and Unpack"}
 	autoDownloadSelect := widget.NewSelect(options, func(selected string) {
