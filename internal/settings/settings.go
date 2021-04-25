@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-	"runtime"
 )
 
 type AutoDownloadMode int
@@ -103,26 +102,7 @@ func Update(newSettings Settings) {
 }
 
 func getDefaults() Settings {
-	var smExePath string
-	var smDataDir string
-
-	switch runtime.GOOS {
-	case "windows":
-		smExePath = "C:\\Games\\StepMania 5.1\\Program\\StepMania.exe"
-		// "C:\\Games\\StepMania 5.3 Outfox\\Program\\StepMania.exe"
-
-		configDir, err := os.UserConfigDir()
-		if err == nil {
-			smDataDir = filepath.Join(configDir, "StepMania 5.1")
-		}
-	default:
-		smExePath = "/usr/local/bin/stepmania"
-
-		homeDir, err := os.UserHomeDir()
-		if err == nil {
-			smDataDir = filepath.Join(homeDir, ".stepmania-5.1")
-		}
-	}
+	smExePath, smDataDir := detectSM()
 
 	return Settings{
 		FirstLaunch:      true,
