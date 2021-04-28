@@ -127,7 +127,7 @@ func (app *App) getSettingsFormItems(data *settings.Settings) []*widget.FormItem
 	return []*widget.FormItem{
 		widget.NewFormItem("StepMania 5 Executable", smExeButton),
 		widget.NewFormItem("StepMania 5 Data Directory", smDirButton),
-		widget.NewFormItem("Auto-Download Unlocks", autoDownloadSelect),
+		widget.NewFormItem("Automatically Download\nUnlocked RPG Songs", autoDownloadSelect),
 		widget.NewFormItem("Separate Unlocks by User", userUnlocksCheck),
 	}
 }
