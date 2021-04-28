@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strconv"
+	"strings"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -31,17 +32,21 @@ func abbreviatePath(fpath string) string {
 	if runtime.GOOS == "windows" {
 		configDir, err := os.UserConfigDir()
 		if err == nil {
-			rel, err := filepath.Rel(configDir, fpath)
-			if err == nil {
-				fpath = "%AppData%\\" + rel
+			if strings.HasPrefix(fpath, configDir+string(os.PathSeparator)) {
+				rel, err := filepath.Rel(configDir, fpath)
+				if err == nil {
+					fpath = "%AppData%\\" + rel
+				}
 			}
 		}
 	} else {
-		homedir, err := os.UserHomeDir()
+		homeDir, err := os.UserHomeDir()
 		if err == nil {
-			rel, err := filepath.Rel(homedir, fpath)
-			if err == nil {
-				fpath = "~/" + rel
+			if strings.HasPrefix(fpath, homeDir+string(os.PathSeparator)) {
+				rel, err := filepath.Rel(homeDir, fpath)
+				if err == nil {
+					fpath = "~/" + rel
+				}
 			}
 		}
 	}
