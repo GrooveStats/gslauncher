@@ -1,7 +1,7 @@
 FROM ubuntu:20.04
 
 RUN apt-get update
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y curl mingw-w64
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y curl mingw-w64 nsis
 
 RUN cd ~ && curl -LO https://golang.org/dl/go1.16.3.linux-amd64.tar.gz
 RUN tar -C /usr/local -xf ~/go1.16.3.linux-amd64.tar.gz

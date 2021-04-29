@@ -22,3 +22,6 @@ go build -tags debug -o gslauncher-windows-i386-debug.exe ../cmd/gslauncher
 
 
 rm ../cmd/gslauncher/logo.syso
+
+
+makensis installer.nsi
