@@ -50,6 +50,8 @@ necessary for that because StepMania themes can not make network requests.
   [Update Profile](https://groovestats.com/index.php?page=register&action=update)
   page to generate and copy your API key. Paste the API key after the `ApiKey=`
   row in the GrooveStats.ini file.
+ 
+- Still have questions or run into problems? Visit the [GrooveStats Discord](https://discord.gg/H7jYZ7xaEX) and ask for help.
 
 
 ## Links for Developers & Themers
@@ -59,4 +61,4 @@ necessary for that because StepMania themes can not make network requests.
   and the GrooveStats Launcher.
 
 Are you a theme developer who is interested in integrating the gslauncher into
-your theme? Please contact us before doing so! [how?]
+your theme? Please [contact us](https://discord.gg/H7jYZ7xaEX) before doing so!
