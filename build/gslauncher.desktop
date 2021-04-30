@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=GrooveStats Launcher
+Exec=/opt/gslauncher/gslauncher-linux-amd64
+Terminal=false
+Icon=/opt/gslauncher/logo.png
+Type=Application
+Categories=Application;Game;ArcadeGame
+Comment=Launcher for StepMania 5
