@@ -1,6 +1,7 @@
 package gui
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -87,6 +88,21 @@ func (app *App) getSettingsForm(data *settings.Settings) fyne.CanvasObject {
 			}
 
 			path := filepath.FromSlash(dir.Path())
+
+			_, err = os.Stat(filepath.Join(path, "Save"))
+			if err != nil {
+				err = errors.New("invalid data directory: Save folder missing")
+				dialog.ShowError(err, app.mainWin)
+				return
+			}
+
+			_, err = os.Stat(filepath.Join(path, "Songs"))
+			if err != nil {
+				err = errors.New("invalid data directory: Songs folder missing")
+				dialog.ShowError(err, app.mainWin)
+				return
+			}
+
 			data.SmDataDir = path
 			smDirButton.SetText(path)
 		}, app.mainWin)

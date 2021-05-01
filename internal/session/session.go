@@ -29,6 +29,10 @@ func Launch(unlockManager *unlocks.Manager) (*Session, error) {
 		gsClient:      groovestats.NewClient(),
 	}
 
+	if settings.Get().SmExePath == "" || settings.Get().SmDataDir == "" {
+		return nil, fmt.Errorf("Please set the path to your StepMania executable in the settings!")
+	}
+
 	err := sess.startIpc()
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize fsipc: %w", err)
