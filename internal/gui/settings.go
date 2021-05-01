@@ -58,7 +58,7 @@ func abbreviatePath(fpath string) string {
 	return fpath
 }
 
-func (app *App) getSettingsFormItems(data *settings.Settings) []*widget.FormItem {
+func (app *App) getSettingsForm(data *settings.Settings) fyne.CanvasObject {
 	smExeButton := widget.NewButton("Select", nil)
 	smExeButton.OnTapped = func() {
 		fileDialog := dialog.NewFileOpen(func(file fyne.URIReadCloser, err error) {
@@ -99,6 +99,9 @@ func (app *App) getSettingsFormItems(data *settings.Settings) []*widget.FormItem
 	}
 	smDirButton.SetText(abbreviatePath(data.SmDataDir))
 
+	smDirFormItem := widget.NewFormItem("StepMania 5 Data Directory", smDirButton)
+	smDirFormItem.HintText = "The folder containing Save and Songs"
+
 	options := []string{"Off", "Download Only", "Download and Unpack"}
 	autoDownloadSelect := widget.NewSelect(options, func(selected string) {
 		switch selected {
@@ -119,17 +122,22 @@ func (app *App) getSettingsFormItems(data *settings.Settings) []*widget.FormItem
 		autoDownloadSelect.SetSelected("Download and Unpack")
 	}
 
+	autoDownloadFormItem := widget.NewFormItem("Automatically Download\nUnlocked RPG Songs", autoDownloadSelect)
+	autoDownloadFormItem.HintText = "Can negatively impact game performance when enabled!"
+
 	userUnlocksCheck := widget.NewCheck("", func(checked bool) {
 		data.UserUnlocks = checked
 	})
 	userUnlocksCheck.SetChecked(data.UserUnlocks)
 
-	return []*widget.FormItem{
+	form := widget.NewForm(
 		widget.NewFormItem("StepMania 5 Executable", smExeButton),
-		widget.NewFormItem("StepMania 5 Data Directory", smDirButton),
-		widget.NewFormItem("Automatically Download\nUnlocked RPG Songs", autoDownloadSelect),
+		smDirFormItem,
+		autoDownloadFormItem,
 		widget.NewFormItem("Separate Unlocks by User", userUnlocksCheck),
-	}
+	)
+
+	return form
 }
 
 func (app *App) showFirstLaunchDialog() {
@@ -141,8 +149,7 @@ func (app *App) showFirstLaunchDialog() {
 	welcomeMessage.Wrapping = fyne.TextWrapWord
 	welcomeMessage.Alignment = fyne.TextAlignCenter
 
-	form := widget.NewForm()
-	form.Items = app.getSettingsFormItems(&data)
+	form := app.getSettingsForm(&data)
 
 	firstLaunchDialog := dialog.NewCustom("Welcome!", "Save", container.NewVBox(
 		welcomeMessage,
@@ -163,87 +170,9 @@ func (app *App) showFirstLaunchDialog() {
 func (app *App) showSettingsDialog() {
 	data := settings.Get()
 
-	items := app.getSettingsFormItems(&data)
+	form := app.getSettingsForm(&data)
 
-	if data.Debug {
-		fakeGsNetworkErrorCheck := widget.NewCheck("", func(checked bool) {
-			data.FakeGsNetworkError = checked
-		})
-		fakeGsNetworkErrorCheck.SetChecked(data.FakeGsNetworkError)
-
-		fakeGsNetDelayEntry := widget.NewEntry()
-		fakeGsNetDelayEntry.Validator = validation.NewRegexp(`^\d+$`, "Must contain a number")
-		fakeGsNetDelayEntry.Text = strconv.Itoa(data.FakeGsNetworkDelay)
-		fakeGsNetDelayEntry.OnChanged = func(s string) {
-			n, err := strconv.Atoi(s)
-			if err == nil {
-				data.FakeGsNetworkDelay = n
-			}
-		}
-
-		options := []string{"OK", "UNSUPPORTED_CHART_HASH", "MAINTENANCE"}
-		fakeGsNewSessionResultSelect := widget.NewSelect(options, func(selected string) {
-			data.FakeGsNewSessionResult = selected
-		})
-		fakeGsNewSessionResultSelect.SetSelected(data.FakeGsNewSessionResult)
-
-		options = []string{"score-added", "improved", "score-not-improved", "chart-not-ranked"}
-		fakeGsSubmitResultSelect := widget.NewSelect(options, func(selected string) {
-			data.FakeGsSubmitResult = selected
-		})
-		fakeGsSubmitResultSelect.SetSelected(data.FakeGsSubmitResult)
-
-		fakeGsRpgCheck := widget.NewCheck("", func(checked bool) {
-			data.FakeGsRpg = checked
-		})
-		fakeGsRpgCheck.SetChecked(data.FakeGsRpg)
-
-		fakeGsCheck := widget.NewCheck("", func(checked bool) {
-			data.FakeGs = checked
-
-			if checked {
-				fakeGsNetworkErrorCheck.Enable()
-				fakeGsNewSessionResultSelect.Enable()
-				fakeGsSubmitResultSelect.Enable()
-				fakeGsRpgCheck.Enable()
-				fakeGsNetDelayEntry.Enable()
-			} else {
-				fakeGsNetworkErrorCheck.Disable()
-				fakeGsNewSessionResultSelect.Disable()
-				fakeGsSubmitResultSelect.Disable()
-				fakeGsRpgCheck.Disable()
-				fakeGsNetDelayEntry.Disable()
-			}
-		})
-		fakeGsCheck.SetChecked(data.FakeGs)
-
-		if !data.FakeGs {
-			fakeGsNetworkErrorCheck.Disable()
-			fakeGsNewSessionResultSelect.Disable()
-			fakeGsSubmitResultSelect.Disable()
-			fakeGsRpgCheck.Disable()
-			fakeGsNetDelayEntry.Disable()
-		}
-
-		items = append(
-			items,
-			widget.NewFormItem("[DEBUG] Simulate GrooveStats Requests", fakeGsCheck),
-			widget.NewFormItem("[DEBUG] >> Network Error", fakeGsNetworkErrorCheck),
-			widget.NewFormItem("[DEBUG] >> Network Delay (Seconds)", fakeGsNetDelayEntry),
-			widget.NewFormItem("[DEBUG] >> New Session Result", fakeGsNewSessionResultSelect),
-			widget.NewFormItem("[DEBUG] >> Score Submit Result", fakeGsSubmitResultSelect),
-			widget.NewFormItem("[DEBUG] >> RPG active", fakeGsRpgCheck),
-		)
-
-		gsUrlEntry := widget.NewEntry()
-		gsUrlEntry.Text = data.GrooveStatsUrl
-		gsUrlEntry.OnChanged = func(url string) {
-			data.GrooveStatsUrl = url
-		}
-		items = append(items, widget.NewFormItem("[DEBUG] GrooveStats URL", gsUrlEntry))
-	}
-
-	dialog.ShowForm("Settings", "Save", "Cancel", items, func(save bool) {
+	settingsDialog := dialog.NewCustomConfirm("Settings", "Save", "Cancel", form, func(save bool) {
 		if save {
 			settings.Update(data)
 
@@ -255,4 +184,92 @@ func (app *App) showSettingsDialog() {
 			app.unlockWidget.Refresh()
 		}
 	}, app.mainWin)
+	settingsDialog.Show()
+}
+
+func (app *App) showDebugSettingsDialog() {
+	data := settings.Get()
+
+	fakeGsNetworkErrorCheck := widget.NewCheck("", func(checked bool) {
+		data.FakeGsNetworkError = checked
+	})
+	fakeGsNetworkErrorCheck.SetChecked(data.FakeGsNetworkError)
+
+	fakeGsNetDelayEntry := widget.NewEntry()
+	fakeGsNetDelayEntry.Validator = validation.NewRegexp(`^\d+$`, "Must contain a number")
+	fakeGsNetDelayEntry.Text = strconv.Itoa(data.FakeGsNetworkDelay)
+	fakeGsNetDelayEntry.OnChanged = func(s string) {
+		n, err := strconv.Atoi(s)
+		if err == nil {
+			data.FakeGsNetworkDelay = n
+		}
+	}
+
+	options := []string{"OK", "UNSUPPORTED_CHART_HASH", "MAINTENANCE"}
+	fakeGsNewSessionResultSelect := widget.NewSelect(options, func(selected string) {
+		data.FakeGsNewSessionResult = selected
+	})
+	fakeGsNewSessionResultSelect.SetSelected(data.FakeGsNewSessionResult)
+
+	options = []string{"score-added", "improved", "score-not-improved", "chart-not-ranked"}
+	fakeGsSubmitResultSelect := widget.NewSelect(options, func(selected string) {
+		data.FakeGsSubmitResult = selected
+	})
+	fakeGsSubmitResultSelect.SetSelected(data.FakeGsSubmitResult)
+
+	fakeGsRpgCheck := widget.NewCheck("", func(checked bool) {
+		data.FakeGsRpg = checked
+	})
+	fakeGsRpgCheck.SetChecked(data.FakeGsRpg)
+
+	fakeGsCheck := widget.NewCheck("", func(checked bool) {
+		data.FakeGs = checked
+
+		if checked {
+			fakeGsNetworkErrorCheck.Enable()
+			fakeGsNewSessionResultSelect.Enable()
+			fakeGsSubmitResultSelect.Enable()
+			fakeGsRpgCheck.Enable()
+			fakeGsNetDelayEntry.Enable()
+		} else {
+			fakeGsNetworkErrorCheck.Disable()
+			fakeGsNewSessionResultSelect.Disable()
+			fakeGsSubmitResultSelect.Disable()
+			fakeGsRpgCheck.Disable()
+			fakeGsNetDelayEntry.Disable()
+		}
+	})
+	fakeGsCheck.SetChecked(data.FakeGs)
+
+	if !data.FakeGs {
+		fakeGsNetworkErrorCheck.Disable()
+		fakeGsNewSessionResultSelect.Disable()
+		fakeGsSubmitResultSelect.Disable()
+		fakeGsRpgCheck.Disable()
+		fakeGsNetDelayEntry.Disable()
+	}
+
+	gsUrlEntry := widget.NewEntry()
+	gsUrlEntry.Text = data.GrooveStatsUrl
+	gsUrlEntry.OnChanged = func(url string) {
+		data.GrooveStatsUrl = url
+	}
+
+	items := []*widget.FormItem{
+		widget.NewFormItem("Simulate GrooveStats Requests", fakeGsCheck),
+		widget.NewFormItem(">> Network Error", fakeGsNetworkErrorCheck),
+		widget.NewFormItem(">> Network Delay (Seconds)", fakeGsNetDelayEntry),
+		widget.NewFormItem(">> New Session Result", fakeGsNewSessionResultSelect),
+		widget.NewFormItem(">> Score Submit Result", fakeGsSubmitResultSelect),
+		widget.NewFormItem(">> RPG active", fakeGsRpgCheck),
+		widget.NewFormItem("GrooveStats URL", gsUrlEntry),
+	}
+
+	formDialog := dialog.NewForm("Debug Settings", "Save", "Cancel", items, func(save bool) {
+		if save {
+			settings.Update(data)
+		}
+	}, app.mainWin)
+	formDialog.Show()
+	formDialog.Resize(fyne.NewSize(600, 300))
 }

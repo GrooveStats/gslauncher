@@ -51,6 +51,25 @@ func NewApp(unlockManager *unlocks.Manager, autolaunch bool) *App {
 	app.mainWin = app.app.NewWindow(appName)
 	app.mainWin.Resize(fyne.NewSize(800, 600))
 
+	fileMenu := fyne.NewMenu("File")
+	fileMenu.Items = []*fyne.MenuItem{
+		fyne.NewMenuItem("Settings", func() {
+			app.showSettingsDialog()
+		}),
+	}
+	if settings.Get().Debug {
+		fileMenu.Items = append(fileMenu.Items, fyne.NewMenuItem("Debug Settings", func() {
+			app.showDebugSettingsDialog()
+		}))
+	}
+	fileMenu.Items = append(
+		fileMenu.Items,
+		fyne.NewMenuItemSeparator(),
+		fyne.NewMenuItem("Quit", func() {
+			go app.maybeQuit()
+		}),
+	)
+
 	logsMenuItem := fyne.NewMenuItem("StepMania Logs", nil)
 	logsMenuItem.ChildMenu = fyne.NewMenu(
 		"",
@@ -73,16 +92,7 @@ func NewApp(unlockManager *unlocks.Manager, autolaunch bool) *App {
 	)
 
 	app.mainWin.SetMainMenu(fyne.NewMainMenu(
-		fyne.NewMenu(
-			"File",
-			fyne.NewMenuItem("Settings", func() {
-				app.showSettingsDialog()
-			}),
-			fyne.NewMenuItemSeparator(),
-			fyne.NewMenuItem("Quit", func() {
-				go app.maybeQuit()
-			}),
-		),
+		fileMenu,
 		fyne.NewMenu(
 			"View",
 			logsMenuItem,
