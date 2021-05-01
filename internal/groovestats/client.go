@@ -296,8 +296,8 @@ func (client *Client) doRequest(req *http.Request, response interface{}) error {
 	// to work around an issue in the API where error responses are
 	// returned with status code 200
 	errorResp := ErrorResponse{}
-	err = json.Unmarshal(data, &errorResp)
-	if err == nil && errorResp.Error != "" {
+	json.Unmarshal(data, &errorResp)
+	if errorResp.Error != "" || errorResp.Message != "" {
 		if resp.StatusCode == 200 {
 			client.permanentError = true
 		}
