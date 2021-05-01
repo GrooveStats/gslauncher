@@ -14,7 +14,7 @@ InstallDir "$PROGRAMFILES\${APPNAME}"
 
 Name "${APPNAME}"
 Icon logo.ico
-outFile gslauncher-windows-setup.exe
+outFile ../dist/gslauncher-windows-setup.exe
 
 
 page components
@@ -42,10 +42,10 @@ section "GrooveStats Launcher"
 
 	${If} ${RunningX64}
 		MessageBox MB_OK "Running on 64-bit Windows"
-		File /oname=gslauncher.exe gslauncher-windows-amd64.exe
+		File /oname=gslauncher.exe ../dist/gslauncher-windows-amd64.exe
 	${Else}
 		MessageBox MB_OK "Running on 32-bit Windows"
-		File /oname=gslauncher.exe gslauncher-windows-i386.exe
+		File /oname=gslauncher.exe ../dist/gslauncher-windows-i386.exe
 	${EndIf}
 	File logo.ico
 
