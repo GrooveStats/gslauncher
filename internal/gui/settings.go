@@ -69,7 +69,7 @@ func (app *App) getSettingsForm(data *settings.Settings) fyne.CanvasObject {
 
 			path := filepath.FromSlash(file.URI().Path())
 			data.SmExePath = path
-			smExeButton.SetText(path)
+			smExeButton.SetText(abbreviatePath(path))
 		}, app.mainWin)
 		uri, err := pathToUrl(filepath.Dir(data.SmExePath))
 		if err == nil {
@@ -104,7 +104,7 @@ func (app *App) getSettingsForm(data *settings.Settings) fyne.CanvasObject {
 			}
 
 			data.SmDataDir = path
-			smDirButton.SetText(path)
+			smDirButton.SetText(abbreviatePath(path))
 		}, app.mainWin)
 		uri, err := pathToUrl(data.SmDataDir)
 		if err == nil {
