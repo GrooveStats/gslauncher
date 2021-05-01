@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -285,10 +286,28 @@ func (client *Client) doRequest(req *http.Request, response interface{}) error {
 		client.permanentError = true
 	}
 
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	// Parse error response (if it actually is one)
+	// XXX: This should only be done for 4xx and 5xx responses, but we have
+	// to work around an issue in the API where error responses are
+	// returned with status code 200
+	errorResp := ErrorResponse{}
+	err = json.Unmarshal(data, &errorResp)
+	if err == nil && errorResp.Error != "" {
+		if resp.StatusCode == 200 {
+			client.permanentError = true
+		}
+
+		return fmt.Errorf("%s %s %d %v", req.Method, req.URL.Path, resp.StatusCode, errorResp)
+	}
+
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		return fmt.Errorf("status code %s", resp.Status)
 	}
 
-	decoder := json.NewDecoder(resp.Body)
-	return decoder.Decode(response)
+	return json.Unmarshal(data, response)
 }

@@ -1,5 +1,10 @@
 package groovestats
 
+type ErrorResponse struct {
+	Message string `json:"message"`
+	Error   string `json:"error"`
+}
+
 type NewSessionResponse struct {
 	ActiveEvents []struct {
 		Name      string `json:"name"`
