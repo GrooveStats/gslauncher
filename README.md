@@ -3,42 +3,75 @@
 ## What is it
 
 The launcher allows StepMania themes to connect to
-[GrooveStats](https://www.groovestats.com/) via it's API. A separate program is
-necessary for that because StepMania themes can not make network requests.
+[GrooveStats](https://www.groovestats.com/) via it's API. StepMania doesn't
+allow themes to make network requests, so a separate program is required to do
+that.
 
-- [Screenshots!]
 - For pad players only
-- Has the following features
-- Auto score submission
-- Leaderboards accessible via the menu
-- Top scores in the songwheel
-- SRPG integration, including auto-downloading unlocks
-- Hidden dogecoin miner
+- Has the following features:
+  - Automatic score submission
+  - Top scores and rivals in the songwheel
+  - Leaderboards accessible via the menu
+  - [SRPG](https://srpg5.groovestats.com/) integration, including
+    auto-downloading unlocked songs
+  - Hidden Dogecoin miner 🐕
 
 
 ## How to Install
 
-- Install StepMania. Currently supported are versions 5.0, 5.1 beta 2 and 5.3
-  (also know as Outfox. Please use the latest alpha release).
-- Set up the Simply Love theme.
+- Install StepMania. Currently supported versions are 5.0, 5.1 beta 2 and 5.3
+  (aka Outfox). If you use Outfox please make sure to use the latest alpha release.
+- Set up the Simply Love theme. You will need version 5.0.0 or later. Older
+  versions don't support GrooveStats features.
   [Installation](https://github.com/Simply-Love/Simply-Love-SM5#installing-simply-love).
-- Note: For now, you need to use the `beta` or `gs` branches for this to work.
-- Install the launcher. You can get executable files for Windows and Linux
-  [here](https://github.com/GrooveStats/gslauncher/releases). Alternatively you
-  can also
-  [build it yourself](https://github.com/GrooveStats/gslauncher/blob/main/doc/building.md).
-  Check out the settings after the first laucnh and adapt the path to your
-  StepMania executable and to the data directory.
-- Enable local profiles if you haven't already. Alternatively, you can use USB profiles.
-- You'll need to generate a `GrooveStats.ini` file in your profile folder. This can be done in one of two ways:
-  - Enter the Music Select screen when logged into a profile. This will automotically generate the file for you.
-  - Identify your LocalProfile, and manually create a `GrooveStats.ini` with the following contents:
+- Install the launcher. There is a
+  [Windows installer](https://github.com/GrooveStats/gslauncher/releases/latest/download/gslauncher-windows-setup.exe)
+  and a
+  [Linux tarball](https://github.com/GrooveStats/gslauncher/releases/latest/download/gslauncher-linux.tar.gz)
+  with a setup script available.
 
+  The installer for Windows is not signed, so you will have to click through a
+  couple of security dialogs when running it.
+
+  <img src="doc/images/win-security-dialog-1.png" height="230">
+  <img src="doc/images/win-security-dialog-2.png" height="230">
+  <img src="doc/images/win-security-dialog-3.png" height="230">
+
+  The Linux tarball contains binaries for the amd64 and i386 architectures. You
+  can either just run the binaries by hand or you use the bundled setup script
+  to install the launcher system-wide and add it to the application menu of you
+  desktop environment.
+
+  ```sh
+  cd Downloads
+  tar xzf gslauncher-linux.tar.gz
+  cd gslauncher
+  sudo ./setup.sh
   ```
-  [GrooveStats]
-  ApiKey=YOUR_API_KEY
-  IsPadPlayer=1
-  ```
+
+  Check the settings after the first launch and adapt the path to your
+  StepMania executable and to the data directory.
+
+  ![welcome screen](doc/images/launcher-welcome.png)
+
+  You can also check out our
+  [other download options](https://github.com/GrooveStats/gslauncher/releases/latest/)
+  or
+  [build the launcher yourself](https://github.com/GrooveStats/gslauncher/blob/main/doc/building.md).
+- Enable local profiles if you haven't already. Alternatively, you can use USB
+  profiles.
+- You'll need to generate a `GrooveStats.ini` file in your profile folder. This
+  can be done in one of two ways:
+  - Enter the Music Select screen when logged into a profile. This will
+    automotically generate the file for you.
+  - Identify your LocalProfile, and manually create a `GrooveStats.ini` with
+    the following contents:
+
+    ```ini
+    [GrooveStats]
+    ApiKey=YOUR_API_KEY
+    IsPadPlayer=1
+    ```
 
   - IsPadPlayer=1 indicates that you are playing on a pad (and not a keyboard).
     If you're using a keyboard, then set this to 0. In that case your scores
@@ -50,15 +83,23 @@ necessary for that because StepMania themes can not make network requests.
   [Update Profile](https://groovestats.com/index.php?page=register&action=update)
   page to generate and copy your API key. Paste the API key after the `ApiKey=`
   row in the GrooveStats.ini file.
+
+  ![GrooveStats API key](doc/images/gs-api-key.png)
+
+- If you want the launcher to immediately launch StepMania after startup
+  (useful for scripts) you can run it with the `-autolaunch` option. When using
+  that option the launcher also automatically exits when StepMania has been
+  closed and there are no pending unlocks.
  
-- Still have questions or run into problems? Visit the [GrooveStats Discord](https://discord.gg/H7jYZ7xaEX) and ask for help.
+- Still have questions or run into problems? Visit the
+  [GrooveStats Discord](https://discord.gg/H7jYZ7xaEX) and ask for help.
 
 
 ## Links for Developers & Themers
 - [Building the Groovestats Launcher](https://github.com/GrooveStats/gslauncher/blob/main/doc/building.md)
 - [Filesystem IPC](https://github.com/GrooveStats/gslauncher/blob/main/doc/fsipc.md):
-  The filesystem based protocol used to communicate between the Theme/StepMania
-  and the GrooveStats Launcher.
+  Description of the filesystem based protocol used to communicate between the
+  Theme/StepMania and the GrooveStats Launcher.
 
 Are you a theme developer who is interested in integrating the gslauncher into
 your theme? Please [contact us](https://discord.gg/H7jYZ7xaEX) before doing so!
