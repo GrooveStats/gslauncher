@@ -1,9 +1,9 @@
 # GrooveStats Launcher
 
-## What is it
+## What is It?
 
 The launcher allows StepMania themes to connect to
-[GrooveStats](https://www.groovestats.com/) via it's API. StepMania doesn't
+[GrooveStats](https://www.groovestats.com/) via its API. StepMania doesn't
 allow themes to make network requests, so a separate program is required to do
 that.
 
@@ -21,9 +21,9 @@ that.
 
 - Install StepMania. Currently supported versions are 5.0, 5.1 beta 2 and 5.3
   (aka Outfox). If you use Outfox please make sure to use the latest alpha release.
-- Set up the Simply Love theme. You will need version 5.0.0 or later. Older
-  versions don't support GrooveStats features.
-  [Installation](https://github.com/Simply-Love/Simply-Love-SM5#installing-simply-love).
+- [Set up the Simply Love theme.](https://github.com/Simply-Love/Simply-Love-SM5#installing-simply-love)
+  You will need version 5.0.0 or later. Older versions don't support
+  GrooveStats features.
 - Install the launcher. There is a
   [Windows installer](https://github.com/GrooveStats/gslauncher/releases/latest/download/gslauncher-windows-setup.exe)
   and a
@@ -58,12 +58,12 @@ that.
   [other download options](https://github.com/GrooveStats/gslauncher/releases/latest/)
   or
   [build the launcher yourself](https://github.com/GrooveStats/gslauncher/blob/main/doc/building.md).
-- Enable local profiles if you haven't already. Alternatively, you can use USB
-  profiles.
+- Enable local profiles in the theme settings if you haven't already.
+  Alternatively, you can use USB profiles.
 - You'll need to generate a `GrooveStats.ini` file in your profile folder. This
   can be done in one of two ways:
   - Enter the Music Select screen when logged into a profile. This will
-    automotically generate the file for you.
+    automatically generate the file for you.
   - Identify your LocalProfile, and manually create a `GrooveStats.ini` with
     the following contents:
 
@@ -82,7 +82,7 @@ that.
   your GrooveStats account and visit the
   [Update Profile](https://groovestats.com/index.php?page=register&action=update)
   page to generate and copy your API key. Paste the API key after the `ApiKey=`
-  row in the GrooveStats.ini file.
+  in the `GrooveStats.ini` file.
 
   ![GrooveStats API key](doc/images/gs-api-key.png)
 
@@ -96,7 +96,7 @@ that.
 
 
 ## Links for Developers & Themers
-- [Building the Groovestats Launcher](https://github.com/GrooveStats/gslauncher/blob/main/doc/building.md)
+- [Building the GrooveStats Launcher](https://github.com/GrooveStats/gslauncher/blob/main/doc/building.md)
 - [Filesystem IPC](https://github.com/GrooveStats/gslauncher/blob/main/doc/fsipc.md):
   Description of the filesystem based protocol used to communicate between the
   Theme/StepMania and the GrooveStats Launcher.
