@@ -1,5 +1,8 @@
 # GrooveStats Launcher
 
+[![Release Video](https://img.youtube.com/vi/8yMzp7xMQq0/0.jpg)](https://youtu.be/8yMzp7xMQq0)
+
+
 ## What is It?
 
 The launcher allows StepMania themes to connect to
