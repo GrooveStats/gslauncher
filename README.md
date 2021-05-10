@@ -24,6 +24,9 @@ that.
 - [Set up the Simply Love theme.](https://github.com/Simply-Love/Simply-Love-SM5#installing-simply-love)
   You will need version 5.0.0 or later. Older versions don't support
   GrooveStats features.
+
+  Future versions of the Digital Dance and Waterfall themes will be adding
+  GrooveStats integration too. (To be released soon!)
 - Install the launcher. There is a
   [Windows installer](https://github.com/GrooveStats/gslauncher/releases/latest/download/gslauncher-windows-setup.exe)
   and a
