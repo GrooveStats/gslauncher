@@ -26,12 +26,12 @@ that.
   (aka Outfox). If you use Outfox please make sure to use the latest alpha release.
 - [Set up the Simply Love theme.](https://github.com/Simply-Love/Simply-Love-SM5#installing-simply-love)
   You will need version 5.0.0 or later. Older versions don't support
-  GrooveStats features. The
-  [Waterfall](https://docs.google.com/document/d/1-13VfHKUM_b2WHZpQodrdLu3Pe-IWqrgJBBIHFq6y_Y)
-  theme (version 0.7 or later) also supports GrooveStats features.
+  GrooveStats features.
 
-  A future version of the Digital Dance theme will be adding GrooveStats
-  integration too. (To be released soon!)
+  [Digital Dance](https://github.com/Hayoreo/Digital-Dance/releases/latest)
+  (1.0.0 or later) and
+  [Waterfall](https://docs.google.com/document/d/1-13VfHKUM_b2WHZpQodrdLu3Pe-IWqrgJBBIHFq6y_Y)
+  (0.7 or later) also have support for GrooveStats features.
 - Install the launcher. There is a
   [Windows installer](https://github.com/GrooveStats/gslauncher/releases/latest/download/gslauncher-windows-setup.exe)
   and a
