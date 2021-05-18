@@ -197,7 +197,7 @@ func (manager *Manager) getUnpackPath(unlock *Unlock, profileName *string) strin
 	re := regexp.MustCompile(`[<>:"/\\|?*]`)
 	packName = re.ReplaceAllLiteralString(packName, "_")
 
-	return filepath.Join(settings.Get().SmDataDir, "Songs", packName)
+	return filepath.Join(settings.Get().SmSongsDir, packName)
 }
 
 func (manager *Manager) getCookiePath(unlock *Unlock, profileName *string) string {

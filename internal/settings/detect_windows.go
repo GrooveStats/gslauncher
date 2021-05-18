@@ -11,7 +11,7 @@ var dirnames = []string{
 	"StepMania 5",
 }
 
-func detectSM() (string, string) {
+func detectSM() (string, string, string, string) {
 	for _, dirname := range dirnames {
 		installDir := filepath.Join("C:\\Games", dirname)
 		smExePath := filepath.Join(installDir, "Program\\StepMania.exe")
@@ -22,6 +22,9 @@ func detectSM() (string, string) {
 		}
 
 		var smDataDir string
+		var smSaveDir string
+		var smSongsDir string
+		var smLogsDir string
 
 		// portable installation?
 		_, err = os.Stat(filepath.Join(installDir, "portable.ini"))
@@ -34,8 +37,14 @@ func detectSM() (string, string) {
 			}
 		}
 
-		return smExePath, smDataDir
+		if smDataDir != "" {
+			smSaveDir = filepath.Join(smDataDir, "Save")
+			smSongsDir = filepath.Join(smDataDir, "Songs")
+			smLogsDir = filepath.Join(smDataDir, "Logs")
+		}
+
+		return smExePath, smSaveDir, smSongsDir, smLogsDir
 	}
 
-	return "", ""
+	return "", "", "", ""
 }

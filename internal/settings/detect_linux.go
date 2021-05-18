@@ -8,12 +8,12 @@ import (
 	"strings"
 )
 
-func detectSM() (string, string) {
+func detectSM() (string, string, string, string) {
 	cmd := exec.Command("which", "stepmania")
 
 	out, err := cmd.Output()
 	if err != nil {
-		return "", ""
+		return "", "", "", ""
 	}
 	smExePath := strings.TrimSpace(string(out))
 
@@ -30,7 +30,10 @@ func detectSM() (string, string) {
 	installDir := filepath.Dir(smExePath)
 	_, err = os.Stat(filepath.Join(installDir, "portable.ini"))
 	if err == nil {
-		return smExePath, installDir
+		smSaveDir := filepath.Join(installDir, "Save")
+		smSongsDir := filepath.Join(installDir, "Songs")
+		smLogsDir := filepath.Join(installDir, "Logs")
+		return smExePath, smSaveDir, smSongsDir, smLogsDir
 	}
 
 	// Query the SM version. We also have to set the working directory,
@@ -41,22 +44,25 @@ func detectSM() (string, string) {
 
 	out, err = cmd.Output()
 	if err != nil {
-		return smExePath, ""
+		return smExePath, "", "", ""
 	}
 
 	pattern := regexp.MustCompile(`^StepMania(5\.[\d+]+)`)
 	m := pattern.FindSubmatch(out)
 	if len(m) < 2 {
-		return smExePath, ""
+		return smExePath, "", "", ""
 	}
 	version := string(m[1])
 
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		return smExePath, ""
+		return smExePath, "", "", ""
 	}
 
 	smDataDir := filepath.Join(homeDir, ".stepmania-"+version)
+	smSaveDir := filepath.Join(smDataDir, "Save")
+	smSongsDir := filepath.Join(smDataDir, "Songs")
+	smLogsDir := filepath.Join(smDataDir, "Logs")
 
-	return smExePath, smDataDir
+	return smExePath, smSaveDir, smSongsDir, smLogsDir
 }

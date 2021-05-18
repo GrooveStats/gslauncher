@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"sync"
 
 	"github.com/GrooveStats/gslauncher/internal/fsipc"
@@ -29,7 +30,7 @@ func Launch(unlockManager *unlocks.Manager) (*Session, error) {
 		gsClient:      groovestats.NewClient(),
 	}
 
-	if settings.Get().SmExePath == "" || settings.Get().SmDataDir == "" {
+	if settings.Get().SmExePath == "" || settings.Get().SmSaveDir == "" || settings.Get().SmSongsDir == "" {
 		return nil, fmt.Errorf("Please set the path to your StepMania executable in the settings!")
 	}
 
@@ -65,10 +66,10 @@ func (sess *Session) Kill() {
 }
 
 func (sess *Session) startIpc() error {
-	smDir := settings.Get().SmDataDir
-	dataDir := filepath.Join(smDir, "Save", "GrooveStats")
+	saveDir := settings.Get().SmSaveDir
+	dataDir := filepath.Join(saveDir, "GrooveStats")
 
-	_, err := os.Stat(smDir)
+	_, err := os.Stat(saveDir)
 	if err != nil {
 		return err
 	}
@@ -102,6 +103,11 @@ func (sess *Session) startIpc() error {
 
 func (sess *Session) startSM() error {
 	smExePath := settings.Get().SmExePath
+
+	// SmExePath points to an .app bundle on MacOS
+	if runtime.GOOS == "darwin" {
+		smExePath = filepath.Join(smExePath, "Contents", "MacOS", "StepMania")
+	}
 
 	// Let's launch StepMania! We also have to set the working directory,
 	// because SM 5.3 (outfox) for Linux searches for bundled shared

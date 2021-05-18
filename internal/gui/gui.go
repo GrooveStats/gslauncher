@@ -51,81 +51,96 @@ func NewApp(unlockManager *unlocks.Manager, autolaunch bool) *App {
 	app.mainWin = app.app.NewWindow(appName)
 	app.mainWin.Resize(fyne.NewSize(800, 600))
 
-	fileMenu := fyne.NewMenu("File")
-	fileMenu.Items = []*fyne.MenuItem{
-		fyne.NewMenuItem("Settings", func() {
-			app.showSettingsDialog()
-		}),
+	menus := make([]*fyne.Menu, 0)
+
+	if runtime.GOOS != "darwin" {
+		fileMenu := fyne.NewMenu("File")
+		fileMenu.Items = []*fyne.MenuItem{
+			fyne.NewMenuItem("Settings", func() {
+				app.showSettingsDialog()
+			}),
+		}
+		if settings.Get().Debug {
+			fileMenu.Items = append(fileMenu.Items, fyne.NewMenuItem("Debug Settings", func() {
+				app.showDebugSettingsDialog()
+			}))
+		}
+		fileMenu.Items = append(
+			fileMenu.Items,
+			fyne.NewMenuItemSeparator(),
+			fyne.NewMenuItem("Quit", func() {
+				go app.maybeQuit()
+			}),
+		)
+		menus = append(menus, fileMenu)
 	}
-	if settings.Get().Debug {
-		fileMenu.Items = append(fileMenu.Items, fyne.NewMenuItem("Debug Settings", func() {
-			app.showDebugSettingsDialog()
-		}))
-	}
-	fileMenu.Items = append(
-		fileMenu.Items,
-		fyne.NewMenuItemSeparator(),
-		fyne.NewMenuItem("Quit", func() {
-			go app.maybeQuit()
-		}),
-	)
 
 	logsMenuItem := fyne.NewMenuItem("StepMania Logs", nil)
 	logsMenuItem.ChildMenu = fyne.NewMenu(
 		"",
 		fyne.NewMenuItem("info.txt", func() {
-			filename := filepath.Join(settings.Get().SmDataDir, "Logs", "info.txt")
+			filename := filepath.Join(settings.Get().SmLogsDir, "info.txt")
 			app.viewLogfile(filename)
 		}),
 		fyne.NewMenuItem("log.txt", func() {
-			filename := filepath.Join(settings.Get().SmDataDir, "Logs", "log.txt")
+			filename := filepath.Join(settings.Get().SmLogsDir, "log.txt")
 			app.viewLogfile(filename)
 		}),
 		fyne.NewMenuItem("timelog.txt", func() {
-			filename := filepath.Join(settings.Get().SmDataDir, "Logs", "timelog.txt")
+			filename := filepath.Join(settings.Get().SmLogsDir, "timelog.txt")
 			app.viewLogfile(filename)
 		}),
 		fyne.NewMenuItem("userlog.txt", func() {
-			filename := filepath.Join(settings.Get().SmDataDir, "Logs", "userlog.txt")
+			filename := filepath.Join(settings.Get().SmLogsDir, "userlog.txt")
 			app.viewLogfile(filename)
 		}),
 	)
 
-	app.mainWin.SetMainMenu(fyne.NewMainMenu(
-		fileMenu,
-		fyne.NewMenu(
-			"View",
-			logsMenuItem,
-			fyne.NewMenuItem("Launcher Log", func() {
-				cacheDir, err := os.UserCacheDir()
-				if err != nil {
-					dialog.ShowError(err, app.mainWin)
-					return
-				}
+	viewMenu := fyne.NewMenu(
+		"View",
+		logsMenuItem,
+		fyne.NewMenuItem("Launcher Log", func() {
+			cacheDir, err := os.UserCacheDir()
+			if err != nil {
+				dialog.ShowError(err, app.mainWin)
+				return
+			}
 
-				filename := filepath.Join(cacheDir, "groovestats-launcher", "log.txt")
-				app.viewLogfile(filename)
-			}),
-			fyne.NewMenuItem("Statistics", func() {
-				app.showStatisticsDialog()
-			}),
-		),
-		fyne.NewMenu(
-			"Help",
-			fyne.NewMenuItem("Setup", func() {
-				url, err := url.Parse("https://github.com/GrooveStats/gslauncher#readme")
-				if err != nil {
-					return
-				}
+			filename := filepath.Join(cacheDir, "groovestats-launcher", "log.txt")
+			app.viewLogfile(filename)
+		}),
+		fyne.NewMenuItem("Statistics", func() {
+			app.showStatisticsDialog()
+		}),
+	)
+	if settings.Get().Debug && runtime.GOOS == "darwin" {
+		viewMenu.Items = append(viewMenu.Items, fyne.NewMenuItem("Settings", func() {
+			app.showSettingsDialog()
+		}))
+		viewMenu.Items = append(viewMenu.Items, fyne.NewMenuItem("Debug Settings", func() {
+			app.showDebugSettingsDialog()
+		}))
+	}
+	menus = append(menus, viewMenu)
 
-				app.app.OpenURL(url)
-			}),
-			fyne.NewMenuItemSeparator(),
-			fyne.NewMenuItem("About", func() {
-				app.showAboutDialog()
-			}),
-		),
-	))
+	helpMenu := fyne.NewMenu(
+		"Help",
+		fyne.NewMenuItem("Setup", func() {
+			url, err := url.Parse("https://github.com/GrooveStats/gslauncher#readme")
+			if err != nil {
+				return
+			}
+
+			app.app.OpenURL(url)
+		}),
+		fyne.NewMenuItemSeparator(),
+		fyne.NewMenuItem("About", func() {
+			app.showAboutDialog()
+		}),
+	)
+	menus = append(menus, helpMenu)
+
+	app.mainWin.SetMainMenu(fyne.NewMainMenu(menus...))
 
 	app.launchButton = widget.NewButton("Launch StepMania", nil)
 	app.launchButton.OnTapped = app.launchSM
@@ -261,9 +276,12 @@ func (app *App) viewLogfile(filename string) {
 	var cmd *exec.Cmd
 
 	// Open the file with the default application
-	if runtime.GOOS == "windows" {
+	switch runtime.GOOS {
+	case "windows":
 		cmd = exec.Command("rundll32.exe", "url.dll,FileProtocolHandler", filename)
-	} else {
+	case "darwin":
+		cmd = exec.Command("open", filename)
+	default:
 		cmd = exec.Command("xdg-open", filename)
 	}
 

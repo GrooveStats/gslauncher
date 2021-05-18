@@ -15,9 +15,7 @@ import (
 func main() {
 	settings.Load()
 
-	smDir := settings.Get().SmDataDir
-	dataDir := filepath.Join(smDir, "Save", "GrooveStats")
-
+	dataDir := filepath.Join(settings.Get().SmSaveDir, "GrooveStats")
 	uuid := genUuid4()
 
 	filename := uuid + ".json"

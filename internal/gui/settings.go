@@ -62,26 +62,52 @@ func abbreviatePath(fpath string) string {
 func (app *App) getSettingsForm(data *settings.Settings) fyne.CanvasObject {
 	smExeButton := widget.NewButton("Select", nil)
 	smExeButton.OnTapped = func() {
-		fileDialog := dialog.NewFileOpen(func(file fyne.URIReadCloser, err error) {
-			if err != nil || file == nil {
-				return
-			}
+		if runtime.GOOS == "darwin" {
+			fileDialog := dialog.NewFolderOpen(func(dir fyne.ListableURI, err error) {
+				if err != nil || dir == nil {
+					return
+				}
 
-			path := filepath.FromSlash(file.URI().Path())
-			data.SmExePath = path
-			smExeButton.SetText(abbreviatePath(path))
-		}, app.mainWin)
-		uri, err := pathToUrl(filepath.Dir(data.SmExePath))
-		if err == nil {
-			fileDialog.SetLocation(uri)
+				path := filepath.FromSlash(dir.Path())
+
+				if !strings.HasSuffix(path, ".app") {
+					err = errors.New("invalid application: must be a .app directory")
+					dialog.ShowError(err, app.mainWin)
+					return
+				}
+
+				data.SmExePath = path
+				smExeButton.SetText(abbreviatePath(path))
+			}, app.mainWin)
+			uri, err := pathToUrl(filepath.Dir(data.SmExePath))
+			if err == nil {
+				fileDialog.SetLocation(uri)
+			}
+			fileDialog.SetFilter(storage.NewExtensionFileFilter([]string{".app"}))
+			fileDialog.Resize(fyne.NewSize(700, 500))
+			fileDialog.Show()
+		} else {
+			fileDialog := dialog.NewFileOpen(func(file fyne.URIReadCloser, err error) {
+				if err != nil || file == nil {
+					return
+				}
+
+				path := filepath.FromSlash(file.URI().Path())
+				data.SmExePath = path
+				smExeButton.SetText(abbreviatePath(path))
+			}, app.mainWin)
+			uri, err := pathToUrl(filepath.Dir(data.SmExePath))
+			if err == nil {
+				fileDialog.SetLocation(uri)
+			}
+			fileDialog.Resize(fyne.NewSize(700, 500))
+			fileDialog.Show()
 		}
-		fileDialog.Resize(fyne.NewSize(700, 500))
-		fileDialog.Show()
 	}
 	smExeButton.SetText(abbreviatePath(data.SmExePath))
 
-	smDirButton := widget.NewButton("Select", nil)
-	smDirButton.OnTapped = func() {
+	smSaveDirButton := widget.NewButton("Select", nil)
+	smSaveDirButton.OnTapped = func() {
 		fileDialog := dialog.NewFolderOpen(func(dir fyne.ListableURI, err error) {
 			if err != nil || dir == nil {
 				return
@@ -89,34 +115,81 @@ func (app *App) getSettingsForm(data *settings.Settings) fyne.CanvasObject {
 
 			path := filepath.FromSlash(dir.Path())
 
-			_, err = os.Stat(filepath.Join(path, "Save"))
+			_, err = os.Stat(filepath.Join(path, "Preferences.ini"))
 			if err != nil {
-				err = errors.New("invalid data directory: Save folder missing")
+				err = errors.New("invalid save directory: Preferences.ini not found")
 				dialog.ShowError(err, app.mainWin)
 				return
 			}
 
-			_, err = os.Stat(filepath.Join(path, "Songs"))
-			if err != nil {
-				err = errors.New("invalid data directory: Songs folder missing")
-				dialog.ShowError(err, app.mainWin)
-				return
-			}
-
-			data.SmDataDir = path
-			smDirButton.SetText(abbreviatePath(path))
+			data.SmSaveDir = path
+			smSaveDirButton.SetText(abbreviatePath(path))
 		}, app.mainWin)
-		uri, err := pathToUrl(data.SmDataDir)
+		uri, err := pathToUrl(data.SmSaveDir)
 		if err == nil {
 			fileDialog.SetLocation(uri)
 		}
 		fileDialog.Resize(fyne.NewSize(700, 500))
 		fileDialog.Show()
 	}
-	smDirButton.SetText(abbreviatePath(data.SmDataDir))
+	smSaveDirButton.SetText(abbreviatePath(data.SmSaveDir))
 
-	smDirFormItem := widget.NewFormItem("StepMania 5 Data Directory", smDirButton)
-	smDirFormItem.HintText = "The folder containing Save and Songs"
+	smSaveDirFormItem := widget.NewFormItem("StepMania 5 Save Directory", smSaveDirButton)
+	smSaveDirFormItem.HintText = "The folder containing StepMania's Preferences.ini"
+
+	smSongsDirButton := widget.NewButton("Select", nil)
+	smSongsDirButton.OnTapped = func() {
+		fileDialog := dialog.NewFolderOpen(func(dir fyne.ListableURI, err error) {
+			if err != nil || dir == nil {
+				return
+			}
+
+			path := filepath.FromSlash(dir.Path())
+
+			data.SmSongsDir = path
+			smSongsDirButton.SetText(abbreviatePath(path))
+		}, app.mainWin)
+		uri, err := pathToUrl(data.SmSongsDir)
+		if err == nil {
+			fileDialog.SetLocation(uri)
+		}
+		fileDialog.Resize(fyne.NewSize(700, 500))
+		fileDialog.Show()
+	}
+	smSongsDirButton.SetText(abbreviatePath(data.SmSongsDir))
+
+	smSongsDirFormItem := widget.NewFormItem("StepMania 5 Songs Directory", smSongsDirButton)
+	smSongsDirFormItem.HintText = "Unlocked RPG songs will be stored here"
+
+	smLogsDirButton := widget.NewButton("Select", nil)
+	smLogsDirButton.OnTapped = func() {
+		fileDialog := dialog.NewFolderOpen(func(dir fyne.ListableURI, err error) {
+			if err != nil || dir == nil {
+				return
+			}
+
+			path := filepath.FromSlash(dir.Path())
+
+			_, err = os.Stat(filepath.Join(path, "info.txt"))
+			if err != nil {
+				err = errors.New("invalid logs directory: info.txt not found")
+				dialog.ShowError(err, app.mainWin)
+				return
+			}
+
+			data.SmLogsDir = path
+			smLogsDirButton.SetText(abbreviatePath(path))
+		}, app.mainWin)
+		uri, err := pathToUrl(data.SmLogsDir)
+		if err == nil {
+			fileDialog.SetLocation(uri)
+		}
+		fileDialog.Resize(fyne.NewSize(700, 500))
+		fileDialog.Show()
+	}
+	smLogsDirButton.SetText(abbreviatePath(data.SmLogsDir))
+
+	smLogsDirFormItem := widget.NewFormItem("StepMania 5 Logs Directory", smLogsDirButton)
 
 	options := []string{"Off", "Download Only", "Download and Unpack"}
 	autoDownloadSelect := widget.NewSelect(options, func(selected string) {
@@ -148,7 +221,9 @@ func (app *App) getSettingsForm(data *settings.Settings) fyne.CanvasObject {
 
 	form := widget.NewForm(
 		widget.NewFormItem("StepMania 5 Executable", smExeButton),
-		smDirFormItem,
+		smSaveDirFormItem,
+		smSongsDirFormItem,
+		smLogsDirFormItem,
 		autoDownloadFormItem,
 		widget.NewFormItem("Separate Unlocks by User", userUnlocksCheck),
 	)

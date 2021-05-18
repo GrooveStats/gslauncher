@@ -54,7 +54,9 @@ func (m AutoDownloadMode) MarshalJSON() ([]byte, error) {
 type Settings struct {
 	FirstLaunch      bool `json:"-"`
 	SmExePath        string
-	SmDataDir        string
+	SmSaveDir        string
+	SmSongsDir       string
+	SmLogsDir        string
 	AutoDownloadMode AutoDownloadMode
 	UserUnlocks      bool
 
@@ -67,6 +69,9 @@ type Settings struct {
 	FakeGsSubmitResult     string `json:"-"`
 	FakeGsRpg              bool   `json:"-"`
 	GrooveStatsUrl         string `json:"-"`
+
+	// backwards compatibility fields
+	SmDataDir string `json:",omitempty"`
 }
 
 var settings Settings = getDefaults()
@@ -93,6 +98,14 @@ func Load() error {
 		return err
 	}
 
+	// v1.0.0 compat
+	if settings.SmDataDir != "" {
+		settings.SmSaveDir = filepath.Join(settings.SmDataDir, "Save")
+		settings.SmSongsDir = filepath.Join(settings.SmDataDir, "Songs")
+		settings.SmLogsDir = filepath.Join(settings.SmDataDir, "Logs")
+		settings.SmDataDir = ""
+	}
+
 	settings.FirstLaunch = false
 	return nil
 }
@@ -102,12 +115,14 @@ func Update(newSettings Settings) {
 }
 
 func getDefaults() Settings {
-	smExePath, smDataDir := detectSM()
+	smExePath, smSaveDir, smSongsDir, smLogsDir := detectSM()
 
 	return Settings{
 		FirstLaunch:      true,
 		SmExePath:        smExePath,
-		SmDataDir:        smDataDir,
+		SmSaveDir:        smSaveDir,
+		SmSongsDir:       smSongsDir,
+		SmLogsDir:        smLogsDir,
 		AutoDownloadMode: AutoDownloadOff,
 		UserUnlocks:      false,
 
