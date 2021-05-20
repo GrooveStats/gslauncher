@@ -106,6 +106,12 @@ func (app *App) getSettingsForm(data *settings.Settings) fyne.CanvasObject {
 	}
 	smExeButton.SetText(abbreviatePath(data.SmExePath))
 
+	smExeButtonFormItem := widget.NewFormItem("StepMania 5 Executable", smExeButton)
+	if runtime.GOOS == "darwin" {
+		smExeButtonFormItem.Text = "StepMania 5 App"
+	}
+	smExeButtonFormItem.HintText = "Currently supported are SM 5.0, 5.1 and 5.3 (Outfox)"
+
 	smSaveDirButton := widget.NewButton("Select", nil)
 	smSaveDirButton.OnTapped = func() {
 		fileDialog := dialog.NewFolderOpen(func(dir fyne.ListableURI, err error) {
@@ -137,30 +143,6 @@ func (app *App) getSettingsForm(data *settings.Settings) fyne.CanvasObject {
 	smSaveDirFormItem := widget.NewFormItem("StepMania 5 Save Directory", smSaveDirButton)
 	smSaveDirFormItem.HintText = "The folder containing StepMania's Preferences.ini"
 
-	smSongsDirButton := widget.NewButton("Select", nil)
-	smSongsDirButton.OnTapped = func() {
-		fileDialog := dialog.NewFolderOpen(func(dir fyne.ListableURI, err error) {
-			if err != nil || dir == nil {
-				return
-			}
-
-			path := filepath.FromSlash(dir.Path())
-
-			data.SmSongsDir = path
-			smSongsDirButton.SetText(abbreviatePath(path))
-		}, app.mainWin)
-		uri, err := pathToUrl(data.SmSongsDir)
-		if err == nil {
-			fileDialog.SetLocation(uri)
-		}
-		fileDialog.Resize(fyne.NewSize(700, 500))
-		fileDialog.Show()
-	}
-	smSongsDirButton.SetText(abbreviatePath(data.SmSongsDir))
-
-	smSongsDirFormItem := widget.NewFormItem("StepMania 5 Songs Directory", smSongsDirButton)
-	smSongsDirFormItem.HintText = "Unlocked RPG songs will be stored here"
-
 	smLogsDirButton := widget.NewButton("Select", nil)
 	smLogsDirButton.OnTapped = func() {
 		fileDialog := dialog.NewFolderOpen(func(dir fyne.ListableURI, err error) {
@@ -191,6 +173,30 @@ func (app *App) getSettingsForm(data *settings.Settings) fyne.CanvasObject {
 
 	smLogsDirFormItem := widget.NewFormItem("StepMania 5 Logs Directory", smLogsDirButton)
 
+	smSongsDirButton := widget.NewButton("Select", nil)
+	smSongsDirButton.OnTapped = func() {
+		fileDialog := dialog.NewFolderOpen(func(dir fyne.ListableURI, err error) {
+			if err != nil || dir == nil {
+				return
+			}
+
+			path := filepath.FromSlash(dir.Path())
+
+			data.SmSongsDir = path
+			smSongsDirButton.SetText(abbreviatePath(path))
+		}, app.mainWin)
+		uri, err := pathToUrl(data.SmSongsDir)
+		if err == nil {
+			fileDialog.SetLocation(uri)
+		}
+		fileDialog.Resize(fyne.NewSize(700, 500))
+		fileDialog.Show()
+	}
+	smSongsDirButton.SetText(abbreviatePath(data.SmSongsDir))
+
+	smSongsDirFormItem := widget.NewFormItem("StepMania 5 Songs Directory", smSongsDirButton)
+	smSongsDirFormItem.HintText = "Unlocked RPG songs will be stored here"
+
 	options := []string{"Off", "Download Only", "Download and Unpack"}
 	autoDownloadSelect := widget.NewSelect(options, func(selected string) {
 		switch selected {
@@ -220,10 +226,10 @@ func (app *App) getSettingsForm(data *settings.Settings) fyne.CanvasObject {
 	userUnlocksCheck.SetChecked(data.UserUnlocks)
 
 	form := widget.NewForm(
-		widget.NewFormItem("StepMania 5 Executable", smExeButton),
+		smExeButtonFormItem,
 		smSaveDirFormItem,
-		smSongsDirFormItem,
 		smLogsDirFormItem,
+		smSongsDirFormItem,
 		autoDownloadFormItem,
 		widget.NewFormItem("Separate Unlocks by User", userUnlocksCheck),
 	)
