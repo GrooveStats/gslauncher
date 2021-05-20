@@ -199,7 +199,7 @@ func (client *Client) ScoreSubmit(request *fsipc.GsScoreSubmitRequest) (*ScoreSu
 
 	type scoreSubmitPlayerData struct {
 		Score   int    `json:"score"`
-		Comment string `json:"comment"`
+		Comment string `json:"comment,omitempty"`
 		Rate    int    `json:"rate"`
 	}
 

@@ -33,7 +33,7 @@ type gsScoreSubmitPlayerData struct {
 	ProfileName string `json:"profileName" validate:"required"`
 	ChartHash   string `json:"chartHash" validate:"required"`
 	Score       int    `json:"score" validate:"min=0,max=10000"`
-	Comment     string `json:"comment" validate:"required"`
+	Comment     string `json:"comment"`
 	Rate        int    `json:"rate" validate:"min=0,max=200"`
 }
 
