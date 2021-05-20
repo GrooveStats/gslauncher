@@ -225,6 +225,11 @@ func (app *App) getSettingsForm(data *settings.Settings) fyne.CanvasObject {
 	})
 	userUnlocksCheck.SetChecked(data.UserUnlocks)
 
+	autoLaunchCheck := widget.NewCheck("", func(checked bool) {
+		data.AutoLaunch = checked
+	})
+	autoLaunchCheck.SetChecked(data.AutoLaunch)
+
 	form := widget.NewForm(
 		smExeButtonFormItem,
 		smSaveDirFormItem,
@@ -232,6 +237,7 @@ func (app *App) getSettingsForm(data *settings.Settings) fyne.CanvasObject {
 		smSongsDirFormItem,
 		autoDownloadFormItem,
 		widget.NewFormItem("Separate Unlocks by User", userUnlocksCheck),
+		widget.NewFormItem("Launch StepMania at Startup", autoLaunchCheck),
 	)
 
 	return form

@@ -59,6 +59,7 @@ type Settings struct {
 	SmLogsDir        string
 	AutoDownloadMode AutoDownloadMode
 	UserUnlocks      bool
+	AutoLaunch       bool
 
 	// debug settings, not stored in the json
 	Debug                  bool   `json:"-"`
@@ -125,6 +126,7 @@ func getDefaults() Settings {
 		SmLogsDir:        smLogsDir,
 		AutoDownloadMode: AutoDownloadOff,
 		UserUnlocks:      false,
+		AutoLaunch:       false,
 
 		Debug:                  debug,
 		FakeGs:                 false,

@@ -37,7 +37,7 @@ func NewApp(unlockManager *unlocks.Manager, autolaunch bool) *App {
 	app := &App{
 		app:           app.New(),
 		unlockManager: unlockManager,
-		autolaunch:    autolaunch,
+		autolaunch:    autolaunch || settings.Get().AutoLaunch,
 	}
 
 	app.app.Settings().SetTheme(theme.DarkTheme())
