@@ -44,6 +44,9 @@ func main() {
 	log.Printf("GrooveStats Launcher %s (%s %s)", version.Formatted(), runtime.GOOS, runtime.GOARCH)
 
 	settings.Load()
+	if settings.Get().FirstLaunch {
+		settings.DetectSM()
+	}
 
 	unlockManager, err := unlocks.NewManager()
 	if err != nil {

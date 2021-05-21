@@ -15,6 +15,10 @@ import (
 func main() {
 	settings.Load()
 
+	if settings.Get().SmSaveDir == "" {
+		log.Fatal("Save directory not configured")
+	}
+
 	dataDir := filepath.Join(settings.Get().SmSaveDir, "GrooveStats")
 	uuid := genUuid4()
 

@@ -75,7 +75,25 @@ type Settings struct {
 	SmDataDir string `json:",omitempty"`
 }
 
-var settings Settings = getDefaults()
+var settings = Settings{
+	FirstLaunch:      true,
+	SmExePath:        "",
+	SmSaveDir:        "",
+	SmSongsDir:       "",
+	SmLogsDir:        "",
+	AutoDownloadMode: AutoDownloadOff,
+	UserUnlocks:      false,
+	AutoLaunch:       false,
+
+	Debug:                  debug,
+	FakeGs:                 false,
+	FakeGsNetworkError:     false,
+	FakeGsNetworkDelay:     0,
+	FakeGsNewSessionResult: "OK",
+	FakeGsSubmitResult:     "score-added",
+	FakeGsRpg:              true,
+	GrooveStatsUrl:         "https://api.groovestats.com",
+}
 
 func Get() Settings {
 	return settings
@@ -115,28 +133,13 @@ func Update(newSettings Settings) {
 	settings = newSettings
 }
 
-func getDefaults() Settings {
+func DetectSM() {
 	smExePath, smSaveDir, smSongsDir, smLogsDir := detectSM()
 
-	return Settings{
-		FirstLaunch:      true,
-		SmExePath:        smExePath,
-		SmSaveDir:        smSaveDir,
-		SmSongsDir:       smSongsDir,
-		SmLogsDir:        smLogsDir,
-		AutoDownloadMode: AutoDownloadOff,
-		UserUnlocks:      false,
-		AutoLaunch:       false,
-
-		Debug:                  debug,
-		FakeGs:                 false,
-		FakeGsNetworkError:     false,
-		FakeGsNetworkDelay:     0,
-		FakeGsNewSessionResult: "OK",
-		FakeGsSubmitResult:     "score-added",
-		FakeGsRpg:              true,
-		GrooveStatsUrl:         "https://api.groovestats.com",
-	}
+	settings.SmExePath = smExePath
+	settings.SmSaveDir = smSaveDir
+	settings.SmSongsDir = smSongsDir
+	settings.SmLogsDir = smLogsDir
 }
 
 func Save() error {
