@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"strings"
 	"sync"
@@ -29,6 +30,7 @@ type FsIpc struct {
 	responseDir string
 	watcher     *fsnotify.Watcher
 	shutdown    chan struct{}
+	logger      *log.Logger
 	wg          sync.WaitGroup
 }
 
@@ -63,6 +65,8 @@ func New(rootDir string) (*FsIpc, error) {
 		return nil, err
 	}
 
+	logger := log.New(log.Writer(), "[IPC] ", log.LstdFlags|log.Lmsgprefix)
+
 	fsipc := FsIpc{
 		Requests:                     make(chan interface{}, 5),
 		GsPlayerScoresRequests:       make(chan interface{}, 1),
@@ -72,6 +76,7 @@ func New(rootDir string) (*FsIpc, error) {
 		responseDir:                  responseDir,
 		watcher:                      watcher,
 		shutdown:                     make(chan struct{}),
+		logger:                       logger,
 	}
 
 	err = fsipc.watcher.Add(fsipc.requestDir)
@@ -126,7 +131,7 @@ func (fsipc *FsIpc) loop() {
 				return
 			}
 
-			log.Printf("fsnotify error: %v", err)
+			fsipc.logger.Printf("fsnotify error: %v", err)
 		case <-fsipc.shutdown:
 			return
 		}
@@ -158,6 +163,13 @@ func readFilePatient(filename string) ([]byte, error) {
 	return data, err
 }
 
+func (fsipc *FsIpc) logRequest(id string, data []byte) {
+	re := regexp.MustCompile(`"apiKey":\s*"[^"]*"`)
+	data = re.ReplaceAllLiteral(data, []byte(`"apiKey":"<redacted>"`))
+
+	fsipc.logger.Printf("received request %s: %s", id, data)
+}
+
 func (fsipc *FsIpc) handleFile(filename string) {
 	defer fsipc.wg.Done()
 
@@ -170,7 +182,7 @@ func (fsipc *FsIpc) handleFile(filename string) {
 
 	info, err := os.Stat(filename)
 	if err != nil {
-		log.Printf("failed to stat %s: %v", basename, err)
+		fsipc.logger.Printf("failed to stat %s: %v", basename, err)
 		return
 	}
 
@@ -181,17 +193,17 @@ func (fsipc *FsIpc) handleFile(filename string) {
 	// SM only waits up to one minute for a reply, so if the request is too
 	// old, just discard it.
 	if info.ModTime().Add(time.Minute).Before(time.Now()) {
-		log.Printf("discarding stale request: %s", id)
+		fsipc.logger.Printf("discarding stale request: %s", id)
 		err = os.Remove(filename)
 		if err != nil {
-			log.Printf("failed to delete %s: %v", basename, err)
+			fsipc.logger.Printf("failed to delete %s: %v", basename, err)
 		}
 		return
 	}
 
 	data, err := readFilePatient(filename)
 	if err != nil {
-		log.Printf("failed to read %s: %v", basename, err)
+		fsipc.logger.Printf("failed to read %s: %v", basename, err)
 		return
 	}
 
@@ -201,7 +213,7 @@ func (fsipc *FsIpc) handleFile(filename string) {
 
 	err = json.Unmarshal(data, &base)
 	if err != nil {
-		log.Printf("failed to unmarshal request %s: %v", id, err)
+		fsipc.logger.Printf("failed to unmarshal request %s: %v", id, err)
 		return
 	}
 
@@ -219,27 +231,25 @@ func (fsipc *FsIpc) handleFile(filename string) {
 	case "groovestats/score-submit":
 		request = &GsScoreSubmitRequest{Id: id}
 	case "":
-		log.Printf("invalid request %s: missing action", id)
+		fsipc.logger.Printf("invalid request %s: missing action", id)
 		return
 	default:
-		log.Printf("invalid request %s: unknown action %s", id, base.Action)
+		fsipc.logger.Printf("invalid request %s: unknown action %s", id, base.Action)
 		return
 	}
 
-	if settings.Get().Debug {
-		log.Printf("received request %s: %s", id, data)
-	}
+	fsipc.logRequest(id, data)
 
 	err = json.Unmarshal(data, request)
 	if err != nil {
-		log.Printf("failed to unmarshal request %s: %v", id, err)
+		fsipc.logger.Printf("failed to unmarshal request %s: %v", id, err)
 		return
 	}
 
 	validate := validator.New()
 	err = validate.Struct(request)
 	if err != nil {
-		log.Printf("invalid request %s: %v", id, err)
+		fsipc.logger.Printf("invalid request %s: %v", id, err)
 		return
 	}
 
@@ -268,7 +278,7 @@ func (fsipc *FsIpc) handleFile(filename string) {
 
 	err = os.Remove(filename)
 	if err != nil {
-		log.Printf("failed to delete %s: %v", basename, err)
+		fsipc.logger.Printf("failed to delete %s: %v", basename, err)
 	}
 
 	return
@@ -281,7 +291,7 @@ func (fsipc *FsIpc) WriteResponse(id string, data interface{}) error {
 	}
 
 	if settings.Get().Debug {
-		log.Printf("writing response for %s: %s", id, b)
+		fsipc.logger.Printf("writing response for %s: %s", id, b)
 	}
 
 	filename := filepath.Join(fsipc.responseDir, id+".json")
@@ -298,7 +308,7 @@ func (fsipc *FsIpc) WriteResponse(id string, data interface{}) error {
 			case <-time.After(time.Minute):
 				err := os.Remove(filename)
 				if err != nil {
-					log.Printf("failed to delete %s: %v", filename, err)
+					fsipc.logger.Printf("failed to delete %s: %v", filename, err)
 				}
 			case <-fsipc.shutdown:
 				return
