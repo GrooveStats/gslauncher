@@ -65,6 +65,8 @@ func (client *Client) NewSession(request *fsipc.GsNewSessionRequest) (*NewSessio
 		return response, nil
 	}
 
+	client.permanentError = false
+
 	params := url.Values{}
 	params.Add("chartHashVersion", strconv.Itoa(request.ChartHashVersion))
 
