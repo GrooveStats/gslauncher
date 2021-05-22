@@ -170,6 +170,8 @@ func (sess *Session) processRequest(request interface{}) {
 		sess.ipc.WriteResponse(req.Id, response)
 	case *fsipc.GsScoreSubmitRequest:
 		resp, err := sess.gsClient.ScoreSubmit(req)
+		response := newNetworkResponse(resp, err)
+		sess.ipc.WriteResponse(req.Id, response)
 
 		if err == nil {
 			if req.Player1 != nil && resp.Player1 != nil && resp.Player1.Rpg != nil && resp.Player1.Rpg.Progress != nil {
@@ -218,9 +220,6 @@ func (sess *Session) processRequest(request interface{}) {
 				}
 			}
 		}
-
-		response := newNetworkResponse(resp, err)
-		sess.ipc.WriteResponse(req.Id, response)
 	default:
 		panic("unknown request type")
 	}
