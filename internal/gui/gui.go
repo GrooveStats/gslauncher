@@ -113,13 +113,15 @@ func NewApp(unlockManager *unlocks.Manager, autolaunch bool) *App {
 			app.showStatisticsDialog()
 		}),
 	)
-	if settings.Get().Debug && runtime.GOOS == "darwin" {
+	if runtime.GOOS == "darwin" {
 		viewMenu.Items = append(viewMenu.Items, fyne.NewMenuItem("Settings", func() {
 			app.showSettingsDialog()
 		}))
-		viewMenu.Items = append(viewMenu.Items, fyne.NewMenuItem("Debug Settings", func() {
-			app.showDebugSettingsDialog()
-		}))
+		if settings.Get().Debug {
+			viewMenu.Items = append(viewMenu.Items, fyne.NewMenuItem("Debug Settings", func() {
+				app.showDebugSettingsDialog()
+			}))
+		}
 	}
 	menus = append(menus, viewMenu)
 
