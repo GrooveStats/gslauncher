@@ -2,7 +2,6 @@ package session
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -159,29 +158,14 @@ func (sess *Session) processRequest(request interface{}) {
 		sess.ipc.WriteResponse(req.Id, response)
 	case *fsipc.GsNewSessionRequest:
 		resp, err := sess.gsClient.NewSession(req)
-
-		if err != nil {
-			log.Printf("failed to start new session: %v", err)
-		}
-
 		response := newNetworkResponse(resp, err)
 		sess.ipc.WriteResponse(req.Id, response)
 	case *fsipc.GsPlayerScoresRequest:
 		resp, err := sess.gsClient.PlayerScores(req)
-
-		if err != nil {
-			log.Printf("failed to fetch player scores: %v", err)
-		}
-
 		response := newNetworkResponse(resp, err)
 		sess.ipc.WriteResponse(req.Id, response)
 	case *fsipc.GsPlayerLeaderboardsRequest:
 		resp, err := sess.gsClient.PlayerLeaderboards(req)
-
-		if err != nil {
-			log.Printf("failed to fetch player leaderboards: %v", err)
-		}
-
 		response := newNetworkResponse(resp, err)
 		sess.ipc.WriteResponse(req.Id, response)
 	case *fsipc.GsScoreSubmitRequest:
@@ -233,8 +217,6 @@ func (sess *Session) processRequest(request interface{}) {
 					)
 				}
 			}
-		} else {
-			log.Printf("failed to submit score: %v", err)
 		}
 
 		response := newNetworkResponse(resp, err)

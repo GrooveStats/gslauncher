@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -28,6 +29,7 @@ func (e *DisabledError) Error() string {
 type Client struct {
 	client *http.Client
 	cache  *lru.Cache
+	logger *log.Logger
 
 	allowScoreSubmit        bool
 	allowPlayerScores       bool
@@ -37,10 +39,12 @@ type Client struct {
 
 func NewClient() *Client {
 	cache, _ := lru.New(512)
+	logger := log.New(log.Writer(), "[GS] ", log.LstdFlags|log.Lmsgprefix)
 
 	return &Client{
 		client: &http.Client{Timeout: 15 * time.Second},
 		cache:  cache,
+		logger: logger,
 
 		allowScoreSubmit:        false,
 		allowPlayerScores:       false,
@@ -50,6 +54,14 @@ func NewClient() *Client {
 }
 
 func (client *Client) NewSession(request *fsipc.GsNewSessionRequest) (*NewSessionResponse, error) {
+	response, err := client.newSession(request)
+	if err != nil {
+		client.logger.Print(err)
+	}
+	return response, err
+}
+
+func (client *Client) newSession(request *fsipc.GsNewSessionRequest) (*NewSessionResponse, error) {
 	stats.GsNewSessionCount++
 
 	if settings.Get().FakeGs {
@@ -89,6 +101,14 @@ func (client *Client) NewSession(request *fsipc.GsNewSessionRequest) (*NewSessio
 }
 
 func (client *Client) PlayerScores(request *fsipc.GsPlayerScoresRequest) (*PlayerScoresResponse, error) {
+	response, err := client.playerScores(request)
+	if err != nil {
+		client.logger.Print(err)
+	}
+	return response, err
+}
+
+func (client *Client) playerScores(request *fsipc.GsPlayerScoresRequest) (*PlayerScoresResponse, error) {
 	cachedResponse := client.getPlayerScores(request)
 	if cachedResponse != nil {
 		stats.GsPlayerScoresCachedCount++
@@ -136,6 +156,14 @@ func (client *Client) PlayerScores(request *fsipc.GsPlayerScoresRequest) (*Playe
 }
 
 func (client *Client) PlayerLeaderboards(request *fsipc.GsPlayerLeaderboardsRequest) (*PlayerLeaderboardsResponse, error) {
+	response, err := client.playerLeaderboards(request)
+	if err != nil {
+		client.logger.Print(err)
+	}
+	return response, err
+}
+
+func (client *Client) playerLeaderboards(request *fsipc.GsPlayerLeaderboardsRequest) (*PlayerLeaderboardsResponse, error) {
 	if !client.allowPlayerLeaderboards {
 		return nil, &DisabledError{reason: "not allowed to fetch player leaderboards"}
 	}
@@ -178,6 +206,14 @@ func (client *Client) PlayerLeaderboards(request *fsipc.GsPlayerLeaderboardsRequ
 }
 
 func (client *Client) ScoreSubmit(request *fsipc.GsScoreSubmitRequest) (*ScoreSubmitResponse, error) {
+	response, err := client.scoreSubmit(request)
+	if err != nil {
+		client.logger.Print(err)
+	}
+	return response, err
+}
+
+func (client *Client) scoreSubmit(request *fsipc.GsScoreSubmitRequest) (*ScoreSubmitResponse, error) {
 	if !client.allowScoreSubmit {
 		return nil, &DisabledError{reason: "not allowed to submit scores"}
 	}
@@ -284,6 +320,8 @@ func (client *Client) doRequest(req *http.Request, response interface{}) error {
 	}
 	defer resp.Body.Close()
 
+	client.logger.Printf("%s %v %s", req.Method, req.URL, resp.Status)
+
 	if resp.StatusCode >= 400 && resp.StatusCode < 499 && resp.StatusCode != 429 {
 		client.permanentError = true
 	}
@@ -304,7 +342,7 @@ func (client *Client) doRequest(req *http.Request, response interface{}) error {
 			client.permanentError = true
 		}
 
-		return fmt.Errorf("%s %s %d %v", req.Method, req.URL.Path, resp.StatusCode, errorResp)
+		return fmt.Errorf("%s %v %d %v", req.Method, req.URL, resp.StatusCode, errorResp)
 	}
 
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
