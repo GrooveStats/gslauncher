@@ -33,10 +33,12 @@ that.
   [Waterfall](https://docs.google.com/document/d/1-13VfHKUM_b2WHZpQodrdLu3Pe-IWqrgJBBIHFq6y_Y)
   (0.7 or later) also have support for GrooveStats features.
 - Install the launcher. There is a
-  [Windows installer](https://github.com/GrooveStats/gslauncher/releases/latest/download/gslauncher-windows-setup.exe)
-  and a
+  [Windows installer](https://github.com/GrooveStats/gslauncher/releases/latest/download/gslauncher-windows-setup.exe),
+  a
   [Linux tarball](https://github.com/GrooveStats/gslauncher/releases/latest/download/gslauncher-linux.tar.gz)
-  with a setup script available.
+  with a setup script and a
+  [macOS app](https://github.com/GrooveStats/gslauncher/releases/latest/download/gslauncher-macos-amd64.dmg)
+  available.
 
   The installer for Windows is not signed, so you will have to click through a
   couple of security dialogs when running it.
