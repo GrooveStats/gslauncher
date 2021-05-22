@@ -9,7 +9,6 @@ docker build -f Dockerfile-cross-win . -t gslauncher-win-build
 
 docker run -v $(pwd)/..:/data gslauncher-linux-build:amd64 /data/build/build-linux.sh amd64
 docker run --platform i386 -v $(pwd)/..:/data gslauncher-linux-build:i386 /data/build/build-linux.sh i386
-docker run -v $(pwd)/..:/data gslauncher-win-build /data/build/build-win.sh
 
 TMPDIR="$(mktemp -d)"
 mkdir "${TMPDIR}/gslauncher"
@@ -17,3 +16,5 @@ install -m 755 ../dist/gslauncher-linux-{amd64,i386} setup.sh "${TMPDIR}/gslaunc
 install -m 644 gslauncher.desktop logo.png "${TMPDIR}/gslauncher/"
 tar -C "${TMPDIR}" -czf ../dist/gslauncher-linux.tar.gz gslauncher
 rm -r $TMPDIR
+
+docker run -v $(pwd)/..:/data gslauncher-win-build /data/build/build-win.sh

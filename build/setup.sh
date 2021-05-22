@@ -21,7 +21,8 @@ case "$(uname -m)" in
         ;;
 esac
 
-[ -d /opt/gslauncher ] || mkdir /opt/gslauncher
+[ -d /opt ] || install -d -m 755 -o root -g root /opt
+[ -d /opt/gslauncher ] || install -d -m 755 -o root -g root /opt/gslauncher
 install -m 755 -o root -g root $binname /opt/gslauncher
 install -m 644 -o root -g root gslauncher.desktop /opt/gslauncher
 install -m 644 -o root -g root logo.png /opt/gslauncher
