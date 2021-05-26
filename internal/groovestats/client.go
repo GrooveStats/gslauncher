@@ -27,7 +27,8 @@ func (e *DisabledError) Error() string {
 }
 
 type Client struct {
-	client *http.Client
+	getClient *http.Client
+	postClient *http.Client
 	cache  *lru.Cache
 	logger *log.Logger
 
@@ -42,7 +43,8 @@ func NewClient() *Client {
 	logger := log.New(log.Writer(), "[GS] ", log.LstdFlags|log.Lmsgprefix)
 
 	return &Client{
-		client: &http.Client{Timeout: 15 * time.Second},
+		getClient: &http.Client{Timeout: 12 * time.Second},
+		postClient: &http.Client{Timeout: 32 * time.Second},
 		cache:  cache,
 		logger: logger,
 
@@ -314,7 +316,14 @@ func (client *Client) doRequest(req *http.Request, response interface{}) error {
 		return &DisabledError{reason: "request not sent due to protocol violation"}
 	}
 
-	resp, err := client.client.Do(req)
+	var resp *http.Response
+	var err error
+
+	if req.Method == "GET" {
+		resp, err = client.getClient.Do(req)
+	} else {
+		resp, err = client.postClient.Do(req)
+	}
 	if err != nil {
 		return err
 	}
