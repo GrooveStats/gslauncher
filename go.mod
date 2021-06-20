@@ -6,17 +6,17 @@ require (
 	fyne.io/fyne/v2 v2.0.3
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/go-gl/gl v0.0.0-20210501111010-69f74958bac0 // indirect
-	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20210410170116-ea3d685f79fb // indirect
 	github.com/go-playground/validator/v10 v10.6.1
-	github.com/godbus/dbus/v5 v5.0.4 // indirect
 	github.com/hashicorp/golang-lru v0.5.4
 	github.com/leodido/go-urn v1.2.1 // indirect
-	github.com/srwiley/oksvg v0.0.0-20210320200257-875f767ac39a // indirect
+	github.com/srwiley/oksvg v0.0.0-20210519022825-9fc0c575d5fe // indirect
+	github.com/srwiley/rasterx v0.0.0-20210519020934-456a8d69b780 // indirect
 	github.com/stretchr/testify v1.7.0 // indirect
-	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a // indirect
-	golang.org/x/image v0.0.0-20210504121937-7319ad40d33e // indirect
-	golang.org/x/net v0.0.0-20210510120150-4163338589ed // indirect
-	golang.org/x/sys v0.0.0-20210514084401-e8d321eab015 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
+	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e // indirect
+	golang.org/x/image v0.0.0-20210607152325-775e3b0c77b9 // indirect
+	golang.org/x/net v0.0.0-20210614182718-04defd469f4e // indirect
+	golang.org/x/sys v0.0.0-20210616094352-59db8d763f22 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
+
+replace github.com/go-gl/glfw/v3.3/glfw => github.com/GrooveStats/go-glfw/v3.3/glfw v0.0.0-20210620123645-eef752a6af54
