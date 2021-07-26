@@ -253,12 +253,15 @@ func (app *App) showFirstLaunchDialog() {
 	welcomeMessage.Alignment = fyne.TextAlignCenter
 
 	form := app.getSettingsForm(&data)
+	content := container.NewVScroll(
+		container.NewVBox(
+			welcomeMessage,
+			widget.NewSeparator(),
+			form,
+		),
+	)
 
-	firstLaunchDialog := dialog.NewCustom("Welcome!", "Save", container.NewVBox(
-		welcomeMessage,
-		widget.NewSeparator(),
-		form,
-	), app.mainWin)
+	firstLaunchDialog := dialog.NewCustom("Welcome!", "Save", content, app.mainWin)
 	firstLaunchDialog.SetOnClosed(func() {
 		settings.Update(data)
 
@@ -267,6 +270,7 @@ func (app *App) showFirstLaunchDialog() {
 			dialog.ShowError(err, app.mainWin)
 		}
 	})
+	firstLaunchDialog.Resize(fyne.NewSize(700, 560))
 	firstLaunchDialog.Show()
 }
 
@@ -274,8 +278,9 @@ func (app *App) showSettingsDialog() {
 	data := settings.Get()
 
 	form := app.getSettingsForm(&data)
+	content := container.NewVScroll(form)
 
-	settingsDialog := dialog.NewCustomConfirm("Settings", "Save", "Cancel", form, func(save bool) {
+	settingsDialog := dialog.NewCustomConfirm("Settings", "Save", "Cancel", content, func(save bool) {
 		if save {
 			settings.Update(data)
 
@@ -287,6 +292,7 @@ func (app *App) showSettingsDialog() {
 			app.unlockWidget.Refresh()
 		}
 	}, app.mainWin)
+	settingsDialog.Resize(fyne.NewSize(700, 500))
 	settingsDialog.Show()
 }
 
