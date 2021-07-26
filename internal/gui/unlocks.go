@@ -133,6 +133,26 @@ func (unlockWidget *UnlockWidget) handleUpdate(unlock *unlocks.Unlock) {
 		unlockWidget.unlockInfos[unlock] = info
 	}
 
+	unpacked := true
+	for _, user := range unlock.Users {
+		if user.UnpackStatus != unlocks.Unpacked {
+			unpacked = false
+		}
+	}
+
+	if unpacked {
+		info.downloadButton.Hide()
+		info.downloadProgress.Hide()
+		info.unpackButton.Hide()
+		info.unpackProgress.Hide()
+		info.unpackProgress.Stop()
+		info.successIcon.Show()
+		info.errorIcon.Hide()
+		info.errorLabel.Hide()
+		info.vbox.Refresh()
+		return
+	}
+
 	switch unlock.DownloadStatus {
 	case unlocks.NotDownloaded:
 		info.downloadButton.Show()

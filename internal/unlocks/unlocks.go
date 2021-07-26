@@ -130,11 +130,50 @@ func (manager *Manager) SetUpdateCallback(callback func(*Unlock)) {
 	manager.updateCallback = callback
 }
 
+func (manager *Manager) GetCacheSize() (int64, error) {
+	entries, err := os.ReadDir(manager.DownloadDir)
+	if err != nil {
+		return -1, err
+	}
+
+	var total int64
+
+	for _, entry := range entries {
+		if !strings.HasSuffix(entry.Name(), ".zip") {
+			continue
+		}
+
+		info, err := entry.Info()
+		if err != nil {
+			return -1, err
+		}
+
+		total += info.Size()
+	}
+
+	return total, nil
+}
+
+func (manager *Manager) ClearCache() error {
+	entries, err := os.ReadDir(manager.DownloadDir)
+	if err != nil {
+		return err
+	}
+
+	for _, entry := range entries {
+		if strings.HasSuffix(entry.Name(), ".zip") {
+			err = os.Remove(filepath.Join(manager.DownloadDir, entry.Name()))
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
 func (manager *Manager) HasPending() bool {
 	for _, unlock := range manager.Unlocks {
-		if unlock.DownloadStatus != Downloaded {
-			return true
-		}
 		for _, user := range unlock.Users {
 			if user.UnpackStatus != Unpacked {
 				return true
@@ -252,6 +291,14 @@ func (manager *Manager) unpack(unlock *Unlock) {
 
 	cookiePath := manager.getCookiePath(unlock, nil)
 	os.WriteFile(cookiePath, []byte(""), 0600)
+
+	userUnlocks := settings.Get().UserUnlocks
+	if !userUnlocks {
+		err := os.Remove(filename)
+		if err == nil {
+			unlock.DownloadStatus = NotDownloaded
+		}
+	}
 
 	for _, user := range unlock.Users {
 		user.UnpackStatus = Unpacked

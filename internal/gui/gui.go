@@ -67,6 +67,9 @@ func NewApp(unlockManager *unlocks.Manager, autolaunch bool) *App {
 		}
 		fileMenu.Items = append(
 			fileMenu.Items,
+			fyne.NewMenuItem("Clear Cache", func() {
+				app.showClearCacheDialog()
+			}),
 			fyne.NewMenuItemSeparator(),
 			fyne.NewMenuItem("Quit", func() {
 				go app.maybeQuit()
@@ -244,6 +247,32 @@ func (app *App) maybeQuit() {
 	}
 
 	app.mainWin.Close()
+}
+
+func (app *App) showClearCacheDialog() {
+	cacheSize, err := app.unlockManager.GetCacheSize()
+	if err != nil {
+		dialog.ShowError(err, app.mainWin)
+		return
+	}
+
+	confirmDialog := dialog.NewConfirm(
+		"Clear unlock cache?",
+		fmt.Sprintf("Clearing the cache will free %s of disk space.", formatBytes(cacheSize)),
+		func(confirmed bool) {
+			if confirmed {
+				err := app.unlockManager.ClearCache()
+				if err != nil {
+					dialog.ShowError(err, app.mainWin)
+				}
+				app.unlockWidget.Refresh()
+			}
+		},
+		app.mainWin,
+	)
+	confirmDialog.SetConfirmText("Clear cache")
+	confirmDialog.SetDismissText("Keep")
+	confirmDialog.Show()
 }
 
 func (app *App) showStatisticsDialog() {

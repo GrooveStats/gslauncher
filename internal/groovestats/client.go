@@ -27,10 +27,10 @@ func (e *DisabledError) Error() string {
 }
 
 type Client struct {
-	getClient *http.Client
+	getClient  *http.Client
 	postClient *http.Client
-	cache  *lru.Cache
-	logger *log.Logger
+	cache      *lru.Cache
+	logger     *log.Logger
 
 	allowScoreSubmit        bool
 	allowPlayerScores       bool
@@ -43,10 +43,10 @@ func NewClient() *Client {
 	logger := log.New(log.Writer(), "[GS] ", log.LstdFlags|log.Lmsgprefix)
 
 	return &Client{
-		getClient: &http.Client{Timeout: 12 * time.Second},
+		getClient:  &http.Client{Timeout: 12 * time.Second},
 		postClient: &http.Client{Timeout: 32 * time.Second},
-		cache:  cache,
-		logger: logger,
+		cache:      cache,
+		logger:     logger,
 
 		allowScoreSubmit:        false,
 		allowPlayerScores:       false,
