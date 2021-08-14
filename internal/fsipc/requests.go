@@ -30,7 +30,7 @@ type GsPlayerLeaderboardsRequest struct {
 
 type gsScoreSubmitPlayerData struct {
 	ApiKey      string `json:"apiKey" validate:"required"`
-	ProfileName string `json:"profileName" validate:"required"`
+	ProfileName string `json:"profileName"`
 	ChartHash   string `json:"chartHash" validate:"required"`
 	Score       int    `json:"score" validate:"min=0,max=10000"`
 	Comment     string `json:"comment"`

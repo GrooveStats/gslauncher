@@ -75,6 +75,10 @@ func NewManager() (*Manager, error) {
 }
 
 func (manager *Manager) AddUnlock(questTitle, url, rpgName, profileName string, songDescriptions []string) {
+	if profileName == "" {
+		profileName = "unnamed player"
+	}
+
 	for _, unlock := range manager.Unlocks {
 		if unlock.DownloadUrl == url {
 			user := &UserData{
