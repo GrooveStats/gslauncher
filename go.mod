@@ -17,4 +17,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
 
-replace github.com/go-gl/glfw/v3.3/glfw => github.com/GrooveStats/go-glfw/v3.3/glfw v0.0.0-20210620123645-eef752a6af54
+replace github.com/go-gl/glfw/v3.3/glfw => github.com/GrooveStats/go-glfw/v3.3/glfw v0.0.0-20210815200153-34d2c095d202
