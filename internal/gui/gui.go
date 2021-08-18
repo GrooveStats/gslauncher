@@ -125,6 +125,9 @@ func NewApp(unlockManager *unlocks.Manager, autolaunch bool) *App {
 				app.showDebugSettingsDialog()
 			}))
 		}
+		viewMenu.Items = append(viewMenu.Items, fyne.NewMenuItem("Clear Cache", func() {
+			app.showClearCacheDialog()
+		}))
 	}
 	menus = append(menus, viewMenu)
 
