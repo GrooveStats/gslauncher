@@ -34,7 +34,7 @@ type gsScoreSubmitPlayerData struct {
 	ChartHash   string `json:"chartHash" validate:"required"`
 	Score       int    `json:"score" validate:"min=0,max=10000"`
 	Comment     string `json:"comment"`
-	Rate        int    `json:"rate" validate:"min=0,max=300"`
+	Rate        int    `json:"rate" validate:"min=0"`
 }
 
 type GsScoreSubmitRequest struct {
