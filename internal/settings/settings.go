@@ -60,6 +60,7 @@ type Settings struct {
 	AutoDownloadMode AutoDownloadMode
 	UserUnlocks      bool
 	AutoLaunch       bool
+	GrooveStatsUrl   string
 
 	// debug settings, not stored in the json
 	Debug                  bool   `json:"-"`

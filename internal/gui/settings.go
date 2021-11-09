@@ -230,6 +230,15 @@ func (app *App) getSettingsForm(data *settings.Settings) fyne.CanvasObject {
 	})
 	autoLaunchCheck.SetChecked(data.AutoLaunch)
 
+	gsUrlEntry := widget.NewEntry()
+	gsUrlEntry.Text = data.GrooveStatsUrl
+	gsUrlEntry.OnChanged = func(url string) {
+		data.GrooveStatsUrl = url
+	}
+
+	gsUrlFormItem := widget.NewFormItem("GrooveStats API endpoint", gsUrlEntry)
+	gsUrlFormItem.HintText = "Do not modify unless you know what you are doing!"
+
 	form := widget.NewForm(
 		smExeButtonFormItem,
 		smSaveDirFormItem,
@@ -238,6 +247,7 @@ func (app *App) getSettingsForm(data *settings.Settings) fyne.CanvasObject {
 		autoDownloadFormItem,
 		widget.NewFormItem("Separate Unlocks by User", userUnlocksCheck),
 		widget.NewFormItem("Launch StepMania at Startup", autoLaunchCheck),
+		gsUrlFormItem,
 	)
 
 	return form
@@ -292,7 +302,7 @@ func (app *App) showSettingsDialog() {
 			app.unlockWidget.Refresh()
 		}
 	}, app.mainWin)
-	settingsDialog.Resize(fyne.NewSize(700, 500))
+	settingsDialog.Resize(fyne.NewSize(700, 550))
 	settingsDialog.Show()
 }
 
@@ -364,12 +374,6 @@ func (app *App) showDebugSettingsDialog() {
 		fakeGsRpgCheck.Disable()
 		fakeGsItlCheck.Disable()
 		fakeGsNetDelayEntry.Disable()
-	}
-
-	gsUrlEntry := widget.NewEntry()
-	gsUrlEntry.Text = data.GrooveStatsUrl
-	gsUrlEntry.OnChanged = func(url string) {
-		data.GrooveStatsUrl = url
 	}
 
 	items := []*widget.FormItem{
