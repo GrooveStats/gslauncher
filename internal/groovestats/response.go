@@ -30,6 +30,7 @@ type leaderBoardEntry struct {
 	IsSelf     bool    `json:"isSelf"`
 	IsRival    bool    `json:"isRival"`
 	IsFail     bool    `json:"isFail"`
+	Comments   *string `json:"comments"`
 }
 
 type playerScoresPlayerData struct {
