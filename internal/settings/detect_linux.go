@@ -47,12 +47,13 @@ func detectSM() (string, string, string, string) {
 		return smExePath, "", "", ""
 	}
 
-	pattern := regexp.MustCompile(`^StepMania(5\.[\d+]+)`)
+	pattern := regexp.MustCompile(`^(StepMania|OutFox)(5\.[\d+]+)`)
 	m := pattern.FindSubmatch(out)
 	if len(m) < 2 {
 		return smExePath, "", "", ""
 	}
-	version := string(m[1])
+	outfox := string(m[1]) == "OutFox"
+	version := string(m[2])
 
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
@@ -60,6 +61,10 @@ func detectSM() (string, string, string, string) {
 	}
 
 	smDataDir := filepath.Join(homeDir, ".stepmania-"+version)
+	if outfox {
+		smDataDir = filepath.Join(homeDir, ".outfox-"+version)
+	}
+
 	smSaveDir := filepath.Join(smDataDir, "Save")
 	smSongsDir := filepath.Join(smDataDir, "Songs")
 	smLogsDir := filepath.Join(smDataDir, "Logs")

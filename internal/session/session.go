@@ -105,7 +105,15 @@ func (sess *Session) startSM() error {
 
 	// SmExePath points to an .app bundle on MacOS
 	if runtime.GOOS == "darwin" {
-		smExePath = filepath.Join(smExePath, "Contents", "MacOS", "StepMania")
+		smAppPath := smExePath
+		smExePath = filepath.Join(smAppPath, "Contents", "MacOS", "StepMania")
+		ofExePath := filepath.Join(smAppPath, "Contents", "MacOS", "OutFox")
+
+		if _, err := os.Stat(ofExePath); err == nil {
+			smExePath = ofExePath
+		}
+
+		smExePath = ofExePath
 	}
 
 	// Let's launch StepMania! We also have to set the working directory,

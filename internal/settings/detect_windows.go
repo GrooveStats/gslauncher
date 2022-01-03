@@ -7,6 +7,7 @@ import (
 
 var dirnames = []string{
 	"StepMania 5.1",
+	"Project OutFox",
 	"StepMania 5.3 Outfox",
 	"StepMania 5",
 }
@@ -15,6 +16,11 @@ func detectSM() (string, string, string, string) {
 	for _, dirname := range dirnames {
 		installDir := filepath.Join("C:\\Games", dirname)
 		smExePath := filepath.Join(installDir, "Program\\StepMania.exe")
+		ofExePath := filepath.Join(installDir, "Program\\OutFox.exe")
+
+		if _, err := os.Stat(ofExePath); err == nil {
+			smExePath = ofExePath
+		}
 
 		_, err := os.Stat(smExePath)
 		if err != nil {
