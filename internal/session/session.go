@@ -112,8 +112,6 @@ func (sess *Session) startSM() error {
 		if _, err := os.Stat(ofExePath); err == nil {
 			smExePath = ofExePath
 		}
-
-		smExePath = ofExePath
 	}
 
 	// Let's launch StepMania! We also have to set the working directory,
