@@ -152,6 +152,36 @@
                     "isFail": false
                 }
             ]
+        },
+        "itl": {
+            "name": "ITL 2022",
+	    "previousPointTotal": 30000,
+	    "currentPointTotal": 30001,
+	    "previousRankingPointTotal": 10000,
+	    "currentRankingPointTotal": 10001,
+            "scoreDelta": 200,
+            "itlLeaderboard": [
+                {
+                    "name": "Teejusb",
+                    "machineTag": "TEEJ",
+                    "score": 9993,
+                    "date": "2022-02-01 19:43:37",
+                    "rank": 1,
+                    "isSelf": true,
+                    "isRival": false,
+                    "isFail": false
+                },
+                {
+                    "name": "natano",
+                    "machineTag": "NATO",
+                    "score": 9486,
+                    "date": "2022-02-02 19:43:37",
+                    "rank": 2,
+                    "isSelf": false,
+                    "isRival": true,
+                    "isFail": false
+                }
+            ]
         }
     },
     "player2": {
@@ -307,6 +337,36 @@
                     "score": 7710,
                     "date": "2020-05-21 19:43:37",
                     "rank": 44,
+                    "isSelf": false,
+                    "isRival": true,
+                    "isFail": false
+                }
+            ]
+        },
+        "itl": {
+            "name": "ITL 2022",
+	    "previousPointTotal": 30000,
+	    "currentPointTotal": 30001,
+	    "previousRankingPointTotal": 10000,
+	    "currentRankingPointTotal": 10001,
+            "scoreDelta": 200,
+            "itlLeaderboard": [
+                {
+                    "name": "Teejusb",
+                    "machineTag": "TEEJ",
+                    "score": 9993,
+                    "date": "2022-02-01 19:43:37",
+                    "rank": 1,
+                    "isSelf": true,
+                    "isRival": false,
+                    "isFail": false
+                },
+                {
+                    "name": "natano",
+                    "machineTag": "NATO",
+                    "score": 9486,
+                    "date": "2022-02-02 19:43:37",
+                    "rank": 2,
                     "isSelf": false,
                     "isRival": true,
                     "isFail": false

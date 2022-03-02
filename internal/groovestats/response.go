@@ -56,6 +56,11 @@ type playerLeaderboardsPlayerData struct {
 		Name           string             `json:"name"`
 		RpgLeaderboard []leaderBoardEntry `json:"rpgLeaderboard"`
 	} `json:"rpg"`
+
+	Itl *struct {
+		Name           string             `json:"name"`
+		ItlLeaderboard []leaderBoardEntry `json:"itlLeaderboard"`
+	} `json:"itl"`
 }
 
 type PlayerLeaderboardsResponse struct {
@@ -96,6 +101,16 @@ type scoreSubmitPlayerData struct {
 
 		RpgLeaderboard *[]leaderBoardEntry `json:"rpgLeaderboard"`
 	} `json:"rpg"`
+
+	Itl *struct {
+		Name                      string              `json:"name"`
+		PreviousPointTotal        *int                `json:"previousPointTotal"`
+		CurrentPointTotal         int                 `json:"currentPointTotal"`
+		PreviousRankingPointTotal *int                `json:"previousRankingPointTotal"`
+		CurrentRankingPointTotal  int                 `json:"currentRankingPointTotal"`
+		ScoreDelta                *int                `json:"scoreDelta,omitempty"`
+		ItlLeaderboard            *[]leaderBoardEntry `json:"itlLeaderboard"`
+	} `json:"itl"`
 }
 
 type ScoreSubmitResponse struct {

@@ -69,6 +69,7 @@ type Settings struct {
 	FakeGsNewSessionResult string `json:"-"`
 	FakeGsSubmitResult     string `json:"-"`
 	FakeGsRpg              bool   `json:"-"`
+	FakeGsItl              bool   `json:"-"`
 	GrooveStatsUrl         string `json:"-"`
 
 	// backwards compatibility fields
@@ -92,6 +93,7 @@ var settings = Settings{
 	FakeGsNewSessionResult: "OK",
 	FakeGsSubmitResult:     "score-added",
 	FakeGsRpg:              true,
+	FakeGsItl:              true,
 	GrooveStatsUrl:         "https://api.groovestats.com",
 }
 

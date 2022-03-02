@@ -35,7 +35,10 @@ func fakeNewSession() (*NewSessionResponse, error) {
 	}
 
 	if !settings.Get().FakeGsRpg {
-		response.ActiveEvents = nil
+		response.ActiveEvents = response.ActiveEvents[1:]
+	}
+	if !settings.Get().FakeGsItl {
+		response.ActiveEvents = response.ActiveEvents[:len(response.ActiveEvents)-1]
 	}
 
 	response.ServicesResult = settings.Get().FakeGsNewSessionResult
@@ -105,6 +108,10 @@ func fakePlayerLeaderboards(request *fsipc.GsPlayerLeaderboardsRequest) (*Player
 	if !settings.Get().FakeGsRpg {
 		response.Player1.Rpg = nil
 		response.Player2.Rpg = nil
+	}
+	if !settings.Get().FakeGsItl {
+		response.Player1.Itl = nil
+		response.Player2.Itl = nil
 	}
 
 	if request.Player1 == nil {
@@ -198,6 +205,10 @@ func fakeScoreSubmit(request *fsipc.GsScoreSubmitRequest) (*ScoreSubmitResponse,
 	if !settings.Get().FakeGsRpg {
 		response.Player1.Rpg = nil
 		response.Player2.Rpg = nil
+	}
+	if !settings.Get().FakeGsItl {
+		response.Player1.Itl = nil
+		response.Player2.Itl = nil
 	}
 
 	if request.Player1 == nil {

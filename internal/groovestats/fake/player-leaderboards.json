@@ -128,6 +128,31 @@
                     "isFail": false
                 }
             ]
+        },
+        "itl": {
+            "name": "ITL 2022",
+            "itlLeaderboard": [
+                {
+                    "name": "Teejusb",
+                    "machineTag": "TEEJ",
+                    "score": 9993,
+                    "date": "2022-02-01 19:43:37",
+                    "rank": 1,
+                    "isSelf": true,
+                    "isRival": false,
+                    "isFail": false
+                },
+                {
+                    "name": "natano",
+                    "machineTag": "NATO",
+                    "score": 9486,
+                    "date": "2022-02-02 19:43:37",
+                    "rank": 2,
+                    "isSelf": false,
+                    "isRival": true,
+                    "isFail": false
+                }
+            ]
         }
     },
     "player2": {
@@ -256,6 +281,31 @@
                     "rank": 44,
                     "isSelf": false,
                     "isRival": true,
+                    "isFail": false
+                }
+            ]
+        },
+        "itl": {
+            "name": "ITL 2022",
+            "itlLeaderboard": [
+                {
+                    "name": "Teejusb",
+                    "machineTag": "TEEJ",
+                    "score": 9993,
+                    "date": "2022-02-01 19:43:37",
+                    "rank": 1,
+                    "isSelf": false,
+                    "isRival": true,
+                    "isFail": false
+                },
+                {
+                    "name": "natano",
+                    "machineTag": "NATO",
+                    "score": 9486,
+                    "date": "2022-02-02 19:43:37",
+                    "rank": 2,
+                    "isSelf": true,
+                    "isRival": false,
                     "isFail": false
                 }
             ]

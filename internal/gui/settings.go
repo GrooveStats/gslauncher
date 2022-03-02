@@ -331,6 +331,11 @@ func (app *App) showDebugSettingsDialog() {
 	})
 	fakeGsRpgCheck.SetChecked(data.FakeGsRpg)
 
+	fakeGsItlCheck := widget.NewCheck("", func(checked bool) {
+		data.FakeGsItl = checked
+	})
+	fakeGsItlCheck.SetChecked(data.FakeGsItl)
+
 	fakeGsCheck := widget.NewCheck("", func(checked bool) {
 		data.FakeGs = checked
 
@@ -339,12 +344,14 @@ func (app *App) showDebugSettingsDialog() {
 			fakeGsNewSessionResultSelect.Enable()
 			fakeGsSubmitResultSelect.Enable()
 			fakeGsRpgCheck.Enable()
+			fakeGsItlCheck.Enable()
 			fakeGsNetDelayEntry.Enable()
 		} else {
 			fakeGsNetworkErrorCheck.Disable()
 			fakeGsNewSessionResultSelect.Disable()
 			fakeGsSubmitResultSelect.Disable()
 			fakeGsRpgCheck.Disable()
+			fakeGsItlCheck.Disable()
 			fakeGsNetDelayEntry.Disable()
 		}
 	})
@@ -355,6 +362,7 @@ func (app *App) showDebugSettingsDialog() {
 		fakeGsNewSessionResultSelect.Disable()
 		fakeGsSubmitResultSelect.Disable()
 		fakeGsRpgCheck.Disable()
+		fakeGsItlCheck.Disable()
 		fakeGsNetDelayEntry.Disable()
 	}
 
@@ -371,6 +379,7 @@ func (app *App) showDebugSettingsDialog() {
 		widget.NewFormItem(">> New Session Result", fakeGsNewSessionResultSelect),
 		widget.NewFormItem(">> Score Submit Result", fakeGsSubmitResultSelect),
 		widget.NewFormItem(">> RPG active", fakeGsRpgCheck),
+		widget.NewFormItem(">> ITL active", fakeGsItlCheck),
 		widget.NewFormItem("GrooveStats URL", gsUrlEntry),
 	}
 
