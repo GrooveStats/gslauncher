@@ -28,7 +28,7 @@ type GsPlayerLeaderboardsRequest struct {
 	Player2               *gsPlayerData `json:"player2"`
 }
 
-type judgmentCounts struct {
+type JudgmentCounts struct {
 	FantasticPlus int `json:"fantasticPlus" validate:"min=0"`
 	Fantastic     int `json:"fantastic" validate:"min=0"`
 	Excellent     int `json:"excellent" validate:"min=0"`
@@ -52,7 +52,7 @@ type gsScoreSubmitPlayerData struct {
 	Score          int             `json:"score" validate:"min=0,max=10000"`
 	Comment        string          `json:"comment"`
 	Rate           int             `json:"rate" validate:"min=0"`
-	JudgmentCounts *judgmentCounts `json:"judgmentCounts"`
+	JudgmentCounts *JudgmentCounts `json:"judgmentCounts"`
 	UsedCmod       *bool           `json:"usedCmod"`
 }
 

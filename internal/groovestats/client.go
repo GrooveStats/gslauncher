@@ -238,9 +238,11 @@ func (client *Client) scoreSubmit(request *fsipc.GsScoreSubmitRequest) (*ScoreSu
 	}
 
 	type scoreSubmitPlayerData struct {
-		Score   int    `json:"score"`
-		Comment string `json:"comment,omitempty"`
-		Rate    int    `json:"rate"`
+		Score          int                   `json:"score"`
+		Comment        string                `json:"comment,omitempty"`
+		Rate           int                   `json:"rate"`
+		JudgmentCounts *fsipc.JudgmentCounts `json:"judgmentCounts"`
+		UsedCmod       *bool                 `json:"usedCmod"`
 	}
 
 	data := struct {
@@ -250,17 +252,21 @@ func (client *Client) scoreSubmit(request *fsipc.GsScoreSubmitRequest) (*ScoreSu
 
 	if request.Player1 != nil {
 		data.Player1 = &scoreSubmitPlayerData{
-			Score:   request.Player1.Score,
-			Comment: request.Player1.Comment,
-			Rate:    request.Player1.Rate,
+			Score:          request.Player1.Score,
+			Comment:        request.Player1.Comment,
+			Rate:           request.Player1.Rate,
+			JudgmentCounts: request.Player1.JudgmentCounts,
+			UsedCmod:       request.Player1.UsedCmod,
 		}
 	}
 
 	if request.Player2 != nil {
 		data.Player2 = &scoreSubmitPlayerData{
-			Score:   request.Player2.Score,
-			Comment: request.Player2.Comment,
-			Rate:    request.Player2.Rate,
+			Score:          request.Player2.Score,
+			Comment:        request.Player2.Comment,
+			Rate:           request.Player2.Rate,
+			JudgmentCounts: request.Player1.JudgmentCounts,
+			UsedCmod:       request.Player1.UsedCmod,
 		}
 	}
 
