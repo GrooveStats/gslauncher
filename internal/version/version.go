@@ -4,7 +4,7 @@ import "fmt"
 
 // When updating this version number also update installer.nsi
 var Major int = 1
-var Minor int = 2
+var Minor int = 3
 var Patch int = 0
 
 var Protocol int = 1

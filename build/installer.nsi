@@ -5,7 +5,7 @@ Unicode true
 !define APPNAME "GrooveStats Launcher"
 
 !define VERSIONMAJOR 1
-!define VERSIONMINOR 2
+!define VERSIONMINOR 3
 !define VERSIONBUILD 0
 
 RequestExecutionLevel admin
