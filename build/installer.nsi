@@ -6,7 +6,7 @@ Unicode true
 
 !define VERSIONMAJOR 1
 !define VERSIONMINOR 3
-!define VERSIONBUILD 0
+!define VERSIONBUILD 1
 
 RequestExecutionLevel admin
 

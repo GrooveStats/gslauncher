@@ -265,8 +265,8 @@ func (client *Client) scoreSubmit(request *fsipc.GsScoreSubmitRequest) (*ScoreSu
 			Score:          request.Player2.Score,
 			Comment:        request.Player2.Comment,
 			Rate:           request.Player2.Rate,
-			JudgmentCounts: request.Player1.JudgmentCounts,
-			UsedCmod:       request.Player1.UsedCmod,
+			JudgmentCounts: request.Player2.JudgmentCounts,
+			UsedCmod:       request.Player2.UsedCmod,
 		}
 	}
 
