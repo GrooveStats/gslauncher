@@ -6,6 +6,8 @@ SRCDIR="$(pwd)"
 
 export CGO_ENABLED=1
 export GOOS=darwin
+export CGO_CFLAGS="-mmacosx-version-min=10.12"
+export CGO_LDFLAGS="-mmacosx-version-min=10.12"
 
 export GOARCH=amd64
 go build -o dist/gslauncher-darwin-amd64 ./cmd/gslauncher
