@@ -33,8 +33,8 @@ type JudgmentCounts struct {
 	Fantastic     int `json:"fantastic" validate:"min=0"`
 	Excellent     int `json:"excellent" validate:"min=0"`
 	Great         int `json:"great" validate:"min=0"`
-	Decent        int `json:"decent" validate:"min=0"`
-	WayOff        int `json:"wayOff" validate:"min=0"`
+	Decent        *int `json:"decent,omitempty"`
+	WayOff        *int `json:"wayOff,omitempty"`
 	Miss          int `json:"miss" validate:"min=0"`
 	TotalSteps    int `json:"totalSteps" validate:"min=0"`
 	MinesHit      int `json:"minesHit" validate:"min=0"`
