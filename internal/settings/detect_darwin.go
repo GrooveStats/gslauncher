@@ -61,37 +61,29 @@ func detectSM() (string, string, string, string) {
 			return smAppPath, "", "", ""
 		}
 
-		pattern := regexp.MustCompile(`^((StepMania|OutFox)5\.[\d+]+)`)
+		pattern := regexp.MustCompile(`(?m)^(StepMania|OutFox)(\d\.[\d+]+)`)
 		m := pattern.FindSubmatch(out)
 		if len(m) < 2 {
 			return smAppPath, "", "", ""
 		}
+		outfox := string(m[1]) == "OutFox"
 		version := string(m[1])
 
-		switch version {
-		case "StepMania5.0", "StepMania5.1":
+		if outfox {
+			homeDir, err := os.UserHomeDir()
+			if err == nil {
+				smSaveDir = filepath.Join(homeDir, "Library", "Preferences", "Project OutFox")
+				smLogsDir = filepath.Join(homeDir, "Library", "Logs", "Project OutFox")
+			}
+
+			smSongsDir = filepath.Join(installDir, "Songs")
+		} else {
 			homeDir, err := os.UserHomeDir()
 			if err == nil {
 				smSaveDir = filepath.Join(homeDir, "Library", "Preferences", "StepMania "+version)
 				smSongsDir = filepath.Join(homeDir, "Library", "Application Support", "StepMania "+version, "Songs")
 				smLogsDir = filepath.Join(homeDir, "Library", "Logs", "StepMania "+version)
 			}
-		case "StepMania5.3":
-			homeDir, err := os.UserHomeDir()
-			if err == nil {
-				smSaveDir = filepath.Join(homeDir, "Library", "Preferences", "StepMania 5.3")
-				smLogsDir = filepath.Join(homeDir, "Library", "Logs", "StepMania 5.3")
-			}
-
-			smSongsDir = filepath.Join(installDir, "Songs")
-		case "OutFox5.3":
-			homeDir, err := os.UserHomeDir()
-			if err == nil {
-				smSaveDir = filepath.Join(homeDir, "Library", "Preferences", "OutFox 5.3")
-				smLogsDir = filepath.Join(homeDir, "Library", "Logs", "OutFox 5.3")
-			}
-
-			smSongsDir = filepath.Join(installDir, "Songs")
 		}
 
 		return smAppPath, smSaveDir, smSongsDir, smLogsDir
