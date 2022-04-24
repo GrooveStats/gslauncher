@@ -30,7 +30,7 @@ func Launch(unlockManager *unlocks.Manager) (*Session, error) {
 	}
 
 	if settings.Get().SmExePath == "" || settings.Get().SmSaveDir == "" || settings.Get().SmSongsDir == "" {
-		return nil, fmt.Errorf("Please set the path to your StepMania executable in the settings!")
+		return nil, fmt.Errorf("Please set the paths to your StepMania executable and the Save and Songs directories in the settings!")
 	}
 
 	err := sess.startIpc()
