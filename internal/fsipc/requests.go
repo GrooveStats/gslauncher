@@ -29,20 +29,20 @@ type GsPlayerLeaderboardsRequest struct {
 }
 
 type JudgmentCounts struct {
-	FantasticPlus int `json:"fantasticPlus" validate:"min=0"`
-	Fantastic     int `json:"fantastic" validate:"min=0"`
-	Excellent     int `json:"excellent" validate:"min=0"`
-	Great         int `json:"great" validate:"min=0"`
+	FantasticPlus int  `json:"fantasticPlus" validate:"min=0"`
+	Fantastic     int  `json:"fantastic" validate:"min=0"`
+	Excellent     int  `json:"excellent" validate:"min=0"`
+	Great         int  `json:"great" validate:"min=0"`
 	Decent        *int `json:"decent,omitempty"`
 	WayOff        *int `json:"wayOff,omitempty"`
-	Miss          int `json:"miss" validate:"min=0"`
-	TotalSteps    int `json:"totalSteps" validate:"min=0"`
-	MinesHit      int `json:"minesHit" validate:"min=0"`
-	TotalMines    int `json:"totalMines" validate:"min=0"`
-	HoldsHeld     int `json:"holdsHeld" validate:"min=0"`
-	TotalHolds    int `json:"totalHolds" validate:"min=0"`
-	RollsHeld     int `json:"rollsHeld" validate:"min=0"`
-	TotalRolls    int `json:"totalRolls" validate:"min=0"`
+	Miss          int  `json:"miss" validate:"min=0"`
+	TotalSteps    int  `json:"totalSteps" validate:"min=0"`
+	MinesHit      int  `json:"minesHit" validate:"min=0"`
+	TotalMines    int  `json:"totalMines" validate:"min=0"`
+	HoldsHeld     int  `json:"holdsHeld" validate:"min=0"`
+	TotalHolds    int  `json:"totalHolds" validate:"min=0"`
+	RollsHeld     int  `json:"rollsHeld" validate:"min=0"`
+	TotalRolls    int  `json:"totalRolls" validate:"min=0"`
 }
 
 type gsScoreSubmitPlayerData struct {
