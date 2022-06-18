@@ -9,11 +9,16 @@ import (
 )
 
 func detectSM() (string, string, string, string) {
-	cmd := exec.Command("which", "stepmania")
+	cmd := exec.Command("which", "itgmania")
 
 	out, err := cmd.Output()
 	if err != nil {
-		return "", "", "", ""
+		cmd = exec.Command("which", "stepmania")
+
+		out, err = cmd.Output()
+		if err != nil {
+			return "", "", "", ""
+		}
 	}
 	smExePath := strings.TrimSpace(string(out))
 
@@ -47,12 +52,13 @@ func detectSM() (string, string, string, string) {
 		return smExePath, "", "", ""
 	}
 
-	pattern := regexp.MustCompile(`(?m)^(StepMania|OutFox)(\d\.[\d+]+)`)
+	pattern := regexp.MustCompile(`(?m)^(StepMania|OutFox|ITGmania)(\d\.[\d+]+)`)
 	m := pattern.FindSubmatch(out)
 	if len(m) < 2 {
 		return smExePath, "", "", ""
 	}
-	outfox := string(m[1]) == "OutFox"
+	isOutFox := string(m[1]) == "OutFox"
+	isITGmania := string(m[1]) == "ITGmania"
 	version := string(m[2])
 
 	homeDir, err := os.UserHomeDir()
@@ -61,8 +67,10 @@ func detectSM() (string, string, string, string) {
 	}
 
 	smDataDir := filepath.Join(homeDir, ".stepmania-"+version)
-	if outfox {
+	if isOutFox {
 		smDataDir = filepath.Join(homeDir, ".project-outfox")
+	} else if isITGmania {
+		smDataDir = filepath.Join(homeDir, ".itgmania")
 	}
 
 	smSaveDir := filepath.Join(smDataDir, "Save")

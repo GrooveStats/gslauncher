@@ -9,6 +9,7 @@ import (
 
 var locations = []string{
 	"/Applications",
+	"/Applications/ITGmania",
 	"/Applications/StepMania-5.1.0",
 	"/Applications/OutFox",
 	"/Applications/StepMania",
@@ -19,8 +20,11 @@ func detectSM() (string, string, string, string) {
 	for _, installDir := range locations {
 		smAppPath := filepath.Join(installDir, "StepMania.app")
 		ofAppPath := filepath.Join(installDir, "OutFox.app")
+		itgmAppPath := filepath.Join(installDir, "ITGmania.app")
 
-		if _, err := os.Stat(ofAppPath); err == nil {
+		if _, err := os.Stat(itgmAppPath); err == nil {
+			smAppPath = itgmAppPath
+		} else if _, err := os.Stat(ofAppPath); err == nil {
 			smAppPath = ofAppPath
 		}
 
@@ -61,15 +65,16 @@ func detectSM() (string, string, string, string) {
 			return smAppPath, "", "", ""
 		}
 
-		pattern := regexp.MustCompile(`(?m)^(StepMania|OutFox)(\d\.[\d+]+)`)
+		pattern := regexp.MustCompile(`(?m)^(StepMania|OutFox|ITGmania)(\d\.[\d+]+)`)
 		m := pattern.FindSubmatch(out)
 		if len(m) < 2 {
 			return smAppPath, "", "", ""
 		}
-		outfox := string(m[1]) == "OutFox"
+		isOutFox := string(m[1]) == "OutFox"
+		isITGmania := string(m[1]) == "ITGmania"
 		version := string(m[1])
 
-		if outfox {
+		if isOutFox {
 			homeDir, err := os.UserHomeDir()
 			if err == nil {
 				smSaveDir = filepath.Join(homeDir, "Library", "Preferences", "Project OutFox")
@@ -77,6 +82,13 @@ func detectSM() (string, string, string, string) {
 			}
 
 			smSongsDir = filepath.Join(installDir, "Songs")
+		} else if isITGmania {
+			homeDir, err := os.UserHomeDir()
+			if err == nil {
+				smSaveDir = filepath.Join(homeDir, "Library", "Preferences", "ITGmania ")
+				smSongsDir = filepath.Join(homeDir, "Library", "Application Support", "ITGmania", "Songs")
+				smLogsDir = filepath.Join(homeDir, "Library", "Logs", "ITGmania")
+			}
 		} else {
 			homeDir, err := os.UserHomeDir()
 			if err == nil {
