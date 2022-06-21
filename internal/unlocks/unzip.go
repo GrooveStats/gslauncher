@@ -24,7 +24,7 @@ func unzip(archivePath, targetDir string) error {
 
 		fpath := filepath.Join(targetDir, filepath.FromSlash(parts[1]))
 		if !strings.HasPrefix(fpath, filepath.Clean(targetDir)+string(os.PathSeparator)) {
-			return fmt.Errorf("illegal file path: %s", f.Name)
+			continue
 		}
 
 		info := f.FileInfo()
