@@ -31,13 +31,15 @@ type App struct {
 	launchButton  *widget.Button
 	session       *session.Session
 	autolaunch    bool
+	cacheDir      string
 }
 
-func NewApp(unlockManager *unlocks.Manager, autolaunch bool) *App {
+func NewApp(unlockManager *unlocks.Manager, autolaunch bool, cacheDir string) *App {
 	app := &App{
 		app:           app.New(),
 		unlockManager: unlockManager,
 		autolaunch:    autolaunch || settings.Get().AutoLaunch,
+		cacheDir:      cacheDir,
 	}
 
 	app.app.Settings().SetTheme(theme.DarkTheme())
@@ -103,12 +105,6 @@ func NewApp(unlockManager *unlocks.Manager, autolaunch bool) *App {
 		"View",
 		logsMenuItem,
 		fyne.NewMenuItem("Launcher Log", func() {
-			cacheDir, err := os.UserCacheDir()
-			if err != nil {
-				dialog.ShowError(err, app.mainWin)
-				return
-			}
-
 			filename := filepath.Join(cacheDir, "groovestats-launcher", "log.txt")
 			app.viewLogfile(filename)
 		}),

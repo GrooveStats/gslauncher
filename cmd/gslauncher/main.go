@@ -17,13 +17,7 @@ import (
 
 const MAX_LOG_SIZE = 1024 * 1024 // 1 MiB
 
-func redirectLog() {
-	cacheDir, err := os.UserCacheDir()
-	if err != nil {
-		log.Print("failed to get cache directory: ", err)
-		return
-	}
-
+func redirectLog(cacheDir string) {
 	filename := filepath.Join(cacheDir, "groovestats-launcher", "log.txt")
 
 	old, err := os.ReadFile(filename)
@@ -54,10 +48,17 @@ func redirectLog() {
 }
 
 func main() {
+	userCacheDir, err := os.UserCacheDir()
+	if err != nil {
+		log.Print("failed to get cache directory: ", err)
+		return
+	}
+
 	autolaunch := flag.Bool("autolaunch", false, "automatically launch StepMania")
+	cacheDir := flag.String("cachedir", userCacheDir, "set the cache location")
 	flag.Parse()
 
-	redirectLog()
+	redirectLog(*cacheDir)
 	log.Printf("GrooveStats Launcher %s (%s %s)", version.Formatted(), runtime.GOOS, runtime.GOARCH)
 
 	settings.Load()
@@ -65,12 +66,12 @@ func main() {
 		settings.DetectSM()
 	}
 
-	unlockManager, err := unlocks.NewManager()
+	unlockManager, err := unlocks.NewManager(*cacheDir)
 	if err != nil {
 		log.Print("failed to initialize downloader: ", err)
 		return
 	}
 
-	app := gui.NewApp(unlockManager, *autolaunch)
+	app := gui.NewApp(unlockManager, *autolaunch, *cacheDir)
 	app.Run()
 }

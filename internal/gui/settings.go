@@ -217,7 +217,7 @@ func (app *App) getSettingsForm(data *settings.Settings) fyne.CanvasObject {
 		autoDownloadSelect.SetSelected("Download and Unpack")
 	}
 
-	autoDownloadFormItem := widget.NewFormItem("Automatically Download\nUnlocked RPG Songs", autoDownloadSelect)
+	autoDownloadFormItem := widget.NewFormItem("Automatically Download Unlocked Songs", autoDownloadSelect)
 	autoDownloadFormItem.HintText = "Can negatively impact game performance when enabled!"
 
 	userUnlocksCheck := widget.NewCheck("", func(checked bool) {

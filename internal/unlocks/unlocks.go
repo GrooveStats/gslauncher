@@ -53,15 +53,10 @@ type Manager struct {
 	updateCallback func(*Unlock)
 }
 
-func NewManager() (*Manager, error) {
-	cacheDir, err := os.UserCacheDir()
-	if err != nil {
-		return nil, err
-	}
-
+func NewManager(cacheDir string) (*Manager, error) {
 	downloadDir := filepath.Join(cacheDir, "groovestats-launcher", "unlocks")
 
-	err = os.MkdirAll(downloadDir, os.ModeDir|0700)
+	err := os.MkdirAll(downloadDir, os.ModeDir|0700)
 	if err != nil {
 		return nil, err
 	}
