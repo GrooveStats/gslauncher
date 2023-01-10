@@ -68,6 +68,7 @@ that.
   [other download options](https://github.com/GrooveStats/gslauncher/releases/latest/)
   or
   [build the launcher yourself](https://github.com/GrooveStats/gslauncher/blob/main/doc/building.md).
+## Setting up your GrooveStats API Key
 - Enable local profiles in the theme settings if you haven't already.
   Alternatively, you can use USB profiles.
 - You'll need to generate a `GrooveStats.ini` file in your profile folder. This
