@@ -1,7 +1,7 @@
 {
     "activeEvents": [
-        {"name": "Stamina RPG 5", "shortName": "SRPG5", "url": "https://srpg5.groovestats.com"},
-        {"name": "ITL 2022", "shortName": "ITL22", "url": "https://itl22.groovestats.com"}
+        {"name": "Stamina RPG 7", "shortName": "SRPG7", "url": "https://srpg7.groovestats.com"},
+        {"name": "ITL 2023", "shortName": "ITL23", "url": "https://itl23.groovestats.com"}
     ],
     "servicesAllowed": {
         "scoreSubmit": true,

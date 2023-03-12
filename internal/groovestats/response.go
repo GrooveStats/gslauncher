@@ -103,13 +103,26 @@ type scoreSubmitPlayerData struct {
 	} `json:"rpg"`
 
 	Itl *struct {
-		Name                      string              `json:"name"`
-		PreviousPointTotal        *int                `json:"previousPointTotal"`
-		CurrentPointTotal         int                 `json:"currentPointTotal"`
-		PreviousRankingPointTotal *int                `json:"previousRankingPointTotal"`
-		CurrentRankingPointTotal  int                 `json:"currentRankingPointTotal"`
-		ScoreDelta                *int                `json:"scoreDelta,omitempty"`
-		ItlLeaderboard            *[]leaderBoardEntry `json:"itlLeaderboard"`
+		Name           string              `json:"name"`
+		ScoreDelta     *int                `json:"scoreDelta,omitempty"`
+		ItlLeaderboard *[]leaderBoardEntry `json:"itlLeaderboard"`
+
+		Progress *struct {
+			StatImprovements []struct {
+				Name    string `json:"name"`
+				Current int    `json:"current"`
+				Gained  int    `json:"gained"`
+			} `json:"statImprovements"`
+
+			QuestsCompleted []struct {
+				Title   string `json:"title"`
+				Rewards []struct {
+					Type        string `json:"type"`
+					Description string `json:"description"`
+				} `json:"rewards"`
+				SongDownloadUrl *string `json:"songDownloadUrl"`
+			} `json:"questsCompleted"`
+		} `json:"progress"`
 	} `json:"itl"`
 }
 

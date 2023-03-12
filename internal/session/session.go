@@ -180,49 +180,99 @@ func (sess *Session) processRequest(request interface{}) {
 		sess.ipc.WriteResponse(req.Id, response)
 
 		if err == nil {
-			if req.Player1 != nil && resp.Player1 != nil && resp.Player1.Rpg != nil && resp.Player1.Rpg.Progress != nil {
-				for _, quest := range resp.Player1.Rpg.Progress.QuestsCompleted {
-					if quest.SongDownloadUrl == nil {
-						continue
-					}
-
-					descriptions := make([]string, 0)
-					for _, reward := range quest.Rewards {
-						if reward.Type == "song" {
-							descriptions = append(descriptions, reward.Description)
+			if req.Player1 != nil && resp.Player1 != nil {
+				if resp.Player1.Rpg != nil && resp.Player1.Rpg.Progress != nil {
+					for _, quest := range resp.Player1.Rpg.Progress.QuestsCompleted {
+						if quest.SongDownloadUrl == nil {
+							continue
 						}
-					}
 
-					sess.unlockManager.AddUnlock(
-						quest.Title,
-						*quest.SongDownloadUrl,
-						resp.Player1.Rpg.Name,
-						req.Player1.ProfileName,
-						descriptions,
-					)
+						descriptions := make([]string, 0)
+						for _, reward := range quest.Rewards {
+							if reward.Type == "song" {
+								descriptions = append(descriptions, reward.Description)
+							}
+						}
+
+						sess.unlockManager.AddUnlock(
+							quest.Title,
+							*quest.SongDownloadUrl,
+							resp.Player1.Rpg.Name,
+							req.Player1.ProfileName,
+							descriptions,
+						)
+					}
+				}
+
+				if resp.Player1.Itl != nil && resp.Player1.Itl.Progress != nil {
+					for _, quest := range resp.Player1.Itl.Progress.QuestsCompleted {
+						if quest.SongDownloadUrl == nil {
+							continue
+						}
+
+						descriptions := make([]string, 0)
+						for _, reward := range quest.Rewards {
+							if reward.Type == "song" {
+								descriptions = append(descriptions, reward.Description)
+							}
+						}
+
+						sess.unlockManager.AddUnlock(
+							quest.Title,
+							*quest.SongDownloadUrl,
+							resp.Player1.Itl.Name,
+							req.Player1.ProfileName,
+							descriptions,
+						)
+					}
 				}
 			}
 
-			if req.Player2 != nil && resp.Player2 != nil && resp.Player2.Rpg != nil && resp.Player2.Rpg.Progress != nil {
-				for _, quest := range resp.Player2.Rpg.Progress.QuestsCompleted {
-					if quest.SongDownloadUrl == nil {
-						continue
-					}
-
-					descriptions := make([]string, 0)
-					for _, reward := range quest.Rewards {
-						if reward.Type == "song" {
-							descriptions = append(descriptions, reward.Description)
+			if req.Player2 != nil && resp.Player2 != nil {
+				if resp.Player2.Rpg != nil && resp.Player2.Rpg.Progress != nil {
+					for _, quest := range resp.Player2.Rpg.Progress.QuestsCompleted {
+						if quest.SongDownloadUrl == nil {
+							continue
 						}
-					}
 
-					sess.unlockManager.AddUnlock(
-						quest.Title,
-						*quest.SongDownloadUrl,
-						resp.Player2.Rpg.Name,
-						req.Player2.ProfileName,
-						descriptions,
-					)
+						descriptions := make([]string, 0)
+						for _, reward := range quest.Rewards {
+							if reward.Type == "song" {
+								descriptions = append(descriptions, reward.Description)
+							}
+						}
+
+						sess.unlockManager.AddUnlock(
+							quest.Title,
+							*quest.SongDownloadUrl,
+							resp.Player2.Rpg.Name,
+							req.Player2.ProfileName,
+							descriptions,
+						)
+					}
+				}
+
+				if resp.Player2.Itl != nil && resp.Player2.Itl.Progress != nil {
+					for _, quest := range resp.Player2.Itl.Progress.QuestsCompleted {
+						if quest.SongDownloadUrl == nil {
+							continue
+						}
+
+						descriptions := make([]string, 0)
+						for _, reward := range quest.Rewards {
+							if reward.Type == "song" {
+								descriptions = append(descriptions, reward.Description)
+							}
+						}
+
+						sess.unlockManager.AddUnlock(
+							quest.Title,
+							*quest.SongDownloadUrl,
+							resp.Player2.Itl.Name,
+							req.Player2.ProfileName,
+							descriptions,
+						)
+					}
 				}
 			}
 		}
