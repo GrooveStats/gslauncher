@@ -52,8 +52,11 @@ func detectSM() (string, string, string, string) {
 		// Query the SM version.
 		smExePath := filepath.Join(smAppPath, "Contents", "MacOS", "StepMania")
 		ofExePath := filepath.Join(smAppPath, "Contents", "MacOS", "OutFox")
+		itgmExePath := filepath.Join(smAppPath, "Contents", "MacOS", "ITGmania")
 
-		if _, err := os.Stat(ofExePath); err == nil {
+		if _, err := os.Stat(itgmExePath); err == nil {
+			smExePath = itgmExePath
+		} else if _, err := os.Stat(ofExePath); err == nil {
 			smExePath = ofExePath
 		}
 
