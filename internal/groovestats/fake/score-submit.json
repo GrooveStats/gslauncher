@@ -185,12 +185,12 @@
             "progress": {
                 "statImprovements": [
                     {
-                        "name": "total",
+                        "name": "footspeedLevel",
                         "current": 30001,
                         "gained": 1
                     },
                     {
-                        "name": "ranking",
+                        "name": "staminaLevel",
                         "current": 10001,
                         "gained": 1
                     }
@@ -400,18 +400,18 @@
             "progress": {
                 "statImprovements": [
                     {
-                        "name": "total",
+                        "name": "footspeedLevel",
                         "current": 30001,
                         "gained": 1
                     },
                     {
-                        "name": "ranking",
+                        "name": "staminaLevel",
                         "current": 10001,
                         "gained": 1
                     },
                     {
                         "name": "clearType",
-                        "current": 0,
+                        "current": 4,
                         "gained": 4
                     }
                 ],
