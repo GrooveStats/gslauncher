@@ -154,7 +154,11 @@
             ]
         },
         "itl": {
-            "name": "ITL 2023",
+            "name": "ITL Online 2023",
+            "previousPointTotal": 30000,
+            "currentPointTotal": 30001,
+            "previousRankingPointTotal": 10000,
+            "currentRankingPointTotal": 10001,
             "scoreDelta": 200,
             "itlLeaderboard": [
                 {
@@ -317,7 +321,7 @@
                                 "description": "Unlocked \"some other song in the same zip\""
                             }
                         ],
-			"songDownloadUrl": "https://www.groovestats.com/ITL2023/9384984147.zip"
+			            "songDownloadUrl": "https://www.groovestats.com/ITL2023/9384984147.zip"
                     }
                 ]
             },
@@ -365,7 +369,11 @@
             ]
         },
         "itl": {
-            "name": "ITL 2023",
+            "name": "ITL Online 2023",
+            "previousPointTotal": 30000,
+            "currentPointTotal": 30001,
+            "previousRankingPointTotal": 10000,
+            "currentRankingPointTotal": 10001,
             "scoreDelta": 200,
             "itlLeaderboard": [
                 {
@@ -400,6 +408,11 @@
                         "name": "ranking",
                         "current": 10001,
                         "gained": 1
+                    },
+                    {
+                        "name": "clearType",
+                        "current": 0,
+                        "gained": 4
                     }
                 ],
                 "questsCompleted": [

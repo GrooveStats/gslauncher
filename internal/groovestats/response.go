@@ -103,9 +103,13 @@ type scoreSubmitPlayerData struct {
 	} `json:"rpg"`
 
 	Itl *struct {
-		Name           string              `json:"name"`
-		ScoreDelta     *int                `json:"scoreDelta,omitempty"`
-		ItlLeaderboard *[]leaderBoardEntry `json:"itlLeaderboard"`
+		Name                      string              `json:"name"`
+		PreviousPointTotal        *int                `json:"previousPointTotal"`
+		CurrentPointTotal         int                 `json:"currentPointTotal"`
+		PreviousRankingPointTotal *int                `json:"previousRankingPointTotal"`
+		CurrentRankingPointTotal  int                 `json:"currentRankingPointTotal"`
+		ScoreDelta                *int                `json:"scoreDelta,omitempty"`
+		ItlLeaderboard            *[]leaderBoardEntry `json:"itlLeaderboard"`
 
 		Progress *struct {
 			StatImprovements []struct {
