@@ -93,7 +93,13 @@ func (unlockWidget *UnlockWidget) handleUpdate(unlock *unlocks.Unlock) {
 		errorLabel.Wrapping = fyne.TextWrapWord
 		errorLabel.Alignment = fyne.TextAlignCenter
 
-		questTitleLabel := widget.NewLabel(unlock.QuestTitle)
+		questTitleLabel := widget.NewLabel(
+			fmt.Sprintf(
+				"[%s] %s",
+				unlock.RpgName,
+				unlock.QuestTitle,
+			),
+		)
 		questTitleLabel.TextStyle.Bold = true
 
 		descriptionsLabel := widget.NewLabel(strings.Join(unlock.SongDescriptions, "\n"))

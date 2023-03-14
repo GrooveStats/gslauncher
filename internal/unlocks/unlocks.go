@@ -75,7 +75,7 @@ func (manager *Manager) AddUnlock(questTitle, url, rpgName, profileName string, 
 	}
 
 	for _, unlock := range manager.Unlocks {
-		if unlock.DownloadUrl == url {
+		if unlock.RpgName == rpgName && unlock.DownloadUrl == url {
 			user := &UserData{
 				ProfileName: profileName,
 			}
@@ -224,7 +224,10 @@ func (manager *Manager) detectUnpackStatus(unlock *Unlock, user *UserData) {
 func (manager *Manager) getCachePath(unlock *Unlock) string {
 	parts := strings.Split(unlock.DownloadUrl, "/")
 	basename := parts[len(parts)-1]
-	return filepath.Join(manager.DownloadDir, basename)
+	return filepath.Join(
+		manager.DownloadDir,
+		fmt.Sprintf("%s-%s", unlock.RpgName, basename),
+	)
 }
 
 func (manager *Manager) getUnpackPath(unlock *Unlock, profileName *string) string {
