@@ -100,8 +100,10 @@ func fakePlayerLeaderboards(request *fsipc.GsPlayerLeaderboardsRequest) (*Player
 		p2 := response.Player2
 
 		p1.GsLeaderboard = p1.GsLeaderboard[:min(n, len(p1.GsLeaderboard))]
+		p1.ExLeaderboard = p1.ExLeaderboard[:min(n, len(p1.ExLeaderboard))]
 		p1.Rpg.RpgLeaderboard = p1.Rpg.RpgLeaderboard[:min(n, len(p1.Rpg.RpgLeaderboard))]
 		p2.GsLeaderboard = p2.GsLeaderboard[:min(n, len(p2.GsLeaderboard))]
+		p2.ExLeaderboard = p2.ExLeaderboard[:min(n, len(p2.ExLeaderboard))]
 		p2.Rpg.RpgLeaderboard = p2.Rpg.RpgLeaderboard[:min(n, len(p2.Rpg.RpgLeaderboard))]
 	}
 
@@ -149,13 +151,17 @@ func fakeScoreSubmit(request *fsipc.GsScoreSubmitRequest) (*ScoreSubmitResponse,
 		p2 := response.Player2
 
 		p1GsLeaderboard := (*p1.GsLeaderboard)[:min(n, len(*p1.GsLeaderboard))]
+		p1ExLeaderboard := (*p1.ExLeaderboard)[:min(n, len(*p1.ExLeaderboard))]
 		p1RpgLeaderboard := (*p1.Rpg.RpgLeaderboard)[:min(n, len(*p1.Rpg.RpgLeaderboard))]
 		p2GsLeaderboard := (*p2.GsLeaderboard)[:min(n, len(*p2.GsLeaderboard))]
+		p2ExLeaderboard := (*p2.ExLeaderboard)[:min(n, len(*p2.ExLeaderboard))]
 		p2RpgLeaderboard := (*p2.Rpg.RpgLeaderboard)[:min(n, len(*p2.Rpg.RpgLeaderboard))]
 
 		p1.GsLeaderboard = &p1GsLeaderboard
+		p1.ExLeaderboard = &p1ExLeaderboard
 		p1.Rpg.RpgLeaderboard = &p1RpgLeaderboard
 		p2.GsLeaderboard = &p2GsLeaderboard
+		p2.ExLeaderboard = &p2ExLeaderboard
 		p2.Rpg.RpgLeaderboard = &p2RpgLeaderboard
 	}
 
@@ -193,10 +199,12 @@ func fakeScoreSubmit(request *fsipc.GsScoreSubmitRequest) (*ScoreSubmitResponse,
 		response.Player1.IsRanked = false
 		response.Player1.ScoreDelta = nil
 		response.Player1.GsLeaderboard = nil
+		response.Player1.ExLeaderboard = nil
 		response.Player1.Rpg = nil
 		response.Player1.IsRanked = false
 		response.Player2.ScoreDelta = nil
 		response.Player2.GsLeaderboard = nil
+		response.Player2.ExLeaderboard = nil
 		response.Player2.Rpg = nil
 	default:
 		panic("unknown submit result")
