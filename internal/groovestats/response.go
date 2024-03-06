@@ -104,11 +104,18 @@ type scoreSubmitPlayerData struct {
 
 	Itl *struct {
 		Name                      string              `json:"name"`
-		PreviousPointTotal        *int                `json:"previousPointTotal"`
-		CurrentPointTotal         int                 `json:"currentPointTotal"`
-		PreviousRankingPointTotal *int                `json:"previousRankingPointTotal"`
-		CurrentRankingPointTotal  int                 `json:"currentRankingPointTotal"`
+		TopScorePoints            *int                `json:topScorePoints`
 		ScoreDelta                *int                `json:"scoreDelta,omitempty"`
+		IsDoubles                 *bool               `json:"isDoubles"`
+		CurrentPointTotal         int                 `json:"currentPointTotal"`
+		PreviousPointTotal        *int                `json:"previousPointTotal"`
+		CurrentRankingPointTotal  int                 `json:"currentRankingPointTotal"`
+		PreviousRankingPointTotal *int                `json:"previousRankingPointTotal"`
+		CurrentExPointTotal       *int                `json:"currentExPointTotal"`
+		PreviousExPointTotal      *int                `json:"previousExPointTotal"`
+		CurrentSongPointTotal     *int                `json:"currentSongPointTotal"`
+		PreviousSongPointTotal    *int                `json:"previousSongPointTotal"`
+
 		ItlLeaderboard            *[]leaderBoardEntry `json:"itlLeaderboard"`
 
 		Progress *struct {
