@@ -104,7 +104,7 @@ type scoreSubmitPlayerData struct {
 
 	Itl *struct {
 		Name                      string              `json:"name"`
-		TopScorePoints            *int                `json:topScorePoints`
+		TopScorePoints            *int                `json:"topScorePoints"`
 		ScoreDelta                *int                `json:"scoreDelta,omitempty"`
 		IsDoubles                 *bool               `json:"isDoubles"`
 		CurrentPointTotal         int                 `json:"currentPointTotal"`
