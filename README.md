@@ -28,8 +28,8 @@ that.
   You will need version 5.0.0 or later. Older versions don't support
   GrooveStats features.
 
-  [Digital Dance](https://github.com/Hayoreo/Digital-Dance/releases/latest)
-  (1.0.0 or later) and
+  [Digital Dance](https://github.com/Hayoreo/Digital-Dance-ITGMania/releases/latest)
+  (1.0.7 or later) and
   [Waterfall](https://docs.google.com/document/d/1-13VfHKUM_b2WHZpQodrdLu3Pe-IWqrgJBBIHFq6y_Y)
   (0.7 or later) also have support for GrooveStats features.
 - Install the launcher. There is a
