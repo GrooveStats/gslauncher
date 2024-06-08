@@ -1,3 +1,13 @@
+# THIS REPO HAS BEEN ARCHIVED
+
+2024-03-07
+
+As mentioned in the latest release notes [here](https://github.com/GrooveStats/gslauncher/releases/tag/v1.6.0), v1.6.0 was the final release.
+
+Development has moved forward to concentrate only on [ITGmania](https://www.itgmania.com) releases going forward so we recommend you migrate if you're still interested in GrooveStats functionality.
+
+This repo still contains relevant info regarding setting up API keys and such will remain around, but development has ceased.
+
 # GrooveStats Launcher
 
 [![Release Video](https://img.youtube.com/vi/8yMzp7xMQq0/0.jpg)](https://youtu.be/8yMzp7xMQq0)
